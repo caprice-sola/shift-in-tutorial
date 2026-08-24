@@ -10,10 +10,10 @@ the GitHub web UI or a separate `gh` command.
 1. **Review first.** Ask the agent to review the diff (or the relevant files) before anything is
    proposed as final. This is the "AI code review" step — treat its findings as a starting point
    for discussion, not a verdict.
-2. **Verify as a mob before anything ships.** This is the rotation ritual from
-   `docs/workshop-format.md`: driver writes the prompt → agent acts → the mob reads the diff aloud
-   together → the navigator challenges one thing → accept or reject. Do this *before* opening a
-   PR, not after — the PR should already represent something the mob agreed with.
+2. **Verify as a mob before anything ships.** This is the rotation ritual: driver writes the
+   prompt → agent acts → the mob reads the diff aloud together → the navigator challenges one
+   thing → accept or reject. Do this *before* opening a PR, not after — the PR should already
+   represent something the mob agreed with.
 3. **Open the PR via the MCP tool**, once the mob has actually accepted the change. Ask for it
    directly, e.g.:
    > "Open a PR from this branch into `solution/m1-context` (or your working branch) titled

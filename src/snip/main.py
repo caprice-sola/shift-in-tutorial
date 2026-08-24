@@ -22,7 +22,7 @@ def link_not_found(request: Request, exc: LinkNotFoundError) -> JSONResponse:
 
 @app.post("/api/links", response_model=LinkResponse, status_code=201)
 def create_link(req: CreateLinkRequest) -> LinkResponse:
-    record = shortener.create_link(str(req.url))
+    record = shortener.create_link(req.url)
     return LinkResponse.from_record(record)
 
 
