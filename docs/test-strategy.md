@@ -37,6 +37,8 @@ handling, lookup). A green coverage report that still lets mutants survive means
 too little; treat a surviving mutant as a missing assertion, not a mutmut false positive, until
 proven otherwise.
 
+Results of the first real run: `docs/mutation-testing-notes.md`.
+
 ## Out of scope for this document
 
 Load-testing infrastructure, persistence-layer testing (the store is in-memory by design), and the
