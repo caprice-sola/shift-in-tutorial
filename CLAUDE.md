@@ -49,9 +49,12 @@ are SLI violations, not style issues.
 
 - Python 3.11+, FastAPI, in-memory store (`store.py` — not persistent; that's intentional).
 - Run: `pip install -e .` then `uvicorn snip.main:app --reload --app-dir src`.
-- Source: `src/snip/`. Tests: `tests/` (empty so far — see `docs/test-strategy.md`).
+- Source: `src/snip/`. Tests: `tests/unit/`, `tests/api/` — see `docs/test-strategy.md` for the
+  target shape and `docs/mutation-testing-notes.md` for what mutation testing found.
+- A `Stop` hook (`.claude/hooks/run_tests.py`) runs the suite before Claude Code ends a turn —
+  don't remove or bypass it to get a stop through faster.
 
 ---
-_v1 — authored in M1 from business context, quality characteristics, and SLIs. No test tooling,
-CI, hooks, or subagents exist yet; this file is a living artifact and gets updated again once
-they do (M4)._
+_v1 — authored in M1 from business context, quality characteristics, and SLIs; test tooling and
+the `Stop` hook noted here as of M3a without a full rewrite. Subagents don't exist yet — this file
+gets its real v2 pass in M4._

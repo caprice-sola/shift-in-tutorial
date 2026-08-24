@@ -1,7 +1,8 @@
 # Test strategy — snip (v1, authored in M1)
 
-No tests exist yet (`tests/` is empty). This document sets the target shape **before** any test
-is written, so tooling decisions in M3a/M4 have something to be held accountable to.
+Written in M1, **before** any test existed, so tooling decisions in M3a/M4 have something to be
+held accountable to. As of M3a, `tests/unit/` and `tests/api/` exist and follow the shape below —
+see `docs/mutation-testing-notes.md` for what mutation testing found once they did.
 
 ## Guiding rule
 

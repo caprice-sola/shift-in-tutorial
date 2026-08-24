@@ -16,6 +16,9 @@ def generate_code() -> str:
 
 
 def create_link(url: str) -> LinkRecord:
+    # check-then-act, not atomic: fine for this in-memory, single-process workshop
+    # store under test/demo traffic, but not a concurrency guarantee - two
+    # requests could still race between exists() and put() under real load.
     code = generate_code()
     while store.exists(code):
         code = generate_code()

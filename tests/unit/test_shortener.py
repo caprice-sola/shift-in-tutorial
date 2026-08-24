@@ -53,8 +53,8 @@ def test_list_links_returns_all_created_links():
 def test_create_link_retries_on_code_collision(monkeypatch):
     # generate_code returns the same value twice, then a distinct one. A
     # correct create_link must not let the second call silently overwrite
-    # the first link - this was planted issue #2 (solutions/README.md),
-    # deliberately left unfixed through M2 for a closer look here.
+    # the first link - this collision gap was deliberately left unfixed
+    # during M2's review for a closer look here.
     codes = iter(["dupe12", "dupe12", "uniq99"])
     monkeypatch.setattr(shortener, "generate_code", lambda: next(codes))
 

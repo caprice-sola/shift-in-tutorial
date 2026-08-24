@@ -5,6 +5,7 @@ the HTTP wiring calls the right thing and shapes the response correctly
 from fastapi.testclient import TestClient
 
 from snip.main import app
+from snip.shortener import CODE_LENGTH
 
 client = TestClient(app)
 
@@ -15,7 +16,7 @@ def test_create_link_returns_201_and_shape():
     body = resp.json()
     assert body["url"] == "https://example.com"
     assert body["clicks"] == 0
-    assert len(body["code"]) == 6
+    assert len(body["code"]) == CODE_LENGTH
 
 
 def test_create_link_rejects_unsafe_url_with_422():

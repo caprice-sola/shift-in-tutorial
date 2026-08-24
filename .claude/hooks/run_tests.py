@@ -11,28 +11,37 @@ import sys
 
 MAX_REASON_CHARS = 4000
 
+# NOTE: decision/reason are TOP-LEVEL fields for a Stop hook - NOT nested under
+# hookSpecificOutput (that wrapper is for events like PreToolUse/UserPromptSubmit
+# that need a hookEventName-scoped shape). Getting this wrong doesn't error, it
+# just makes the hook a silent no-op: verified against code.claude.com/docs/en/hooks
+# and hooks-guide.md ("PostToolUse and Stop hooks use a top-level decision: 'block'
+# field") after a review pass caught the nested version failing to block.
+
+
+def block(reason: str) -> None:
+    print(json.dumps({"decision": "block", "reason": reason}))
+
 
 def main() -> None:
-    payload = json.load(sys.stdin)
+    try:
+        payload = json.load(sys.stdin)
+    except json.JSONDecodeError:
+        return  # can't tell what's going on; don't block on unreadable input
+
     if payload.get("stop_hook_active"):
         return  # already blocked once this turn - don't loop forever
 
     try:
         result = subprocess.run(
-            ["pytest", "-q"],
+            ["pytest", "-q", "--tb=short"],
             capture_output=True,
             text=True,
             cwd=payload.get("cwd"),
         )
-    except FileNotFoundError:
-        print(json.dumps({
-            "hookSpecificOutput": {
-                "hookEventName": "Stop",
-                "decision": "block",
-                "reason": "pytest isn't installed/on PATH. Run `pip install -e \".[test]\"` "
-                           "(from the repo root, in your active environment) before finishing.",
-            }
-        }))
+    except OSError as exc:
+        block(f"Couldn't run pytest ({exc}). If it's not installed, run "
+              "`pip install -e \".[test]\"` from the repo root before finishing.")
         return
 
     if result.returncode == 0:
@@ -41,14 +50,12 @@ def main() -> None:
     output = (result.stdout + result.stderr).strip()
     if len(output) > MAX_REASON_CHARS:
         output = output[-MAX_REASON_CHARS:]
-    reason = f"pytest is failing - fix before finishing:\n\n{output}"
-    print(json.dumps({
-        "hookSpecificOutput": {
-            "hookEventName": "Stop",
-            "decision": "block",
-            "reason": reason,
-        }
-    }))
+
+    if result.returncode == 5:
+        block(f"pytest collected zero tests (exit 5) - check cwd/testpaths, "
+              f"not a real failure:\n\n{output}")
+    else:
+        block(f"pytest is failing - fix before finishing:\n\n{output}")
 
 
 if __name__ == "__main__":
