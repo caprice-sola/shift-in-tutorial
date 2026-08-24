@@ -1,0 +1,20 @@
+# CI stub — added in M2 alongside the first reviewed PR, so the pipeline exists
+# before there's anything real to gate on. There is no test suite yet (that's M3a),
+# so this only proves the package installs cleanly. M3b replaces the sanity-check
+# step with the real unit-test run plus an SLI-derived gate.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  sanity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -e .
+      - run: python -c "import snip; print(snip.__version__)"
