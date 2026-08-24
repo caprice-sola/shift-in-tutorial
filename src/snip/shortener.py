@@ -8,7 +8,9 @@ solutions/README.md. Do not "fix" them in the `start` branch.
 import random
 import string
 
-from .store import LinkRecord, store
+from .store import LinkNotFoundError, LinkRecord, store
+
+__all__ = ["LinkNotFoundError", "create_link", "generate_code", "list_links", "resolve", "stats"]
 
 ALPHABET = string.ascii_letters + string.digits
 CODE_LENGTH = 6
