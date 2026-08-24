@@ -1,10 +1,10 @@
 """Request/response models."""
 
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 
 
 class CreateLinkRequest(BaseModel):
-    url: str
+    url: HttpUrl
 
 
 class LinkResponse(BaseModel):
