@@ -17,7 +17,7 @@ out the previous branch to resync. Branches are built in order; each starts from
 ## Build status
 
 - [x] T0 `start`
-- [ ] T1 `solution/m1-context`
+- [x] T1 `solution/m1-context`
 - [ ] T2 `solution/m2-review`
 - [ ] T3 `solution/m3a-unit-hook`
 - [ ] T4 `solution/m3b-ci`
