@@ -3,8 +3,7 @@
 A tiny URL shortener — the **starter application** for the Shift In tutorial. Past M3a: a unit
 test suite exists, backed by mutation testing (`docs/mutation-testing-notes.md`), and a `Stop`
 hook (`.claude/hooks/run_tests.py`) keeps Claude Code from ending its turn while the suite is red
-— the shift-left → Shift In pivot (`docs/shift-in-thesis.md`). CI (M3b) and system tests (M4)
-still come later.
+— the shift-left → Shift In pivot. CI (M3b) and system tests (M4) still come later.
 
 ## Run it
 

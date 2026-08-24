@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Stop hook: don't let the agent end its turn while pytest is red.
 
-This is the shift-left -> Shift In pivot for this workshop (docs/shift-in-thesis.md):
-quality feedback moves from "after a push" (CI, M3b) to "before the agent's turn
-even ends." See docs/test-strategy.md for what these tests are supposed to cover.
+This is the shift-left -> Shift In pivot for this workshop: quality feedback moves
+from "after a push" (CI, M3b) to "before the agent's turn even ends." See
+docs/test-strategy.md for what these tests are supposed to cover.
 """
 import json
 import subprocess
