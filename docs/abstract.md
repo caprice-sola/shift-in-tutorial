@@ -12,20 +12,19 @@ That next step matters because agents change where quality work naturally lives.
 
 We start with a real, running application in a Git repository — business context, quality characteristics, and SLIs already defined, but not a single line of AI-assisted engineering yet. Working in small mobs of three around one machine, each team takes that repo from bare to a fully quality-engineered delivery pipeline, using the AI agent at every step. We use Claude Code as the reference implementation and call out where Copilot is similar or different throughout.
 
-The day progresses through eight short exercises, each with a brief theory primer up front:
+The day progresses through seven short exercises, each with a brief theory primer up front:
 
 1. **Understand the business context.** Turn the team's DoR/DoD, quality characteristics, and SLIs into the agent's standing instructions and a shared, versioned test strategy the agent actually consults.
 2. **The agent as collaborator.** Run an AI code review, verify the diff together as a mob, and open a pull request through the GitHub MCP server — establishing the verification ritual we reuse all day.
 3. **Unit tests and the loop hook.** Generate unit tests, then use mutation testing to expose tests that pass while asserting nothing — and wire a hook that runs the suite *inside the agent's loop* before it finishes. This is where shift-left becomes Shift In.
 4. **The CI pipeline.** Have the agent design a pipeline that gates every commit, including one SLI-based check.
-5. **API tests as a skill.** Build a reusable Skill that drives contract and property-based API testing against the OpenAPI spec, rather than brittle happy-path examples.
-6. **System tests as a subagent.** Delegate Robot Framework system-test creation to a specialized subagent — and enforce the right pyramid level so the agent doesn't bury you in slow end-to-end tests.
-7. **System regression in the pipeline.** Add the slower suite as its own stage and update the agent's instructions to keep tests at the level that gives confidence cheapest.
-8. **The feature build — quality in the loop.** Take a pre-prepared issue, refine its user stories and acceptance criteria through Example Mapping with a BDD agent that interviews the team, then let the coding agent build the feature — generating and running its own tests against the pipeline and opening a PR, with humans as the verification gate throughout.
+5. **System tests as a subagent.** Delegate Robot Framework system-test creation to a specialized subagent — and enforce the right pyramid level so the agent doesn't bury you in slow end-to-end tests.
+6. **System regression in the pipeline.** Add the slower suite as its own stage and update the agent's instructions to keep tests at the level that gives confidence cheapest.
+7. **The feature build — quality in the loop.** Take a pre-prepared issue, refine its user stories and acceptance criteria through Example Mapping — driven by a purpose-built skill — with a BDD agent that interviews the team, then let the coding agent build the feature — generating and running its own tests against the pipeline and opening a PR, with humans as the verification gate throughout.
 
 ## The strong message: Shift In
 
-Shift-left asked us to test earlier. **Shift In** asks something different: embed quality engineering directly into the agent's reasoning-and-acting loop, so the agent generates, tests, and gates its own work as it goes — and the human's role shifts from typist to verifier. The hook that runs tests before the agent stops, the skills that encode test-design discipline, the subagent that owns system testing, the human reproduction gate on every accepted change: these are not add-ons to AI coding. They are how quality survives autonomy.
+Shift-left asked us to test earlier. **Shift In** asks something different: embed quality engineering directly into the agent's reasoning-and-acting loop, so the agent generates, tests, and gates its own work as it goes — and the human's role shifts from typist to verifier. The hook that runs tests before the agent stops, the skill that encodes a repeatable technique, the subagent that owns system testing, the human reproduction gate on every accepted change: these are not add-ons to AI coding. They are how quality survives autonomy.
 
 ## What you'll take away
 

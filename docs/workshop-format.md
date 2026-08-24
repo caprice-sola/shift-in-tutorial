@@ -35,7 +35,7 @@ The handoff *is* the quality gate. This is the human reproduction / verification
    is a map of gaps, not a target; prove oracles with mutation testing (M3a).
 2. **Pyramid inversion.** Agents happily generate slow end-to-end tests for everything. Counter:
    add coverage at the lowest level that gives confidence; the test strategy (M1) sets the target
-   distribution the agent must respect (M4b).
+   distribution the agent must respect (M4).
 
 ## Recurring rituals
 

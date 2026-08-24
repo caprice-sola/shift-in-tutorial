@@ -30,22 +30,17 @@ Do not write these until the solution branches are proven, so the steps match re
 **Artifact:** `.github/workflows/ci.yml`
 **Recovery:** `git checkout solution/m3b-ci`
 
-## M4a — API tests via skill
-**Theory primer:** _TODO — skill vs subagent vs command; contract/property testing._
-**Steps:** _TODO_
-**Artifact:** `.claude/skills/api-testing/`, `tests/api/`
-**Recovery:** `git checkout solution/m4a-api`
-
-## M4b — System tests via subagent
+## M4 — System tests via subagent
 **Theory primer:** _TODO — pyramid discipline when tests are cheap; delegating to a subagent._
 **Steps:** _TODO_
 **Artifact:** system-test subagent, `tests/system/`, `app/CLAUDE.md` v2
-**Recovery:** `git checkout solution/m4b-system`
+**Recovery:** `git checkout solution/m4-system`
 
 ## M5a — Story refinement (Example Mapping)
-**Theory primer:** _TODO — Example Mapping; agent-led discovery; untrusted input._
+**Theory primer:** _TODO — skill vs subagent vs command; Example Mapping technique; agent-led
+discovery; untrusted input._
 **Steps:** _TODO_
-**Artifact:** enhanced AC + BDD scenarios
+**Artifact:** `.claude/skills/example-mapping/`, enhanced AC + BDD scenarios
 **Recovery:** `git checkout solution/m5a-bdd`
 
 ## M5b — Feature build, QA in the loop

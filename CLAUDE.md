@@ -35,8 +35,8 @@ Shift-left moved testing earlier in time. An autonomous coding agent compresses 
 and decisions into one continuous generative loop — so quality no longer has to sit only
 *before* the loop (planning) or *after* it (CI). It can travel *inside* the loop, with the
 agent, as it works. The tutorial makes that concrete: a hook that runs tests before the agent
-stops, skills that encode test-design discipline, a subagent that owns system testing, and a
-human verification gate on every accepted change. See `docs/shift-in-thesis.md`.
+stops, a skill that encodes a repeatable technique (Example Mapping), a subagent that owns system
+testing, and a human verification gate on every accepted change. See `docs/shift-in-thesis.md`.
 
 ---
 
@@ -46,7 +46,6 @@ human verification gate on every accepted change. See `docs/shift-in-thesis.md`.
 - **Unit tests:** `pytest` + `pytest-cov`. Coverage is a **map of gaps, not a target**.
 - **Test-quality check:** mutation testing (`mutmut`) on at least one critical module, to prove
   tests actually assert something (the oracle problem made visible).
-- **API tests:** contract / property-based testing with **Schemathesis** against the OpenAPI spec.
 - **System tests:** **Robot Framework**, kept at the right pyramid level (see working agreements).
 - **CI:** GitHub Actions. At least one **SLI-derived gate** in the pipeline.
 - **Agent features (Claude Code = reference implementation):**
@@ -97,15 +96,14 @@ Work on a feature branch, keep `start` clean, and update `solutions/README.md` c
       in-loop. (This is the shift-left → Shift In pivot — make it prominent.)
 - [ ] **T4 — `solution/m3b-ci`.** GitHub Actions workflow running unit tests on every commit, with
       one SLI-derived gate.
-- [ ] **T5 — `solution/m4a-api`.** A `.claude/skills/` skill for contract/property API testing;
-      Schemathesis suite against the OpenAPI spec.
-- [ ] **T6 — `solution/m4b-system`.** A system-test **subagent** generating Robot Framework suites at
+- [ ] **T5 — `solution/m4-system`.** A system-test **subagent** generating Robot Framework suites at
       the right pyramid level; add a separate (slower) CI stage. Update `app/CLAUDE.md` to v2.
-- [ ] **T7 — `solution/m5a-bdd`.** A pre-prepared GitHub issue (new feature: **link expiry**), plus a
-      BDD subagent that runs Example Mapping by interviewing the user to refine acceptance criteria.
-- [ ] **T8 — `solution/m5b-feature`.** Build the link-expiry feature using all prior context, with the
+- [ ] **T6 — `solution/m5a-bdd`.** A pre-prepared GitHub issue (new feature: **link expiry**), plus a
+      BDD **skill** (`.claude/skills/example-mapping/`) that runs Example Mapping by interviewing
+      the user to refine acceptance criteria.
+- [ ] **T7 — `solution/m5b-feature`.** Build the link-expiry feature using all prior context, with the
       agent generating + running tests in-loop and opening a PR. Quality embedded throughout.
-- [ ] **T9 — Module guides.** For each sub-module, fill `docs/module-guide.md` with the short theory
+- [ ] **T8 — Module guides.** For each sub-module, fill `docs/module-guide.md` with the short theory
       primer + step list. (Author last, once the branches are proven.)
 
 ---

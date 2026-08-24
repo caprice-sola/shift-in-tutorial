@@ -10,10 +10,9 @@ out the previous branch to resync. Branches are built in order; each starts from
 | `solution/m2-review` | T2 | CI stub + GitHub MCP notes + one AI-reviewed PR fixing some planted issues. |
 | `solution/m3a-unit-hook` | T3 | `pytest`/`pytest-cov`, unit tests, a `mutmut` run, a `Stop` hook. |
 | `solution/m3b-ci` | T4 | `.github/workflows/ci.yml` running units + one SLI gate. |
-| `solution/m4a-api` | T5 | `.claude/skills/api-testing/` + Schemathesis suite. |
-| `solution/m4b-system` | T6 | System-test subagent + Robot suites + slow CI stage + `app/CLAUDE.md` v2. |
-| `solution/m5a-bdd` | T7 | Pre-prepared issue (link expiry) + BDD/Example-Mapping subagent. |
-| `solution/m5b-feature` | T8 | Link-expiry feature built in-loop, tests generated, PR opened. |
+| `solution/m4-system` | T5 | System-test subagent + Robot suites + slow CI stage + `app/CLAUDE.md` v2. |
+| `solution/m5a-bdd` | T6 | Pre-prepared issue (link expiry) + BDD/Example-Mapping skill (`.claude/skills/example-mapping/`). |
+| `solution/m5b-feature` | T7 | Link-expiry feature built in-loop, tests generated, PR opened. |
 
 ## Build status
 
@@ -22,11 +21,10 @@ out the previous branch to resync. Branches are built in order; each starts from
 - [ ] T2 `solution/m2-review`
 - [ ] T3 `solution/m3a-unit-hook`
 - [ ] T4 `solution/m3b-ci`
-- [ ] T5 `solution/m4a-api`
-- [ ] T6 `solution/m4b-system`
-- [ ] T7 `solution/m5a-bdd`
-- [ ] T8 `solution/m5b-feature`
-- [ ] T9 module guides filled in
+- [ ] T5 `solution/m4-system`
+- [ ] T6 `solution/m5a-bdd`
+- [ ] T7 `solution/m5b-feature`
+- [ ] T8 module guides filled in
 
 ---
 

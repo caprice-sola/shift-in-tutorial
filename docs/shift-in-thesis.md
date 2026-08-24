@@ -19,8 +19,8 @@ and gates its own work as it goes — and the human's role shifts from typist to
 
 - **Hooks** that run the test suite before the agent is allowed to finish a turn — quality
   feedback arrives within the loop, not after a push.
-- **Skills** that encode test-design discipline (contract testing, ISTQB techniques) so the
-  agent generates *good* tests by default, not just passing ones.
+- **Skills** that encode a repeatable team technique — like Example Mapping — so the agent runs
+  it consistently instead of improvising each time.
 - **Subagents** that own a quality concern (e.g. system testing) in isolated context.
 - A **human reproduction / verification gate**: nothing is "done" until a human has confirmed it.
 - **SLIs** that define what "good" means and become pipeline gates.

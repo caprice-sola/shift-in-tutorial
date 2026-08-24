@@ -15,7 +15,7 @@ Targets are deliberately modest so a workshop pipeline can check them.
 
 - **M1** references these in the test strategy.
 - **M3b** turns at least one SLI into a **CI gate** (latency or correctness are the easy first choices).
-- **M4** weights API/system test coverage toward the redirect hot path (SLIs 1–3).
+- **M4** weights system test coverage toward the redirect hot path (SLIs 1–3).
 - **M5** treats SLI impact as part of the feature's acceptance criteria.
 
 > Note: in `start`, several of these SLIs are **not yet met** — e.g. unsafe URLs are accepted
