@@ -47,6 +47,6 @@ robot --outputdir robot-results tests/system/ # system tests, real server, real 
 - `tests/unit/`, `tests/api/` — unit tests and thin route-wiring tests.
 - `tests/gates/` — the SLI 1 (redirect latency) CI gate. Not part of the pyramid, not run by the
   Stop hook; CI runs it on every push.
-- `tests/system/` — Robot Framework system tests: the redirect hot path and two cross-cutting
-  flows. Maintained by the `system-test-writer` subagent, not written inline.
+- `tests/system/` — Robot Framework system tests: the redirect hot path round trip. Maintained by
+  the `system-test-writer` subagent, not written inline.
 - `.claude/agents/system-test-writer.md` — the subagent that owns `tests/system/`.

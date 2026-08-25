@@ -8,6 +8,7 @@ Suite Teardown   Stop Snip Server
 
 *** Variables ***
 ${BASE_URL}      http://127.0.0.1:8941
+${STARTUP_ATTEMPTS}    20
 
 *** Keywords ***
 Start Snip Server
@@ -15,11 +16,23 @@ Start Snip Server
     ...    --host    127.0.0.1    --port    8941    --log-level    warning
     ...    cwd=${CURDIR}/../..
     Set Suite Variable    ${SERVER_PROCESS}    ${handle}
-    Wait Until Keyword Succeeds    20x    0.5s    Server Should Be Up
+    Create Session    snip    ${BASE_URL}
+    Wait For Server To Be Up
 
-Server Should Be Up
-    Create Session    probe    ${BASE_URL}
-    ${resp}=    GET On Session    probe    /openapi.json
+Wait For Server To Be Up
+    FOR    ${attempt}    IN RANGE    ${STARTUP_ATTEMPTS}
+        ${running}=    Is Process Running    ${SERVER_PROCESS}
+        IF    not ${running}
+            Fail    uvicorn exited before starting - port ${BASE_URL} may already be in use
+        END
+        ${up}=    Run Keyword And Return Status    Server Should Respond
+        IF    ${up}    RETURN
+        Sleep    0.5s
+    END
+    Fail    snip server didn't come up within ${STARTUP_ATTEMPTS} attempts
+
+Server Should Respond
+    ${resp}=    GET On Session    snip    /openapi.json
     Status Should Be    200    ${resp}
 
 Stop Snip Server

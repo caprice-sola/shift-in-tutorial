@@ -17,10 +17,18 @@ unit test cannot exercise the behaviour (e.g. real HTTP routing, redirect status
 |---|---|---|---|
 | Unit | pytest (M3a) | Majority of tests | `shortener.py` and `store.py` logic in isolation: code generation, collision handling, validation, click counting, lookup-miss behaviour. |
 | API / integration | pytest + FastAPI `TestClient` (M3a) | A thin layer | Route wiring: status codes, request/response shapes — one or two tests per endpoint, not per case. |
-| System | Robot Framework, via `system-test-writer` subagent (M4) | Thinnest layer, weighted toward SLIs 1–3 | `tests/system/`: one suite for the redirect hot path (create → follow → stats round trip), one suite with two cross-cutting flows (unknown-code 404, unsafe-URL rejection). Not a restatement of the unit suite. |
+| System | Robot Framework, via `system-test-writer` subagent (M4) | Thinnest layer, weighted toward SLIs 2, 3, 5 | `tests/system/`: one suite — the redirect hot path (create → follow → stats round trip). The only behaviour in this app that actually needs a real running process. Not SLI 1 (latency) — that's `tests/gates/`, which actually asserts on a measured value; this suite doesn't time anything. |
 
 If a mob is about to write a system test for something already provable at the unit level, that's
-the pyramid-inversion anti-pattern — stop and push the coverage down instead.
+the pyramid-inversion anti-pattern — stop and push the coverage down instead. This isn't
+hypothetical: the first version of `tests/system/` also had a suite with two "cross-cutting"
+cases (unknown-code 404, unsafe-URL rejection) — deleted after review, because both were
+byte-for-byte identical in input and assertion to tests already in `tests/api/test_routes.py`.
+`TestClient` already exercises the same in-process pipeline (routing, validation, exception
+handling) that those cases claimed to be testing "end to end" — running the same check through a
+real socket instead of an in-process one proved nothing a slower, flakier copy wouldn't. The
+"one or two cross-cutting flows" this table originally promised turned out not to exist for this
+app; that's the discipline working, not the plan falling short.
 
 `tests/gates/` (M3b) sits outside this pyramid on purpose: it's not a coverage level, it's a single
 SLI enforced directly in CI. Don't grow it into a parallel test suite — one gate per SLI that
@@ -51,7 +59,9 @@ Load-testing infrastructure, persistence-layer testing (the store is in-memory b
 link-expiry feature — that gets its own acceptance criteria via Example Mapping in M5a.
 
 ---
-_v1 — M1, target shape only. Confirmed workable in practice as of M4 — the subagent's actual
-output matched this table without needing to renegotiate it. Revisit if a future module finds the
-distribution doesn't hold; that's a legitimate reason to change this document, not a reason to
+_v1 — M1, target shape only. As of M4: the System row's weight turned out thinner than planned —
+"one or two cross-cutting flows" shrank to zero once each candidate was checked against
+`tests/api/`, see the System row's note above. The document was right that the bar should be
+high; it just hadn't been applied yet. Revisit if a future module finds the distribution doesn't
+hold; that's a legitimate reason to change this document, not a reason to
 quietly ignore it._

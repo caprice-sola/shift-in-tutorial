@@ -60,8 +60,9 @@ are SLI violations, not style issues.
   - `tests/gates/` — one SLI-derived CI gate (redirect latency, SLI 1). Not part of the pyramid;
     not run by the `Stop` hook, since it needs a real server and is too slow for in-loop feedback.
   - `tests/system/` — Robot Framework, maintained by the `system-test-writer` subagent. Thinnest
-    layer: the redirect hot path plus one or two cross-cutting flows. Also not run by the `Stop`
-    hook, for the same reason as the gate.
+    layer: the redirect hot path round trip, and only that unless something genuinely can't be
+    proven at `tests/api/`'s level — see the subagent's own file for why the bar is high. Also
+    not run by the `Stop` hook, for the same reason as the gate.
 - A `Stop` hook (`.claude/hooks/run_tests.py`) runs `tests/unit`+`tests/api` before Claude Code
   ends a turn — don't remove or bypass it to get a stop through faster.
 - CI (`.github/workflows/ci.yml`) is two jobs: `test` (production-install sanity, unit+API, the
