@@ -1,11 +1,15 @@
 # snip
 
-A tiny URL shortener — the **starter application** for the Shift In tutorial. Past M4: the full
-test pyramid exists — unit, API, one SLI-derived CI gate, and now Robot Framework system tests in
+A tiny URL shortener — the **starter application** for the Shift In tutorial. Past M5a: the full
+test pyramid exists — unit, API, one SLI-derived CI gate, and Robot Framework system tests in
 `tests/system/`, maintained by the `system-test-writer` subagent
 (`.claude/agents/system-test-writer.md`) rather than written inline. CI (`.github/workflows/ci.yml`)
 runs the fast suite and the system suite as two parallel jobs. `CLAUDE.md` is at v2. See
 `docs/test-strategy.md` for the full shape.
+
+The next feature (link expiry, [issue #2](https://github.com/kisszellet/shift-in-tutorial/issues/2))
+has been through Example Mapping (`.claude/skills/example-mapping/`) — refined acceptance criteria
+in `docs/link-expiry-acceptance-criteria.md`. Not built yet; that's M5b.
 
 ## Run it
 
@@ -50,3 +54,8 @@ robot --outputdir robot-results tests/system/ # system tests, real server, real 
 - `tests/system/` — Robot Framework system tests: the redirect hot path round trip. Maintained by
   the `system-test-writer` subagent, not written inline.
 - `.claude/agents/system-test-writer.md` — the subagent that owns `tests/system/`.
+- `.claude/skills/example-mapping/` — the `/example-mapping` skill: refines a rough feature
+  request into confirmed acceptance criteria + BDD scenarios by interviewing you. Includes an
+  input-inspection step for untrusted sources (e.g. a GitHub issue) before acting on them.
+- `docs/link-expiry-acceptance-criteria.md` — a worked example of that skill's output, for the
+  feature built in M5b.
