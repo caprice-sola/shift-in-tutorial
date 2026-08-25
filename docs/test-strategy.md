@@ -21,11 +21,15 @@ unit test cannot exercise the behaviour (e.g. real HTTP routing, redirect status
 If a mob is about to write a system test for something already provable at the unit level, that's
 the pyramid-inversion anti-pattern — stop and push the coverage down instead.
 
+`tests/gates/` (M3b) sits outside this pyramid on purpose: it's not a coverage level, it's a single
+SLI enforced directly in CI. Don't grow it into a parallel test suite — one gate per SLI that
+actually needs a live process, not a place to restate what unit/API/system already cover.
+
 ## Per-SLI test mapping
 
 | SLI | Primary level | Notes |
 |---|---|---|
-| Redirect latency (p95 < 50 ms) | System (M4) | Needs a real running process; a unit test can't measure server-side latency meaningfully. Candidate for an M3b CI gate if a lightweight check is feasible; otherwise stays a system-level concern. |
+| Redirect latency (p95 < 50 ms) | CI gate (M3b) — `tests/gates/` | Needs a real running process; a unit test can't measure server-side latency meaningfully. Turned out lightweight enough to gate directly: spins up uvicorn, samples 50 real requests, measures p95 client-side over loopback. Not part of the Stop hook (M3a) — deliberately kept out of the fast in-loop path; CI is where a heavier check like this belongs. |
 | Redirect availability (valid redirect or correct 404) | Unit | `resolve()` behaviour for known vs. unknown codes is a pure function test — no server needed. |
 | Resolve correctness (exact URL match) | Unit | Create-then-resolve round trip on the store/shortener layer. |
 | Create validation (unsafe/invalid URLs rejected) | Unit | Table-driven tests over valid/invalid/unsafe URL inputs against `create_link`. Highest-value suite in the app — this is where the one significant security risk lives. |

@@ -34,7 +34,9 @@ def main() -> None:
 
     try:
         result = subprocess.run(
-            ["pytest", "-q", "--tb=short"],
+            # unit + api only - tests/gates spins up a real server for the
+            # SLI latency gate (M3b) and belongs in CI, not every turn-end.
+            ["pytest", "-q", "--tb=short", "tests/unit", "tests/api"],
             capture_output=True,
             text=True,
             cwd=payload.get("cwd"),
