@@ -38,9 +38,13 @@ are SLI violations, not style issues.
 
 - **Coverage is a map of gaps, not a score.** Test the SLI-relevant and business-critical paths
   first (resolve/redirect, create validation). Don't chase a percentage.
-- **Keep the pyramid upright.** Add coverage at the lowest level that gives confidence. See
-  `docs/test-strategy.md` for the target distribution — don't add a system/end-to-end test for
-  something a unit test already covers.
+- **Keep the pyramid upright.** Add coverage at the lowest level that gives confidence — unit,
+  then API wiring, then system, in that order of preference. See `docs/test-strategy.md` for the
+  target distribution. Before adding a system test, check whether `tests/unit/` or `tests/api/`
+  already prove it; if so, that's the pyramid-inversion anti-pattern, not thoroughness.
+- **Delegate system tests to the `system-test-writer` subagent** (`.claude/agents/system-test-writer.md`)
+  rather than writing `tests/system/*.robot` inline. It's scoped to keep that layer thin — use it
+  when a change affects end-to-end behaviour on the redirect hot path.
 - **DoD (excerpt — full version in `docs/business-context.md`):** reviewed and merged via PR;
   tests exist at the appropriate level(s) and pass in CI; SLI-affecting changes are reflected in
   pipeline gates; observable behaviour changes are covered by at least one higher-level test.
@@ -49,15 +53,24 @@ are SLI violations, not style issues.
 
 - Python 3.11+, FastAPI, in-memory store (`store.py` — not persistent; that's intentional).
 - Run: `pip install -e .` then `uvicorn snip.main:app --reload --app-dir src`.
-- Source: `src/snip/`. Tests: `tests/unit/`, `tests/api/` — see `docs/test-strategy.md` for the
-  target shape and `docs/mutation-testing-notes.md` for what mutation testing found.
+- Source: `src/snip/`.
+- Test pyramid — see `docs/test-strategy.md` for the target shape, `docs/mutation-testing-notes.md`
+  for what mutation testing found:
+  - `tests/unit/`, `tests/api/` — pytest. Run directly, and what the `Stop` hook runs on every turn.
+  - `tests/gates/` — one SLI-derived CI gate (redirect latency, SLI 1). Not part of the pyramid;
+    not run by the `Stop` hook, since it needs a real server and is too slow for in-loop feedback.
+  - `tests/system/` — Robot Framework, maintained by the `system-test-writer` subagent. Thinnest
+    layer: the redirect hot path plus one or two cross-cutting flows. Also not run by the `Stop`
+    hook, for the same reason as the gate.
 - A `Stop` hook (`.claude/hooks/run_tests.py`) runs `tests/unit`+`tests/api` before Claude Code
   ends a turn — don't remove or bypass it to get a stop through faster.
-- CI (`.github/workflows/ci.yml`) runs that same suite on every push, plus `tests/gates/` — one
-  SLI-derived gate (redirect latency, docs/slis.md SLI 1), kept out of the Stop hook because it's
-  slower than an in-loop check should be.
+- CI (`.github/workflows/ci.yml`) is two jobs: `test` (production-install sanity, unit+API, the
+  SLI gate) and `system-tests` (Robot Framework), running in parallel. A reviewer should be able to
+  tell from the job name alone which layer failed.
 
 ---
-_v1 — authored in M1 from business context, quality characteristics, and SLIs; test tooling and
-the `Stop` hook noted here as of M3a without a full rewrite. Subagents don't exist yet — this file
-gets its real v2 pass in M4._
+_v2 — M4. v1 (M1) covered business context, quality characteristics, and SLIs; M3a/M3b noted test
+tooling, the `Stop` hook, and CI here without a full rewrite. This pass adds the system-test tier,
+the subagent that owns it, and reorganises the stack section into one coherent map of the pyramid
+now that every tier actually exists. Next scheduled change: none — this file only moves again if
+the app itself changes (M5)._

@@ -8,6 +8,10 @@ venv/
 htmlcov/
 .mutmut-cache
 mutants/
+robot-results/
+output.xml
+log.html
+report.html
 dist/
 build/
 .DS_Store

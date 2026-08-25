@@ -1,8 +1,9 @@
 # Test strategy — snip (v1, authored in M1)
 
-Written in M1, **before** any test existed, so tooling decisions in M3a/M4 have something to be
-held accountable to. As of M3a, `tests/unit/` and `tests/api/` exist and follow the shape below —
-see `docs/mutation-testing-notes.md` for what mutation testing found once they did.
+Written in M1, **before** any test existed, so tooling decisions in M3a/M3b/M4 have something to
+be held accountable to. As of M4, every tier below is real — see `docs/mutation-testing-notes.md`
+for what mutation testing found and `.claude/agents/system-test-writer.md` for who maintains the
+system tier.
 
 ## Guiding rule
 
@@ -16,7 +17,7 @@ unit test cannot exercise the behaviour (e.g. real HTTP routing, redirect status
 |---|---|---|---|
 | Unit | pytest (M3a) | Majority of tests | `shortener.py` and `store.py` logic in isolation: code generation, collision handling, validation, click counting, lookup-miss behaviour. |
 | API / integration | pytest + FastAPI `TestClient` (M3a) | A thin layer | Route wiring: status codes, request/response shapes — one or two tests per endpoint, not per case. |
-| System | Robot Framework, via subagent (M4) | Thinnest layer, weighted toward SLIs 1–3 | Full-process black-box checks on the redirect hot path (create → follow → stats round trip) and one or two cross-cutting flows. Not a restatement of the unit suite. |
+| System | Robot Framework, via `system-test-writer` subagent (M4) | Thinnest layer, weighted toward SLIs 1–3 | `tests/system/`: one suite for the redirect hot path (create → follow → stats round trip), one suite with two cross-cutting flows (unknown-code 404, unsafe-URL rejection). Not a restatement of the unit suite. |
 
 If a mob is about to write a system test for something already provable at the unit level, that's
 the pyramid-inversion anti-pattern — stop and push the coverage down instead.
@@ -50,5 +51,7 @@ Load-testing infrastructure, persistence-layer testing (the store is in-memory b
 link-expiry feature — that gets its own acceptance criteria via Example Mapping in M5a.
 
 ---
-_v1 — M1. Revisit if M4's subagent finds the target distribution unworkable in practice; that's a
-legitimate reason to change this document, not a reason to quietly ignore it._
+_v1 — M1, target shape only. Confirmed workable in practice as of M4 — the subagent's actual
+output matched this table without needing to renegotiate it. Revisit if a future module finds the
+distribution doesn't hold; that's a legitimate reason to change this document, not a reason to
+quietly ignore it._

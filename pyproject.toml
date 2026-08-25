@@ -8,14 +8,18 @@ dependencies = [
     "uvicorn>=0.29",
 ]
 
-# robotframework is intentionally NOT listed here - that's M4's job, at the
-# system-test level. httpx is pulled in transitively for FastAPI's TestClient.
 [project.optional-dependencies]
 test = [
     "pytest>=8",
     "pytest-cov>=5",
     "mutmut>=3",
     "httpx2",  # required by starlette.testclient.TestClient in this FastAPI version
+]
+# Separate extra (M4): the fast unit+API CI step doesn't need Robot Framework
+# installed at all - only the slower system-test CI stage does.
+system = [
+    "robotframework>=7",
+    "robotframework-requests>=0.9",
 ]
 
 [build-system]

@@ -1,10 +1,11 @@
 # snip
 
-A tiny URL shortener — the **starter application** for the Shift In tutorial. Past M3b: unit +
-API tests, mutation testing (`docs/mutation-testing-notes.md`), a `Stop` hook that keeps Claude
-Code from ending a turn while the suite is red (the shift-left → Shift In pivot), and CI
-(`.github/workflows/ci.yml`) running that same suite plus an SLI-derived gate on every push. System
-tests (Robot Framework, M4) still come later.
+A tiny URL shortener — the **starter application** for the Shift In tutorial. Past M4: the full
+test pyramid exists — unit, API, one SLI-derived CI gate, and now Robot Framework system tests in
+`tests/system/`, maintained by the `system-test-writer` subagent
+(`.claude/agents/system-test-writer.md`) rather than written inline. CI (`.github/workflows/ci.yml`)
+runs the fast suite and the system suite as two parallel jobs. `CLAUDE.md` is at v2. See
+`docs/test-strategy.md` for the full shape.
 
 ## Run it
 
@@ -24,6 +25,9 @@ pytest tests/unit tests/api                   # fast suite - what the Stop hook 
 pytest tests/gates -s                         # SLI 1 gate: redirect p95 latency, real server
 pytest --cov=snip --cov-report=term-missing   # coverage: a map of gaps, not a target
 mutmut run && mutmut results                  # mutation testing on shortener.py
+
+pip install -e ".[system]"
+robot --outputdir robot-results tests/system/ # system tests, real server, real HTTP
 ```
 
 ## Endpoints
@@ -40,6 +44,9 @@ mutmut run && mutmut results                  # mutation testing on shortener.py
 - `docs/business-context.md`, `docs/quality-characteristics.md`, `docs/slis.md` — what "good" means.
 - `docs/test-strategy.md` — the target test pyramid and per-SLI test-level mapping.
 - `src/snip/` — the implementation.
-- `tests/unit/`, `tests/api/` — unit tests and thin route-wiring tests. System tests land in M4.
+- `tests/unit/`, `tests/api/` — unit tests and thin route-wiring tests.
 - `tests/gates/` — the SLI 1 (redirect latency) CI gate. Not part of the pyramid, not run by the
   Stop hook; CI runs it on every push.
+- `tests/system/` — Robot Framework system tests: the redirect hot path and two cross-cutting
+  flows. Maintained by the `system-test-writer` subagent, not written inline.
+- `.claude/agents/system-test-writer.md` — the subagent that owns `tests/system/`.

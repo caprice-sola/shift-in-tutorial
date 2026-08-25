@@ -1,15 +1,11 @@
-# CI: the M2 sanity check (package installs and imports with ONLY production
-# deps - catches a test-only import accidentally leaking into src/snip/),
-# then the real test suite added in M3a/M3b: unit + API tests, plus one
-# SLI-derived gate (SLI 1 - redirect p95 latency, docs/slis.md). One job,
-# labeled steps rather than a second job/runner - the app is tiny enough
-# that splitting would only add GitHub Actions overhead for no benefit.
-#
-# The gate step is a separate `pytest` invocation, not folded into the tests
-# step, so a CI failure clearly shows which of "a test broke" vs "an SLI was
-# violated" happened - the gate spins up a real server and is meaningfully
-# slower than the unit/API suite, which is also why it's NOT part of the
-# Stop hook's fast in-loop check (M3a): see docs/test-strategy.md.
+# CI: the fast job (M2/M3a/M3b) - production-install sanity check, unit+API
+# tests, and the SLI 1 latency gate - plus a separate, slower system-tests
+# job (M4) running the Robot Framework suite. Two jobs, not two steps in one
+# job: GitHub Actions runs jobs in parallel by default, so splitting the slow
+# system suite out doesn't add to the fast job's turnaround, and a reviewer
+# can see at a glance which layer failed. system-tests installs only the
+# `system` extra - it doesn't need pytest/httpx2 at all, it drives the app
+# over real HTTP via Robot Framework's RequestsLibrary.
 name: CI
 
 on:
@@ -33,3 +29,21 @@ jobs:
         run: pytest tests/unit tests/api -q
       - name: "SLI gate: redirect p95 latency < 50ms (docs/slis.md SLI 1)"
         run: pytest tests/gates -q -s
+
+  system-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      - run: pip install -e ".[system]"
+      - name: "System tests (Robot Framework): redirect hot path + cross-cutting flows"
+        run: robot --outputdir robot-results tests/system/
+      - name: Upload Robot Framework report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: robot-results
+          path: robot-results/
