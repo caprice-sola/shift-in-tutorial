@@ -30,50 +30,84 @@ point where the facilitator runs the 5-minute injection-awareness beat.
 As a link owner, I want to set an expiry on a short link, so that it stops resolving after a
 chosen time.
 
-## Steps 2–4 — rules, examples, and the questions each one answers
+## Step 2 — rules
 
-**Rule 1 — Expiry is optional at creation, set once, immutable.**
-Answers the issue's "can it be changed later?" question: no, not in this version — there's no
-update endpoint in the app today, and adding one is a bigger feature than this issue asked for.
-A link without an expiry behaves exactly as it does today (never expires).
-- *Example:* `POST /api/links {"url": "...", "expires_at": null}` (or the field omitted) → created,
-  never expires.
-- *Example:* `POST /api/links {"url": "...", "expires_at": "2026-09-01T00:00:00Z"}` → created with
-  that expiry.
+1. Expiry is optional at creation, set once, immutable. Answers the issue's "can it be changed
+   later?" question: no, not in this version — there's no update endpoint in the app today, and
+   adding one is a bigger feature than this issue asked for. A link without an expiry behaves
+   exactly as it does today (never expires).
+2. `expires_at` must be an ISO-8601 datetime; assumed UTC if no offset is given; a value in the
+   past at creation time is rejected. Consistent with how unsafe URLs are already rejected (M2)
+   rather than accepted and failing later.
+3. Following an expired link returns `410 Gone`, not a redirect. Answers the issue's "what
+   happens when someone follows an expired link?" question. Deliberately `410`, not `404`: the
+   link existed and was valid — it's gone on purpose, which is exactly what `410 Gone` means and
+   `404 Not Found` doesn't. Worth revisiting `docs/slis.md` SLI 2's wording when this is actually
+   built, since `410` is now also a correct non-redirect outcome for a well-formed request, not
+   just a redirect-or-404.
+4. An expired link does not count as a follow for stats. Ties to `docs/slis.md` SLI 5 — nothing
+   was actually followed, so nothing should increment.
+5. An expired code is not freed for reuse. Answers the issue's "does the code become available
+   again?" question: no — keeps `create_link`'s existing collision-avoidance logic unchanged
+   rather than adding code-lifecycle management this issue didn't ask for.
 
-**Rule 2 — `expires_at` in the past is rejected at creation.**
-Consistent with how unsafe URLs are already rejected (M2) rather than accepted and failing later.
-- *Example:* `POST /api/links` with `expires_at` in the past → `422`, link not created.
+## Step 3 — examples, as Gherkin scenarios
 
-**Rule 3 — Following an expired link returns `410 Gone`, not a redirect.**
-Answers the issue's "what happens when someone follows an expired link?" question. Deliberately
-`410`, not `404`: the link existed and was valid — it's gone on purpose, which is exactly what
-`410 Gone` means and `404 Not Found` doesn't. Worth revisiting `docs/slis.md` SLI 2's wording
-when this is actually built, since `410` is now also a correct non-redirect outcome for a
-well-formed request, not just a redirect-or-404.
-- *Example:* link created with `expires_at` one second in the future; wait two seconds; follow it
-  → `410`, not `307`.
+```gherkin
+Feature: Link expiry
 
-**Rule 4 — An expired link does not count as a follow for stats.**
-Ties to `docs/slis.md` SLI 5 — nothing was actually followed, so nothing should increment.
-- *Example:* expired link, followed 3 times → `GET /api/links/{code}/stats` still shows `clicks: 0`
-  from before expiry, unchanged by the 3 attempts.
+  Scenario: Creating a link without an expiry behaves as it does today (Rule 1)
+    Given no expiry is given
+    When a link is created for "https://example.com"
+    Then the link is created
+    And it never expires
 
-**Rule 5 — An expired code is not freed for reuse.**
-Answers the issue's "does the code become available again?" question: no — keeps
-`create_link`'s existing collision-avoidance logic unchanged rather than adding code-lifecycle
-management this issue didn't ask for.
-- *Example:* link expires; `generate_code()` later produces the same code by chance;
-  `create_link`'s existing retry loop treats it as taken, same as any other collision.
+  Scenario: Creating a link with a future expiry (Rule 1)
+    Given an expiry of "2026-09-01T00:00:00Z"
+    When a link is created for "https://example.com"
+    Then the link is created with that expiry
 
-## Open questions not resolved here (red cards carried forward, not guessed at)
+  Scenario: Rejecting an expiry already in the past (Rule 2)
+    Given an expiry in the past
+    When a link is created for "https://example.com"
+    Then the request is rejected with 422
+    And no link is created
+
+  Scenario: Rejecting an expiry with no timezone offset is NOT required (Rule 2)
+    Given an expiry of "2026-09-01T00:00:00" with no UTC offset
+    When a link is created for "https://example.com"
+    Then the link is created
+    And the expiry is treated as UTC
+
+  Scenario: Following an expired link (Rule 3)
+    Given a link with an expiry one second in the future
+    And two seconds have passed
+    When the link's code is followed
+    Then the response is 410 Gone
+    And the response is not a redirect
+
+  Scenario: Following an expired link does not count as a click (Rule 4)
+    Given an expired link
+    When its code is followed 3 times
+    Then GET /api/links/{code}/stats still reports the click count from before expiry
+    And the 3 attempts did not increment it
+
+  Scenario: An expired link's code stays reserved (Rule 5)
+    Given a link that has expired
+    When generate_code() later produces the same code by chance
+    Then create_link's existing collision-retry loop treats it as taken
+    And a different code is generated for the new link
+```
+
+## Step 4 — open questions (not guessed at)
 
 - Should `GET /api/links` (the list endpoint) show expiry status, or a separate flag? Not asked
   in the issue; punting rather than inventing a response-shape change nobody requested.
-- Time zone handling for `expires_at` beyond "accept ISO-8601, assume UTC if unspecified" wasn't
-  explored — fine for a workshop feature, would need a real answer for production.
+- Should there be any tolerance/leeway around the exact expiry instant (e.g. clock skew between
+  request time and server time), or is it a hard cutoff at that timestamp? Not explored — the
+  scenarios above treat it as a hard cutoff, but that's an assumption, not a confirmed rule.
 
 ## Out of scope for this issue (confirmed, not assumed)
 
 Changing an existing link's expiry after creation, and reusing an expired link's code — both
-explicitly deferred in Rules 1 and 5, not overlooked.
+explicitly decided in Rules 1 and 5, not overlooked.
