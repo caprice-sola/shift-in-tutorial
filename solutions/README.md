@@ -23,7 +23,7 @@ out the previous branch to resync. Branches are built in order; each starts from
 - [x] T4 `solution/m3b-ci`
 - [x] T5 `solution/m4-system`
 - [x] T6 `solution/m5a-bdd`
-- [ ] T7 `solution/m5b-feature`
+- [x] T7 `solution/m5b-feature`
 - [ ] T8 module guides filled in
 
 ---
