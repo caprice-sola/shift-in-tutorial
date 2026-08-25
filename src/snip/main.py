@@ -13,7 +13,6 @@ from .models import CreateLinkRequest, LinkResponse
 from .shortener import LinkExpiredError, LinkNotFoundError
 
 NOT_FOUND = {404: {"description": "No link found for the given code"}}
-GONE = {410: {"description": "Link existed but has expired"}}
 
 app = FastAPI(title="snip", version="0.1.0", description="A tiny URL shortener.")
 
@@ -45,7 +44,7 @@ def link_stats(code: str) -> LinkResponse:
     return LinkResponse.from_record(record)
 
 
-@app.get("/{code}", responses={**NOT_FOUND, **GONE})
+@app.get("/{code}", responses={**NOT_FOUND, 410: {"description": "Link existed but has expired"}})
 def follow(code: str) -> RedirectResponse:
     record = shortener.resolve(code)
     return RedirectResponse(url=record.url, status_code=307)
