@@ -48,15 +48,14 @@ Consistent with how unsafe URLs are already rejected (M2) rather than accepted a
 **Rule 3 — Following an expired link returns `410 Gone`, not a redirect.**
 Answers the issue's "what happens when someone follows an expired link?" question. Deliberately
 `410`, not `404`: the link existed and was valid — it's gone on purpose, which is exactly what
-`410 Gone` means and `404 Not Found` doesn't. `docs/slis.md`'s SLI 2 currently says "valid
-redirect or a correct 404" — worth revisiting that wording when this is actually built, since
-`410` is now also a correct non-redirect outcome for a well-formed request.
+`410 Gone` means and `404 Not Found` doesn't. Worth revisiting `docs/slis.md` SLI 2's wording
+when this is actually built, since `410` is now also a correct non-redirect outcome for a
+well-formed request, not just a redirect-or-404.
 - *Example:* link created with `expires_at` one second in the future; wait two seconds; follow it
   → `410`, not `307`.
 
 **Rule 4 — An expired link does not count as a follow for stats.**
-Ties to SLI 5 ("recorded clicks = actual follows") — nothing was actually followed, so nothing
-should increment.
+Ties to `docs/slis.md` SLI 5 — nothing was actually followed, so nothing should increment.
 - *Example:* expired link, followed 3 times → `GET /api/links/{code}/stats` still shows `clicks: 0`
   from before expiry, unchanged by the 3 attempts.
 
