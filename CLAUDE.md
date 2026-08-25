@@ -25,7 +25,7 @@ snip turns them into short codes and counts how often each is followed. Full con
 | SLI | Target |
 |---|---|
 | Redirect latency (p95, `GET /{code}`) | < 50 ms |
-| Redirect availability (valid redirect or correct 404) | ≥ 99.9% |
+| Redirect availability (valid redirect, correct 404, or correct 410 once expired) | ≥ 99.9% |
 | Resolve correctness (redirects to exact stored URL) | 100% |
 | Create validation (unsafe/invalid URLs correctly rejected) | 100% |
 | Stats accuracy (recorded clicks = actual follows) | 100% |

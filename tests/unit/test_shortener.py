@@ -1,9 +1,11 @@
 """Unit tests for shortener.py - the highest-risk logic in the app, and
 mutmut's target (see docs/test-strategy.md)."""
+from datetime import datetime, timedelta, timezone
+
 import pytest
 
 from snip import shortener
-from snip.store import LinkNotFoundError
+from snip.shortener import LinkExpiredError, LinkNotFoundError
 
 
 def test_generate_code_length_and_alphabet():
@@ -65,3 +67,79 @@ def test_create_link_retries_on_code_collision(monkeypatch):
     assert second.code == "uniq99"  # retried via generate_code(), not left blank
     assert shortener.resolve(first.code).url == "https://example.com/first"
     assert shortener.resolve(second.code).url == "https://example.com/second"
+
+
+# Link expiry (docs/link-expiry-acceptance-criteria.md)
+
+
+def test_create_link_without_expiry_never_expires():
+    record = shortener.create_link("https://example.com")
+    assert record.expires_at is None
+    assert shortener.resolve(record.code).url == "https://example.com"  # doesn't raise
+
+
+def test_create_link_stores_expiry():
+    expiry = datetime.now(timezone.utc) + timedelta(days=1)
+    record = shortener.create_link("https://example.com", expires_at=expiry)
+    assert record.expires_at == expiry
+
+
+def test_resolve_expired_link_raises_link_expired():
+    # Rule 3: following an expired link is a distinct outcome (410) from an
+    # unknown code (404) - the link existed and is deliberately gone.
+    past = datetime.now(timezone.utc) - timedelta(seconds=1)
+    record = shortener.create_link("https://example.com", expires_at=past)
+    with pytest.raises(LinkExpiredError) as exc_info:
+        shortener.resolve(record.code)
+    assert str(exc_info.value) == record.code  # the actual code, not just any error
+
+
+def test_resolve_at_the_exact_expiry_instant_is_expired(monkeypatch):
+    # Boundary check: exactly AT expiry counts as expired (<=, not <) - a link
+    # is not valid "up to and including" its expiry instant.
+    from snip.store import LinkRecord, store
+
+    frozen_now = datetime(2026, 1, 1, tzinfo=timezone.utc)
+
+    class FrozenDatetime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return frozen_now
+
+    monkeypatch.setattr(shortener, "datetime", FrozenDatetime)
+    store.put(LinkRecord(code="exactly1", url="https://example.com", expires_at=frozen_now))
+
+    with pytest.raises(LinkExpiredError):
+        shortener.resolve("exactly1")
+
+
+def test_resolve_expired_link_does_not_increment_clicks():
+    # Rule 4: an expired hit is not a follow - ties to SLI 5 (docs/slis.md),
+    # clicks must equal actual follows.
+    past = datetime.now(timezone.utc) - timedelta(seconds=1)
+    record = shortener.create_link("https://example.com", expires_at=past)
+    for _ in range(3):
+        with pytest.raises(LinkExpiredError):
+            shortener.resolve(record.code)
+    assert shortener.stats(record.code).clicks == 0
+
+
+def test_stats_on_expired_link_does_not_raise():
+    # Checking stats is a distinct concern from following - an owner should
+    # be able to see final numbers after expiry.
+    past = datetime.now(timezone.utc) - timedelta(seconds=1)
+    record = shortener.create_link("https://example.com", expires_at=past)
+    assert shortener.stats(record.code).clicks == 0
+
+
+def test_expired_code_is_not_freed_for_reuse(monkeypatch):
+    # Rule 5: create_link's existing collision-retry loop treats an expired
+    # link's code as still taken - no special-casing for expired records.
+    past = datetime.now(timezone.utc) - timedelta(seconds=1)
+    expired = shortener.create_link("https://example.com/old", expires_at=past)
+
+    codes = iter([expired.code, "uniq99"])
+    monkeypatch.setattr(shortener, "generate_code", lambda: next(codes))
+
+    new_record = shortener.create_link("https://example.com/new")
+    assert new_record.code == "uniq99"
