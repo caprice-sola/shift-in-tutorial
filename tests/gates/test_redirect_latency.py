@@ -3,11 +3,15 @@
 running process to measure anything meaningful about latency, which is
 exactly docs/test-strategy.md's bar for justifying a level above unit.
 
+Measures client-side wall-clock latency over loopback (httpx), not
+instrumented server-internal time - close enough for a workshop-scale gate,
+but note the difference if you ever compare this number to real production
+telemetry for the same SLI.
+
 Also intentionally NOT part of the Stop hook's fast in-loop check (M3a) - CI
 is where the app can afford a heavier, slower gate like this one. Run it
 directly with `pytest tests/gates -q`.
 """
-import statistics
 import subprocess
 import sys
 import time
@@ -24,9 +28,14 @@ WARMUP_REQUESTS = 5
 STARTUP_TIMEOUT_S = 10
 
 
-def _wait_for_server(client: httpx.Client) -> None:
+def _wait_for_server(client: httpx.Client, proc: subprocess.Popen) -> None:
     deadline = time.monotonic() + STARTUP_TIMEOUT_S
     while time.monotonic() < deadline:
+        if proc.poll() is not None:
+            raise RuntimeError(
+                f"uvicorn exited early (code {proc.returncode}) instead of starting - "
+                f"port {PORT} may already be in use"
+            )
         try:
             if client.get(f"{BASE_URL}/openapi.json").status_code == 200:
                 return
@@ -45,7 +54,7 @@ def test_redirect_p95_latency_under_sli_target():
     )
     try:
         with httpx.Client() as client:
-            _wait_for_server(client)
+            _wait_for_server(client, proc)
             code = client.post(
                 f"{BASE_URL}/api/links", json={"url": "https://example.com"}
             ).json()["code"]
@@ -70,4 +79,8 @@ def test_redirect_p95_latency_under_sli_target():
             )
     finally:
         proc.terminate()
-        proc.wait(timeout=5)
+        try:
+            proc.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            proc.wait(timeout=5)
