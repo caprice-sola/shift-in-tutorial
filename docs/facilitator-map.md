@@ -31,7 +31,8 @@ Copilot: same content split across `.github/copilot-instructions.md` + scoped `*
 
 **M2 Agent as collaborator** — *Run AI code review, verify the diff as a mob, open a PR via
 GitHub MCP.* Artifact: first reviewed PR. Introduce the rotation-as-verification ritual here.
-Copilot: GitHub + Playwright MCP are enabled by default; for Claude you point at a pre-provisioned server.
+Copilot: GitHub + Playwright MCP are enabled by default; for Claude each attendee connects their
+own GitHub MCP server (their own account, as pre-work) — see `docs/workshop-format.md` Setup.
 
 **M3a Unit tests + loop hook** — *Generate units, expose weak oracles with mutation testing, run
 tests inside the agent loop.* Artifact: `tests/unit/`, `Stop` hook in `.claude/settings.json`.

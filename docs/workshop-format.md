@@ -24,10 +24,13 @@ The handoff *is* the quality gate. This is the human reproduction / verification
 
 - Pre-provision **one facilitator laptop per mob**, already authenticated with Claude Code and the
   repo cloned. ~4–6 mobs means ~4–6 machines, not 15.
-- Pre-provision the **GitHub MCP** server / token so installing it is never an exercise — *using*
-  it is.
-- Send pre-work a few days out: install/auth, clone, run one smoke prompt. The 09:00–09:30 slot is
-  a **sanity check** ("make the agent edit a file"), not a from-scratch install.
+- Attendees bring their own GitHub account and their own Claude subscription — there's no shared
+  facilitator-provisioned MCP token to manage. Send pre-work asking each attendee to connect
+  **GitHub MCP** under their own account (`claude mcp add --transport http github
+  https://api.githubcopilot.com/mcp/`, then a one-time browser OAuth click the first time it's
+  used) before the day, so installing it is never a live exercise — *using* it is.
+- Send pre-work a few days out: install/auth, clone, connect GitHub MCP, run one smoke prompt. The
+  09:00–09:30 slot is a **sanity check** ("make the agent edit a file"), not a from-scratch install.
 
 ## Two anti-patterns to defend against all day
 
