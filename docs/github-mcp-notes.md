@@ -24,8 +24,14 @@ don't need to name a specific tool.
    represent something the mob agreed with.
 3. **Open the PR via the MCP tool**, once the mob has actually accepted the change. Ask for it
    directly, e.g.:
-   > "Open a PR from this branch into `solution/m1-context` (or your working branch) titled
-   > '...', summarizing what the review found and what we fixed."
+   > "Open a PR from this branch into our working branch titled '...', summarizing what the
+   > review found and what we fixed."
+
+   **Check the base repo before confirming.** You're working in your own fork, but GitHub's
+   default when creating a PR from a fork is to target the *upstream* repo — the one you forked
+   from, not yours. Left unchecked, you'd propose a PR against the facilitator's real repo instead
+   of merging into your own working branch. Have the agent confirm (or check yourself) that the
+   base repository is your fork before it actually opens the PR.
 4. **Read what comes back.** The agent will report a PR URL/number — open it and confirm the diff
    on GitHub matches what the mob just verified locally. A PR opened by an agent is still an agent
    claim until a human has looked at the rendered diff.
