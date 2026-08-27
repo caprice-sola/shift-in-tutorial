@@ -1,9 +1,17 @@
 # Using GitHub MCP in M2
 
-The facilitator pre-provisions a GitHub MCP server for the workshop, so installing it is never
-part of the exercise — using it is. Once connected, Claude Code gets GitHub actions (open a PR,
-read a PR, comment, etc.) as tools it can call directly, instead of you leaving the terminal for
-the GitHub web UI or a separate `gh` command.
+You should already have GitHub MCP connected under your own GitHub account, done as pre-work
+before today — installing it is never part of the exercise, using it is. If `claude mcp list`
+doesn't show `github` as connected, sort that out before starting M2, not mid-exercise:
+
+```bash
+claude mcp add --transport http github https://api.githubcopilot.com/mcp/
+```
+
+Once connected, Claude Code gets GitHub actions (open a PR, read a PR, comment, etc.) as tools it
+can call directly, instead of you leaving the terminal for the GitHub web UI or a separate `gh`
+command. Ask it to do something GitHub-shaped and it'll reach for the right tool on its own — you
+don't need to name a specific tool.
 
 ## The M2 flow
 
@@ -32,6 +40,6 @@ was exhaustive. Coverage of *review* is also a map of gaps, not a guarantee.
 
 ## Copilot equivalent
 
-GitHub MCP (and Playwright MCP) ship enabled by default in Copilot's agent mode — there's no
-separate provisioning step. The workflow above — review, mob verification, then open the PR — is
-identical regardless of which agent is driving.
+GitHub MCP (and Playwright MCP) ship enabled by default in Copilot's agent mode — no `claude mcp
+add`, no separate connection step at all. The workflow above — review, mob verification, then
+open the PR — is identical regardless of which agent is driving; only the one-time setup differs.
