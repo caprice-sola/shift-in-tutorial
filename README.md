@@ -7,9 +7,14 @@ AI-reviewed PR has landed (see `docs/github-cli-notes.md`) and a CI stub exists,
 ## Run it
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate    # Windows: .venv\Scripts\activate
 pip install -e .
 uvicorn snip.main:app --reload --app-dir src
 ```
+
+`pip`/`uvicorn` as bare commands only exist once a virtualenv is active — if you see "command not
+found" for either, that's what's missing, not a broken install.
 
 - Interactive docs: http://127.0.0.1:8000/docs
 - OpenAPI schema: http://127.0.0.1:8000/openapi.json
