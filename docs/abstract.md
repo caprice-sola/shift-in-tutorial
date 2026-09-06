@@ -15,7 +15,7 @@ We start with a real, running application in a Git repository — business conte
 The day progresses through seven short exercises, each with a brief theory primer up front:
 
 1. **Understand the business context.** Turn the team's DoR/DoD, quality characteristics, and SLIs into the agent's standing instructions and a shared, versioned test strategy the agent actually consults.
-2. **The agent as collaborator.** Run an AI code review, verify the diff together as a mob, and open a pull request through the GitHub MCP server — establishing the verification ritual we reuse all day.
+2. **The agent as collaborator.** Run an AI code review, verify the diff together as a mob, and open a pull request from the terminal — establishing the verification ritual we reuse all day.
 3. **Unit tests and the loop hook.** Generate unit tests, then use mutation testing to expose tests that pass while asserting nothing — and wire a hook that runs the suite *inside the agent's loop* before it finishes. This is where shift-left becomes Shift In.
 4. **The CI pipeline.** Have the agent design a pipeline that gates every commit, including one SLI-based check.
 5. **System tests as a subagent.** Delegate Robot Framework system-test creation to a specialized subagent — and enforce the right pyramid level so the agent doesn't bury you in slow end-to-end tests.

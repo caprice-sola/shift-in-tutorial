@@ -30,9 +30,12 @@ shared test strategy.* Artifact: `app/CLAUDE.md` v1, `app/docs/test-strategy.md`
 Copilot: same content split across `.github/copilot-instructions.md` + scoped `*.instructions.md`.
 
 **M2 Agent as collaborator** — *Run AI code review, verify the diff as a mob, open a PR via
-GitHub MCP.* Artifact: first reviewed PR. Introduce the rotation-as-verification ritual here.
-Copilot: GitHub + Playwright MCP are enabled by default; for Claude each attendee connects their
-own GitHub MCP server (their own account, as pre-work) — see `docs/workshop-format.md` Setup.
+`gh` (each attendee's own `gh auth login`, done as pre-work).* Artifact: first reviewed PR.
+Introduce the rotation-as-verification ritual here. GitHub MCP is the same "external actions"
+category and worth a mention, but not the default: its official remote server currently can't
+complete OAuth (a live upstream bug — see `docs/github-cli-notes.md` on the solution branches for
+the workaround, if a mob wants to try it anyway). Copilot: GitHub + Playwright MCP are enabled by
+default in its agent mode, if you want the contrast.
 
 **M3a Unit tests + loop hook** — *Generate units, expose weak oracles with mutation testing, run
 tests inside the agent loop.* Artifact: `tests/unit/`, `Stop` hook in `.claude/settings.json`.

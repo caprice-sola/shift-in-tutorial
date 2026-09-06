@@ -53,8 +53,12 @@ testing, and a human verification gate on every accepted change. See `docs/shift
   - Reusable know-how: **skills** under `.claude/skills/`.
   - Delegated bounded work: **subagents**.
   - In-loop enforcement: **hooks** (a `Stop`/`PostToolUse` hook that runs tests).
-  - External actions: **MCP** (GitHub MCP — each attendee connects their own, under their own
-    GitHub account and Claude subscription, as pre-work; see `docs/workshop-format.md`).
+  - External actions: **`gh` CLI** (each attendee authenticates their own via `gh auth login`, as
+    pre-work; see `docs/workshop-format.md`). GitHub MCP is mentioned as the same category of
+    agent feature but kept optional — its official remote server currently doesn't support OAuth
+    Dynamic Client Registration (a live, upstream bug, not a setup mistake), so requiring it live
+    would be a single point of failure for every mob at once. `gh` was proven throughout this
+    build (every real PR/issue here went through it) and needs a fraction of the setup.
 - For every agent feature you create, add a short note on the **Copilot equivalent**
   (custom instructions / Agent Skills / custom agents / hooks / MCP) so the tutorial stays
   tool-aware. Claude Code is what we demo live.

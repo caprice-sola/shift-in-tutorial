@@ -48,8 +48,8 @@ visible instead of silently absorbed.)
 **Theory primer:** The verification ritual — read the diff, run it, challenge one claim, accept
 or reject — *is* the quality gate here, not a formality wrapped around it. That's why the rotation
 protocol enforces it structurally: whoever rotates in must read the previous diff aloud before
-prompting. GitHub MCP is how the agent takes a real external action (opening a PR) instead of
-just editing local files — the same verification ritual applies before that action, not after.
+prompting. Opening a PR via `gh` is how the agent takes a real external action instead of just
+editing local files — the same verification ritual applies before that action, not after.
 
 **Steps:**
 1. Ask the agent to review the starter app's code for real issues.
@@ -57,7 +57,8 @@ just editing local files — the same verification ritual applies before that ac
 3. Rotate on one fix: driver prompts → agent acts → mob reads the diff aloud → navigator
    challenges one specific thing → accept or reject → rotate. Repeat for a second finding.
 4. Add a CI stub — install + a sanity import, not real tests yet (that's M3a).
-5. Once the mob has actually accepted the changes, ask the agent to open a PR via GitHub MCP.
+5. Once the mob has actually accepted the changes, ask the agent to open a PR via `gh` (confirm
+   `gh auth status` beforehand if this is the first GitHub action of the day).
 6. Read the PR as it actually appears on GitHub before moving on.
 
 **Artifact:** CI stub, first reviewed PR.
