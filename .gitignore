@@ -11,3 +11,4 @@ mutants/
 dist/
 build/
 .DS_Store
+AGENTS.md
