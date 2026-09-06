@@ -18,6 +18,7 @@ Targets are deliberately modest so a workshop pipeline can check them.
 - **M4** weights system test coverage toward the redirect hot path (SLIs 1–3).
 - **M5** treats SLI impact as part of the feature's acceptance criteria.
 
-> Note: in `start`, several of these SLIs are **not yet met** — e.g. unsafe URLs are accepted
-> (SLI 4) and unknown codes raise errors instead of correct 404s (SLI 2). Closing those gaps is
-> the work of the workshop.
+> As of M3b: every SLI above is met and covered. `start`'s gaps (unsafe URLs accepted, unknown
+> codes raising errors instead of a clean 404, and a short-code collision going unnoticed) closed
+> in M2 and M3a. SLI 1 (latency) has a dedicated CI check (`tests/gates/`); the rest are covered
+> by the unit/API suite.
