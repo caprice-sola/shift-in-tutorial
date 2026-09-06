@@ -18,6 +18,12 @@ Targets are deliberately modest so a workshop pipeline can check them.
 - **M4** weights system test coverage toward the redirect hot path (SLIs 1–3).
 - **M5** treats SLI impact as part of the feature's acceptance criteria.
 
-> Note: `start` doesn't meet every SLI here yet. Which ones, and why, is exactly what M2's review
-> is for — treat this table as the target, not a description of the current code, and don't go
-> looking for the specific gaps yourself before then.
+> **Facilitator note:** in `start`, SLI 4 (unsafe URLs accepted), SLI 2 (unknown codes 500 instead
+> of 404), and SLI 3 (short-code collisions overwrite silently) are all unmet on purpose — the
+> planted issues M2/M3a exist to close. Full list with rationale: `solutions/README.md`.
+>
+> This file is `app/`'s copy, extracted into the attendee-facing `start` branch — but `start`'s
+> copy of this note has been deliberately reworded to not name specifics, since attendees read it
+> during M1, before M2 discovers any of this. The two copies have diverged on purpose. **Don't
+> re-run the `app/` → `start` extraction and overwrite `start`'s version with this one** — if `app/`
+> ever needs re-extracting, carry this note's de-spoilered wording over by hand.
