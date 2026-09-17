@@ -30,12 +30,17 @@ the pyramid-inversion anti-pattern — stop and push the coverage down instead.
 | Create validation (unsafe/invalid URLs rejected) | Unit | Table-driven tests over valid/invalid/unsafe URL inputs against `create_link`. Highest-value suite in the app — this is where the one significant security risk lives. |
 | Stats accuracy (clicks = follows) | Unit, plus one system check | Unit: click counter increments correctly per resolve call. System: one end-to-end "follow N times, check stats" flow, since it crosses the create/follow/stats boundary. |
 
-## Mutation testing (M3a)
+## Proving the oracles (M3a)
 
-Run `mutmut` against `shortener.py` — it carries the highest-risk logic (validation, collision
-handling, lookup). A green coverage report that still lets mutants survive means the tests assert
-too little; treat a surviving mutant as a missing assertion, not a mutmut false positive, until
-proven otherwise.
+Coverage says a line ran; it does not say a test would notice if that line broke. In M3a we check
+that directly, by hand: change one line of `shortener.py` — it carries the highest-risk logic
+(validation, collision handling, lookup) — to something wrong, re-run the suite, and see whether it
+goes red. A suite that stays green against deliberately broken code has a missing assertion, not a
+passing test. Strengthen the assertion, confirm it now fails against the broken line, then revert
+the break.
+
+This is mutation testing, done by hand and in minutes. `mutmut` automates the same idea across a
+whole module — worth adding once a suite is stable, deliberately out of scope for the workshop day.
 
 ## Out of scope for this document
 
