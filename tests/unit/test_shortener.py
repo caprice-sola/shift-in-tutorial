@@ -1,5 +1,5 @@
-"""Unit tests for shortener.py - the highest-risk logic in the app, and
-mutmut's target (see docs/test-strategy.md)."""
+"""Unit tests for shortener.py - the highest-risk logic in the app, and where we
+check our oracles by breaking a line on purpose (see docs/test-strategy.md)."""
 import pytest
 
 from snip import shortener

@@ -33,7 +33,7 @@ pip install -e ".[test]"
 pytest tests/unit tests/api                   # fast suite - what the Stop hook runs
 pytest tests/gates -s                         # SLI 1 gate: redirect p95 latency, real server
 pytest --cov=snip --cov-report=term-missing   # coverage: a map of gaps, not a target
-mutmut run && mutmut results                  # mutation testing on shortener.py
+# oracle check: break a line in src/snip/shortener.py, re-run pytest, confirm it goes red
 
 pip install -e ".[system]"
 robot --outputdir robot-results tests/system/ # system tests, real server, real HTTP

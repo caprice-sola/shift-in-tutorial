@@ -60,8 +60,8 @@ are SLI violations, not style issues.
 - Python 3.11+, FastAPI, in-memory store (`store.py` — not persistent; that's intentional).
 - Run: `pip install -e .` then `uvicorn snip.main:app --reload --app-dir src`.
 - Source: `src/snip/`.
-- Test pyramid — see `docs/test-strategy.md` for the target shape, `docs/mutation-testing-notes.md`
-  for what mutation testing found:
+- Test pyramid — see `docs/test-strategy.md` for the target shape, `docs/oracle-notes.md`
+  for what breaking the code on purpose found:
   - `tests/unit/`, `tests/api/` — pytest. Run directly, and what the `Stop` hook runs on every turn.
   - `tests/gates/` — one SLI-derived CI gate (redirect latency, SLI 1). Not part of the pyramid;
     not run by the `Stop` hook, since it needs a real server and is too slow for in-loop feedback.
