@@ -16,7 +16,7 @@ The day progresses through seven short exercises, each with a brief theory prime
 
 1. **Understand the business context.** Turn the team's DoR/DoD, quality characteristics, and SLIs into the agent's standing instructions and a shared, versioned test strategy the agent actually consults.
 2. **The agent as collaborator.** Run an AI code review, verify the diff together as a mob, and open a pull request from the terminal — establishing the verification ritual we reuse all day.
-3. **Unit tests and the loop hook.** Generate unit tests, then use mutation testing to expose tests that pass while asserting nothing — and wire a hook that runs the suite *inside the agent's loop* before it finishes. This is where shift-left becomes Shift In.
+3. **Unit tests and the loop hook.** Generate unit tests, then break the code on purpose to expose tests that pass while asserting nothing — and wire a hook that runs the suite *inside the agent's loop* before it finishes. This is where shift-left becomes Shift In.
 4. **The CI pipeline.** Have the agent design a pipeline that gates every commit, including one SLI-based check.
 5. **System tests as a subagent.** Delegate Robot Framework system-test creation to a specialized subagent — and enforce the right pyramid level so the agent doesn't bury you in slow end-to-end tests.
 6. **System regression in the pipeline.** Add the slower suite as its own stage and update the agent's instructions to keep tests at the level that gives confidence cheapest.
@@ -30,7 +30,7 @@ Shift-left asked us to test earlier. **Shift In** asks something different: embe
 
 - A working pattern for turning business context, DoR/DoD, and SLIs into an agent's standing instructions and an executable test strategy.
 - A practical toolkit — instructions files, skills, subagents, hooks, and MCP — and clear judgment about when to reach for each.
-- Techniques to keep AI-generated tests honest and well-shaped — using mutation testing to confirm your tests really assert something, and keeping the pyramid the right way up.
+- Techniques to keep AI-generated tests honest and well-shaped — deliberately breaking code (mutation testing, done by hand in minutes) to confirm your tests really assert something, and keeping the pyramid the right way up.
 - A mob-based verification ritual that keeps a human as the quality gate, even at agent speed.
 - A concrete mental model of Shift In you can apply to your own codebase on Monday — plus a reusable repository and solution branches to take home.
 

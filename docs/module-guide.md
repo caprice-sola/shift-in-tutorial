@@ -26,7 +26,7 @@ visible instead of silently absorbed.)
    SLI table, working agreements, stack conventions. Distilled from the docs just read, not
    generic boilerplate — check for that specifically.
 3. Ask the agent to draft `docs/test-strategy.md` v1: target pyramid *shape* (weights per level,
-   not just names), a per-SLI test-level mapping, and a plan for mutation testing.
+   not just names), a per-SLI test-level mapping, and a plan for proving the tests' oracles.
 4. Read both back aloud as a mob. Does the priority order and SLI mapping actually match the
    business context, or does it read like it could belong to any app?
 5. Commit. No app code changes this module.
@@ -81,38 +81,43 @@ editing local files — the same verification ritual applies before that action,
 ## M3a — Unit tests + the loop hook
 
 **Theory primer:** Coverage answers "did this line run," not "would we notice if it broke" — that
-second question is the oracle problem, and mutation testing makes it visible by deliberately
-breaking the code and checking whether the tests notice. **This is the pivot.** A `Stop` hook that
+second question is the oracle problem, and you make it visible by deliberately breaking the code
+and checking whether the tests notice. We do that **by hand**, on one line, in about three minutes:
+no extra tooling, no config, and the mob does the breaking itself. (`mutmut` automates the same
+idea across a whole module — named in the notes as a take-home, not run on the day.) **This is the pivot.** A `Stop` hook that
 runs tests before the agent can end its turn moves quality feedback from "after a push" (CI) to
 *inside the loop* — shift-left becomes Shift In right here.
 
 **Steps:**
-1. Add `pytest`/`pytest-cov`/`mutmut` as a test extra.
+1. Add `pytest`/`pytest-cov` as a test extra.
 2. Write a unit test for the still-open collision bug (#2 from M2) and watch it fail red — for
    real, not just "written."
 3. Fix the bug; watch the test go green.
 4. Add thin API-level tests (route wiring only — status codes and shapes, not every input variant).
-5. Run `mutmut` against the core logic module. Read any survivor as a mob: does the test really
-   assert what it claims to?
-6. Strengthen the weak assertion; re-run to confirm the mutant is now killed.
+5. **Break the code on purpose.** Change one line of the core logic module to something wrong —
+   the collision-retry line (`code = generate_code()` → `code = None`) is the sharpest target — and
+   re-run the suite. Does it go red? Read the result as a mob: does the test really assert what it
+   claims to?
+6. If it stayed green, that's a missing assertion, not a passing test. Strengthen it, re-run to
+   confirm it now catches the sabotage, then **revert the broken line**.
 7. Write the `Stop` hook script and settings. **Test it by piping fake JSON at it directly** — a
    passing case and a failing case — before trusting it in a live session.
 8. Demonstrate live: break a test on purpose, ask the agent to do something, watch the hook block
    the stop and force a fix before it's allowed to finish.
 
-**Artifact:** `tests/unit/`, `tests/api/`, a mutation-testing run with notes, the `Stop` hook.
+**Artifact:** `tests/unit/`, `tests/api/`, a hand-mutation oracle check with notes, the `Stop` hook.
 
 **Common failure modes:**
 - Trusting a hook's JSON output schema from memory instead of the current docs. Concretely: the
   reference build's first hook nested `decision`/`reason` under `hookSpecificOutput` — which
   doesn't error, it just makes the hook a silent no-op. A `/code-review` pass caught it before it
   shipped; verify against the actual docs, not a remembered shape.
-- Chasing 100% coverage as the goal. A 100%-covered file can still let a mutant survive — the
-  reference build's own collision test covered the retry line completely and still missed a
-  mutant that replaced the retried code with `None`.
+- Chasing 100% coverage as the goal. A 100%-covered file can still stay green against broken code
+  — the reference build's own collision test covered the retry line completely and still passed
+  when the retried code was replaced with `None`. That is the line the mob breaks in step 5.
 - More generally: an assertion that proves "something happened" (a value changed, an error was
   raised) without pinning down *what* happened is the same weak-oracle shape as the `None`-code
-  mutant above, just with different surface details. M5b hit two more instances of this same
+  example above, just with different surface details. M5b hit two more instances of this same
   family — `pytest.raises(SomeError)` alone proving an error's *type* but not its *content* — so
   it's worth flagging here as a pattern to watch for, not just this one module's story.
 
@@ -247,8 +252,8 @@ module is the day's thesis, made concrete in one continuous build.
    them and watch them fail — before implementing anything.
 3. Implement against the rules, letting the `Stop` hook fire naturally. Don't bypass it to move
    faster.
-4. Run mutation testing on any new logic that lands in the mutmut-targeted module; treat a
-   survivor as a missing assertion, not noise to dismiss.
+4. Hand-mutate any new logic that lands in the core logic module — break one line, re-run, confirm
+   the suite goes red. Treat a green run as a missing assertion, not noise to dismiss.
 5. Smoke-test the actually-running app, not just the test suite. This matters: a real bug in the
    reference build (a crash on a naive, non-UTC datetime) had 100% passing tests around it. It was
    found by a second `/code-review` pass plus direct reproduction against the running app — the

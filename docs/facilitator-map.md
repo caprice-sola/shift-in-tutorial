@@ -37,8 +37,8 @@ complete OAuth (a live upstream bug — see `docs/github-cli-notes.md` on the so
 the workaround, if a mob wants to try it anyway). Copilot: GitHub + Playwright MCP are enabled by
 default in its agent mode, if you want the contrast.
 
-**M3a Unit tests + loop hook** — *Generate units, expose weak oracles with mutation testing, run
-tests inside the agent loop.* Artifact: `tests/unit/`, `Stop` hook in `.claude/settings.json`.
+**M3a Unit tests + loop hook** — *Generate units, expose weak oracles by breaking the code by
+hand, run tests inside the agent loop.* Artifact: `tests/unit/`, `Stop` hook in `.claude/settings.json`.
 **This is the shift-left → Shift In pivot.** Copilot: hooks exist (e.g. `preToolUse`), configured differently.
 
 **M3b CI pipeline** — *Gate every commit in CI with one SLI check.* Artifact:

@@ -44,8 +44,9 @@ testing, and a human verification gate on every accepted change. See `docs/shift
 
 - **App:** Python 3.11+, FastAPI, in-memory store. Small URL-shortener service ("snip").
 - **Unit tests:** `pytest` + `pytest-cov`. Coverage is a **map of gaps, not a target**.
-- **Test-quality check:** mutation testing (`mutmut`) on at least one critical module, to prove
-  tests actually assert something (the oracle problem made visible).
+- **Test-quality check:** **hand mutation** — break one line of a critical module on purpose and
+  confirm the suite goes red, proving the tests actually assert something (the oracle problem made
+  visible). No extra tooling; `mutmut` is named as the automation for later, not run on the day.
 - **System tests:** **Robot Framework**, kept at the right pyramid level (see working agreements).
 - **CI:** GitHub Actions. At least one **SLI-derived gate** in the pipeline.
 - **Agent features (Claude Code = reference implementation):**
@@ -71,7 +72,8 @@ testing, and a human verification gate on every accepted change. See `docs/shift
    one claim, then accept or reject. In the workshop this is the mob rotation protocol itself.
 2. **Coverage is a map, not a score.** Cover SLI-relevant and business-critical paths first.
    Do not chase a coverage percentage.
-3. **Prove your oracles.** Use mutation testing to confirm tests fail when behavior breaks.
+3. **Prove your oracles.** Break the code on purpose, by hand, and confirm the tests go red. A
+   suite that stays green against deliberate sabotage is asserting nothing.
 4. **Keep the pyramid upright.** Add coverage at the **lowest level that gives confidence**.
    Do not generate a system test for every change. This is the single most important guardrail
    when an agent can produce tests cheaply.
@@ -97,7 +99,7 @@ Work on a feature branch, keep `start` clean, and update `solutions/README.md` c
 - [ ] **T2 — `solution/m2-review`.** Add a GitHub Actions stub + GitHub MCP usage notes; produce one
       AI-reviewed PR that fixes a subset of the planted issues. Document the verification ritual.
 - [ ] **T3 — `solution/m3a-unit-hook`.** Add `pytest`/`pytest-cov`, unit tests for core logic, one
-      `mutmut` run with notes on a surviving mutant, and a Claude Code `Stop` hook that runs tests
+      hand-mutation oracle check with notes on what stayed green, and a Claude Code `Stop` hook that runs tests
       in-loop. (This is the shift-left → Shift In pivot — make it prominent.)
 - [ ] **T4 — `solution/m3b-ci`.** GitHub Actions workflow running unit tests on every commit, with
       one SLI-derived gate.

@@ -38,7 +38,7 @@ The handoff *is* the quality gate. This is the human reproduction / verification
 ## Two anti-patterns to defend against all day
 
 1. **Coverage theatre.** Agents produce high-coverage tests that assert little. Counter: coverage
-   is a map of gaps, not a target; prove oracles with mutation testing (M3a).
+   is a map of gaps, not a target; prove oracles by breaking the code on purpose (M3a).
 2. **Pyramid inversion.** Agents happily generate slow end-to-end tests for everything. Counter:
    add coverage at the lowest level that gives confidence; the test strategy (M1) sets the target
    distribution the agent must respect (M4).
