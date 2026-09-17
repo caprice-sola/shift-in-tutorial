@@ -1,7 +1,7 @@
 # snip
 
 A tiny URL shortener — the **starter application** for the Shift In tutorial. Past M3a: a unit
-test suite exists, backed by mutation testing (`docs/mutation-testing-notes.md`), and a `Stop`
+test suite exists with its oracles checked by hand (`docs/oracle-notes.md`), and a `Stop`
 hook (`.claude/hooks/run_tests.py`) keeps Claude Code from ending its turn while the suite is red
 — the shift-left → Shift In pivot. CI (M3b) and system tests (M4) still come later.
 
@@ -26,7 +26,7 @@ found" for either, that's what's missing, not a broken install.
 pip install -e ".[test]"
 pytest                              # unit + API tests
 pytest --cov=snip --cov-report=term-missing   # coverage: a map of gaps, not a target
-mutmut run && mutmut results        # mutation testing on shortener.py
+# oracle check: break a line in src/snip/shortener.py, re-run pytest, confirm it goes red
 ```
 
 ## Endpoints
