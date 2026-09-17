@@ -50,7 +50,7 @@ are SLI violations, not style issues.
 - Python 3.11+, FastAPI, in-memory store (`store.py` — not persistent; that's intentional).
 - Run: `pip install -e .` then `uvicorn snip.main:app --reload --app-dir src`.
 - Source: `src/snip/`. Tests: `tests/unit/`, `tests/api/` — see `docs/test-strategy.md` for the
-  target shape and `docs/mutation-testing-notes.md` for what mutation testing found.
+  target shape and `docs/oracle-notes.md` for what breaking the code on purpose found.
 - A `Stop` hook (`.claude/hooks/run_tests.py`) runs `tests/unit`+`tests/api` before Claude Code
   ends a turn — don't remove or bypass it to get a stop through faster.
 - CI (`.github/workflows/ci.yml`) runs that same suite on every push, plus `tests/gates/` — one
