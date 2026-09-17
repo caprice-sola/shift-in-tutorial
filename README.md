@@ -1,7 +1,7 @@
 # snip
 
 A tiny URL shortener — the **starter application** for the Shift In tutorial. Past M3b: unit +
-API tests, mutation testing (`docs/oracle-notes.md`), a `Stop` hook that keeps Claude
+API tests with their oracles checked by hand (`docs/oracle-notes.md`), a `Stop` hook that keeps Claude
 Code from ending a turn while the suite is red (the shift-left → Shift In pivot), and CI
 (`.github/workflows/ci.yml`) running that same suite plus an SLI-derived gate on every push. System
 tests (Robot Framework, M4) still come later.
