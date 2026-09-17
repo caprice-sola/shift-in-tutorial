@@ -6,8 +6,6 @@ venv/
 .pytest_cache/
 .coverage
 htmlcov/
-.mutmut-cache
-mutants/
 robot-results/
 output.xml
 log.html
