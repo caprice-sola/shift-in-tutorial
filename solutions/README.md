@@ -46,3 +46,9 @@ SLIs so the fixes have business meaning.
 
 Suggested split: M2's AI review typically catches #1 and #3 quickly; leave #2 as a deliberately
 subtle one to discuss. #4 is the bridge into M3a.
+
+**Keep the source clean of hints.** The attendee branches must carry no comment or docstring that
+says these weaknesses are deliberate — the M2 review agent reads every docstring, and "this module
+deliberately contains weaknesses, see solutions/README.md" hands it the answer and points at a
+file that doesn't exist on the branch. (One such note shipped in `shortener.py` on `start`,
+`m1-context` and `m2-review` and was removed in review.) This file is the only place to record it.

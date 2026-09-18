@@ -106,7 +106,9 @@ and the pipeline that runs after the push.
 7. Write the `Stop` hook script and settings. **Test it by piping fake JSON at it directly** — a
    passing case and a failing case — before trusting it in a live session.
 8. Demonstrate live: break a test on purpose, ask the agent to do something, watch the hook block
-   the stop and force a fix before it's allowed to finish.
+   the stop and force a fix before it's allowed to finish. If nothing fires, check `/hooks`: a
+   settings-file hook only runs once the workspace-trust dialog has been accepted, and only finds
+   `pytest` if `claude` was started from the activated venv.
 9. Add a minimal `.github/workflows/ci.yml`: install the package and check it imports, with **only
    production dependencies**. It deliberately does not run the tests yet — M3b adds that, plus the
    SLI gate. The production-only install is not filler: it is the check that later catches a
@@ -116,6 +118,12 @@ and the pipeline that runs after the push.
 a minimal `.github/workflows/ci.yml`.
 
 **Common failure modes:**
+- Reading `stop_hook_active` as "bail out". The input field is `true` when the stop attempt is
+  itself the result of an earlier block. The reference hook's first version returned early on it —
+  one forced retry, then the agent could stop on a red suite, which quietly contradicts the slide.
+  Claude Code already caps consecutive blocks at 8, so the hook now re-runs the suite every time
+  and keeps blocking while it's red; the cap is the loop guard. Good discussion material: what
+  *should* happen on the 8th red attempt?
 - Trusting a hook's JSON output schema from memory instead of the current docs. Concretely: the
   reference build's first hook nested `decision`/`reason` under `hookSpecificOutput` — which
   doesn't error, it just makes the hook a silent no-op. A `/code-review` pass caught it before it
@@ -224,7 +232,10 @@ every time, not just when something looks obviously off.
 3. Discuss as a mob: the issue's raw body contains a hidden HTML comment, invisible when rendered
    on GitHub, asking whoever implements the feature to quietly undo the day's earlier validation
    and hook work. What would have happened if nobody looked at the raw text?
-4. Run the Example Mapping skill against the now-vetted content.
+4. Run the Example Mapping skill against the now-vetted content — by **typing `/example-mapping`**.
+   The skill is `disable-model-invocation: true`, so asking for it in prose ("use the example
+   mapping skill") does nothing: the agent can't see the skill, let alone load it. Pass the issue
+   number or the story text as the argument.
 5. Work the interview as a mob: confirm the story, propose and confirm rules one at a time,
    propose and confirm examples (as Gherkin scenarios) for each. Track genuinely open questions
    explicitly rather than letting the agent guess at them.

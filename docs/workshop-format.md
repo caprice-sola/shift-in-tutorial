@@ -33,8 +33,13 @@ The handoff *is* the quality gate. This is the human reproduction / verification
   one-off setup mistake — so building the exercise's success around it live would be a single
   point of failure for every mob at once. `docs/github-cli-notes.md` on the solution branches
   documents the MCP path anyway, PAT workaround included, for a mob that wants to try it.)
-- Send pre-work a few days out: install/auth, clone, connect GitHub MCP, run one smoke prompt. The
-  09:00–09:30 slot is a **sanity check** ("make the agent edit a file"), not a from-scratch install.
+- Send pre-work a few days out: install/auth, clone, run one smoke prompt. The 09:00–09:30 slot is
+  a **sanity check** ("make the agent edit a file"), not a from-scratch install.
+- Two setup facts the M3a `Stop` hook depends on, so settle them at 09:00 rather than at 11:30:
+  start `claude` **from an activated virtualenv** (the hook calls `pytest` from `PATH` — with no
+  venv active it blocks every turn with "couldn't run pytest"), and **accept the workspace-trust
+  dialog** on first start — Claude Code holds back every settings-file hook until the folder is
+  trusted, so a hook committed in `.claude/settings.json` silently does nothing before then.
 
 ## Two anti-patterns to defend against all day
 
