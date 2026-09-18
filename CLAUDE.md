@@ -96,11 +96,13 @@ Work on a feature branch, keep `start` clean, and update `solutions/README.md` c
       intact (they are discovered in M2). No tests yet. Tag this state as branch `start`.
 - [ ] **T1 — `solution/m1-context`.** Author `app/CLAUDE.md` v1 and `app/docs/test-strategy.md` v1
       derived from the business context, quality characteristics, and SLIs. No app code change.
-- [ ] **T2 — `solution/m2-review`.** Add a GitHub Actions stub + GitHub MCP usage notes; produce one
-      AI-reviewed PR that fixes a subset of the planted issues. Document the verification ritual.
+- [ ] **T2 — `solution/m2-review`.** Add GitHub CLI usage notes; produce one AI-reviewed PR that
+      fixes a subset of the planted issues. Document the verification ritual. No CI yet — the
+      pipeline starts in M3a, so M2 stays focused on review and the mob's verification ritual.
 - [ ] **T3 — `solution/m3a-unit-hook`.** Add `pytest`/`pytest-cov`, unit tests for core logic, one
-      hand-mutation oracle check with notes on what stayed green, and a Claude Code `Stop` hook that runs tests
-      in-loop. (This is the shift-left → Shift In pivot — make it prominent.)
+      hand-mutation oracle check with notes on what stayed green, a Claude Code `Stop` hook that runs tests
+      in-loop, and a minimal GitHub Actions workflow (install + import check, no test run yet).
+      (This is the shift-left → Shift In pivot — make it prominent.)
 - [ ] **T4 — `solution/m3b-ci`.** GitHub Actions workflow running unit tests on every commit, with
       one SLI-derived gate.
 - [ ] **T5 — `solution/m4-system`.** A system-test **subagent** generating Robot Framework suites at

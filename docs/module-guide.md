@@ -56,12 +56,13 @@ editing local files — the same verification ritual applies before that action,
 2. Read the findings as a mob — which are real, which are noise?
 3. Rotate on one fix: driver prompts → agent acts → mob reads the diff aloud → navigator
    challenges one specific thing → accept or reject → rotate. Repeat for a second finding.
-4. Add a CI stub — install + a sanity import, not real tests yet (that's M3a).
-5. Once the mob has actually accepted the changes, ask the agent to open a PR via `gh` (confirm
+4. Once the mob has actually accepted the changes, ask the agent to open a PR via `gh` (confirm
    `gh auth status` beforehand if this is the first GitHub action of the day).
-6. Read the PR as it actually appears on GitHub before moving on.
+5. Read the PR as it actually appears on GitHub before moving on.
 
-**Artifact:** CI stub, first reviewed PR.
+**Artifact:** first reviewed PR. No CI in this module — the pipeline starts in M3a, so M2 stays
+one thing: reviewing with an agent and verifying its output as a mob. The PR will show no checks,
+which is worth naming out loud; M3a gives it something to run.
 
 **Common failure modes:**
 - Accepting the agent's first fix without reading the diff — the exact anti-pattern this module
@@ -86,7 +87,9 @@ and checking whether the tests notice. We do that **by hand**, on one line, in a
 no extra tooling, no config, and the mob does the breaking itself. (`mutmut` automates the same
 idea across a whole module — named in the notes as a take-home, not run on the day.) **This is the pivot.** A `Stop` hook that
 runs tests before the agent can end its turn moves quality feedback from "after a push" (CI) to
-*inside the loop* — shift-left becomes Shift In right here.
+*inside the loop* — shift-left becomes Shift In right here. The module ends by adding the minimal
+CI workflow, so the mob sees both ends of that sentence in one sitting: the hook that runs now,
+and the pipeline that runs after the push.
 
 **Steps:**
 1. Add `pytest`/`pytest-cov` as a test extra.
@@ -104,8 +107,13 @@ runs tests before the agent can end its turn moves quality feedback from "after 
    passing case and a failing case — before trusting it in a live session.
 8. Demonstrate live: break a test on purpose, ask the agent to do something, watch the hook block
    the stop and force a fix before it's allowed to finish.
+9. Add a minimal `.github/workflows/ci.yml`: install the package and check it imports, with **only
+   production dependencies**. It deliberately does not run the tests yet — M3b adds that, plus the
+   SLI gate. The production-only install is not filler: it is the check that later catches a
+   test-only import leaking into `src/snip/`.
 
-**Artifact:** `tests/unit/`, `tests/api/`, a hand-mutation oracle check with notes, the `Stop` hook.
+**Artifact:** `tests/unit/`, `tests/api/`, a hand-mutation oracle check with notes, the `Stop` hook,
+a minimal `.github/workflows/ci.yml`.
 
 **Common failure modes:**
 - Trusting a hook's JSON output schema from memory instead of the current docs. Concretely: the

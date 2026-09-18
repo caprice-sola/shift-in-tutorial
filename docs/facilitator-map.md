@@ -9,9 +9,9 @@ Format: small **mobs of 3** around one machine, **Claude Code** as the reference
 |---|---|---|---|
 | 09:00–09:30 | Setup & orientation | — | `start` |
 | 09:30–10:00 | **M1** Foundations | Ex1 | `solution/m1-context` |
-| 10:00–10:45 | **M2** Agent as collaborator | Ex2 | `solution/m2-review` |
-| 10:45–11:15 | Break | | |
-| 11:15–12:00 | **M3a** Unit tests + the loop hook | Ex3 | `solution/m3a-unit-hook` |
+| 10:00–10:40 | **M2** Agent as collaborator | Ex2 | `solution/m2-review` |
+| 10:40–11:10 | Break | | |
+| 11:10–12:00 | **M3a** Unit tests + the loop hook | Ex3 | `solution/m3a-unit-hook` |
 | 12:00–12:30 | **M3b** CI pipeline | Ex4 | `solution/m3b-ci` |
 | 12:30–13:30 | Lunch | | |
 | 13:30–14:45 | **M4** System tests via subagent | Ex5 + Ex6 | `solution/m4-system` |
@@ -31,6 +31,7 @@ Copilot: same content split across `.github/copilot-instructions.md` + scoped `*
 
 **M2 Agent as collaborator** — *Run AI code review, verify the diff as a mob, open a PR via
 `gh` (each attendee's own `gh auth login`, done as pre-work).* Artifact: first reviewed PR.
+No CI here — M2 is review and the verification ritual only; the pipeline starts in M3a.
 Introduce the rotation-as-verification ritual here. GitHub MCP is the same "external actions"
 category and worth a mention, but not the default: its official remote server currently can't
 complete OAuth (a live upstream bug — see `docs/github-cli-notes.md` on the solution branches for
@@ -38,7 +39,8 @@ the workaround, if a mob wants to try it anyway). Copilot: GitHub + Playwright M
 default in its agent mode, if you want the contrast.
 
 **M3a Unit tests + loop hook** — *Generate units, expose weak oracles by breaking the code by
-hand, run tests inside the agent loop.* Artifact: `tests/unit/`, `Stop` hook in `.claude/settings.json`.
+hand, run tests inside the agent loop.* Artifact: `tests/unit/`, `Stop` hook in `.claude/settings.json`,
+and a minimal `.github/workflows/ci.yml` (install + import check; M3b makes it run the tests).
 **This is the shift-left → Shift In pivot.** Copilot: hooks exist (e.g. `preToolUse`), configured differently.
 
 **M3b CI pipeline** — *Gate every commit in CI with one SLI check.* Artifact:
