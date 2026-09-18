@@ -108,6 +108,10 @@ th,td{text-align:left; padding:9px 12px; border-bottom:1px solid var(--line); co
 th{color:var(--muted); font-size:16px; text-transform:uppercase; letter-spacing:.07em}
 td b{color:var(--ink)}
 tr.now td{background:var(--panel-2)}
+tr.brk td{color:var(--muted); font-style:italic; background:var(--panel-2)}
+table.clock{font-size:19px}
+table.clock th,table.clock td{padding:5px 12px}
+tr.brk td:first-child{font-style:normal}
 
 /* chrome */
 .slidehead{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px}
@@ -159,18 +163,21 @@ tr.now td{background:var(--panel-2)}
 <article class="slide" data-kind="theory">
   <div class="tag"><span class="dot"></span>Orientation</div>
   <h2>The day at a glance</h2>
-  <table>
+  <table class="clock">
     <tr><th>Time</th><th>Block</th><th>Exercise</th><th>Resync branch</th></tr>
     <tr><td>09:00–09:30</td><td><b>Setup &amp; orientation</b></td><td>—</td><td><code>start</code></td></tr>
     <tr><td>09:30–10:00</td><td><b>Foundations</b></td><td>Ex 1</td><td><code>solution/m1-context</code></td></tr>
     <tr><td>10:00–10:45</td><td><b>Agent as collaborator</b></td><td>Ex 2</td><td><code>solution/m2-review</code></td></tr>
+    <tr class="brk"><td>10:45–11:15</td><td>Coffee break</td><td>—</td><td>—</td></tr>
     <tr><td>11:15–12:00</td><td><b>Unit tests + the loop hook</b></td><td>Ex 3</td><td><code>solution/m3a-unit-hook</code></td></tr>
     <tr><td>12:00–12:30</td><td><b>CI pipeline</b></td><td>Ex 4</td><td><code>solution/m3b-ci</code></td></tr>
+    <tr class="brk"><td>12:30–13:30</td><td>Lunch</td><td>—</td><td>—</td></tr>
     <tr><td>13:30–14:45</td><td><b>System tests + pipeline stage</b></td><td>Ex 5 + Ex 6</td><td><code>solution/m4-system</code></td></tr>
+    <tr class="brk"><td>14:45–15:15</td><td>Coffee break</td><td>—</td><td>—</td></tr>
     <tr><td>15:15–16:30</td><td><b>Feature build, QA in the loop</b></td><td>Ex 7 (pt 1 + pt 2)</td><td><code>m5a-bdd</code> / <code>m5b-feature</code></td></tr>
     <tr><td>16:30–17:00</td><td><b>Retro &amp; wrap</b></td><td>—</td><td>—</td></tr>
   </table>
-  <div class="note">Stuck? Check out the previous solution branch and rejoin. <b>Nobody stays stuck.</b></div>
+  <div class="note">Stuck? Check out the previous solution branch and rejoin — <b>nobody stays stuck.</b> Checkpoint walk at every break and at lunch.</div>
 </article>
 
 <article class="slide" data-kind="theory">
