@@ -3,7 +3,8 @@
 A tiny URL shortener — the **starter application** for the Shift In tutorial. Past M3a: a unit
 test suite exists with its oracles checked by hand (`docs/oracle-notes.md`), and a `Stop`
 hook (`.claude/hooks/run_tests.py`) keeps Claude Code from ending its turn while the suite is red
-— the shift-left → Shift In pivot. CI (M3b) and system tests (M4) still come later.
+— the shift-left → Shift In pivot. A minimal `.github/workflows/ci.yml` exists too, but it only
+checks that the package installs and imports; running the tests in CI is M3b, system tests are M4.
 
 ## Run it
 

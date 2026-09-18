@@ -1,8 +1,9 @@
-# CI stub — added in M2 alongside the first reviewed PR, so the pipeline exists
-# before there's anything real to gate on. There is no test suite yet (that's M3a),
-# so this only proves the package installs and the app module imports cleanly
-# (import snip.main pulls in models/shortener/store too). M3b replaces the
-# sanity-check step with the real unit-test run plus an SLI-derived gate.
+# Minimal CI workflow — added at the end of M3a, once tests exist locally and
+# the Stop hook runs them in-loop. It deliberately does NOT run the test suite
+# yet: that's M3b, together with an SLI-derived gate. What it does prove is that
+# the package installs and imports with ONLY production dependencies
+# (import snip.main pulls in models/shortener/store too) - the check that later
+# catches a test-only import leaking into src/snip/.
 name: CI
 
 on:
