@@ -1,4 +1,4 @@
-# CI: the fast job (M2/M3a/M3b) - production-install sanity check, unit+API
+# CI: the fast job (M3a/M3b) - production-install sanity check, unit+API
 # tests, and the SLI 1 latency gate - plus a separate, slower system-tests
 # job (M4) running the Robot Framework suite. Two jobs, not two steps in one
 # job: GitHub Actions runs jobs in parallel by default, so splitting the slow
