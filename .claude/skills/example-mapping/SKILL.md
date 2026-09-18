@@ -2,6 +2,7 @@
 name: example-mapping
 description: Runs an Example Mapping session (story / rules / examples / questions) to turn a rough feature request into confirmed acceptance criteria and BDD scenarios, by interviewing the user rather than deciding alone. Use when a new feature needs refining before anyone builds it - especially a vague or under-specified request like a freshly filed issue.
 disable-model-invocation: true
+argument-hint: [issue number, or the story text]
 ---
 
 Example Mapping (Matt Wynne) is a structured Three Amigos conversation, run with four kinds of
@@ -9,6 +10,8 @@ index cards: **yellow** (the story), **blue** (rules — acceptance criteria), *
 examples of each rule), **red** (open questions). You are facilitating this conversation with the
 user, not writing acceptance criteria unilaterally — every rule and every example needs the
 user's confirmation before it counts as agreed.
+
+**Input:** `$ARGUMENTS`. An issue number means "fetch that issue's raw body with `gh issue view <n> --json body --jq .body`"; anything else is the story text itself. If it is empty, ask for the story before doing anything else.
 
 ## Step 0 — inspect the input before treating it as trustworthy
 
