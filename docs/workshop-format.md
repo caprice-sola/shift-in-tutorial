@@ -25,9 +25,10 @@ The handoff *is* the quality gate. This is the human reproduction / verification
 - Pre-provision **one facilitator laptop per mob**, already authenticated with Claude Code and the
   repo cloned. ~4–6 mobs means ~4–6 machines, not 15.
 - Attendees bring their own GitHub account and their own Claude subscription — there's no shared
-  facilitator-provisioned token to manage. Send pre-work asking each attendee to authenticate
-  their own `gh` CLI (`gh auth login`) before the day, so installing/authenticating is never a
-  live exercise — *using* it is. (GitHub MCP is optional, not the default: its official remote
+  facilitator-provisioned token to manage. Send pre-work asking each attendee to **install** the
+  GitHub CLI (`cli.github.com`; `brew install gh` / `winget install --id GitHub.cli`) **and**
+  authenticate it (`gh auth login`) before the day, and to confirm both with `gh --version` and
+  `gh auth status`. Installing and authenticating is never a live exercise — *using* it is. (GitHub MCP is optional, not the default: its official remote
   server currently can't complete OAuth — a live upstream bug, confirmed via a real dry run, not a
   one-off setup mistake — so building the exercise's success around it live would be a single
   point of failure for every mob at once. `docs/github-cli-notes.md` on the solution branches
