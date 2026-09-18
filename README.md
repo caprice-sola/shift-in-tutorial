@@ -1,8 +1,8 @@
 # snip
 
 A tiny URL shortener — the **starter application** for the Shift In tutorial. Past M2: a first
-AI-reviewed PR has landed (see `docs/github-cli-notes.md`) and a CI stub exists, but there are
-**still no tests** — that's M3a.
+AI-reviewed PR has landed (see `docs/github-cli-notes.md`), but there are **still no tests and no
+CI** — both arrive in M3a.
 
 ## Run it
 
