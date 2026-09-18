@@ -29,8 +29,11 @@ def main() -> None:
     except json.JSONDecodeError:
         return  # can't tell what's going on; don't block on unreadable input
 
-    if payload.get("stop_hook_active"):
-        return  # already blocked once this turn - don't loop forever
+    # payload["stop_hook_active"] is true when this stop attempt is itself the
+    # result of an earlier block. Deliberately NOT treated as "let it through":
+    # the whole point is "no stopping while the suite is red", so re-run and
+    # re-judge every time. Claude Code caps consecutive Stop blocks at 8, and
+    # that cap - not this script - is the loop guard.
 
     try:
         result = subprocess.run(
