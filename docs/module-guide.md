@@ -96,18 +96,22 @@ Keeping it out is what keeps this one about the loop.
 2. Write a unit test for the still-open collision bug (#2 from M2) and watch it fail red — for
    real, not just "written."
 3. Fix the bug; watch the test go green.
-4. Add thin API-level tests (route wiring only — status codes and shapes, not every input variant).
-5. **Break the code on purpose.** In `src/snip/shortener.py`, `create_link()` contains **two
+4. **Build out the unit suite** — `shortener.py`, `store.py`, `models.py`. Let the per-SLI table in
+   `docs/test-strategy.md` set the order: SLI-relevant paths first, not whatever is easiest to
+   test. This is the step that makes step 6 mean something; against a single collision test,
+   "did the suite notice?" is not a real question.
+5. Add thin API-level tests (route wiring only — status codes and shapes, not every input variant).
+6. **Break the code on purpose.** In `src/snip/shortener.py`, `create_link()` contains **two
    identical** `code = generate_code()` lines. Change the indented one inside
    `while store.exists(code):` to `code = None` and re-run `pytest tests/unit -q`. (Breaking the
    *first* one instead fails several tests immediately, which proves nothing about weak
    assertions — say which line you mean when you brief a mob.) Does a test fail? Read the result
    as a mob: does the test really assert what it claims to?
-6. If it stayed green, that's a missing assertion, not a passing test. Strengthen it, re-run to
+7. If it stayed green, that's a missing assertion, not a passing test. Strengthen it, re-run to
    confirm it now catches the sabotage, then **revert the broken line**.
-7. Write the `Stop` hook script and settings. **Test it by piping fake JSON at it directly** — a
+8. Write the `Stop` hook script and settings. **Test it by piping fake JSON at it directly** — a
    passing case and a failing case — before trusting it in a live session.
-8. Demonstrate live: break a test on purpose, ask the agent to do something, watch the hook block
+9. Demonstrate live: break a test on purpose, ask the agent to do something, watch the hook block
    the stop and force a fix before it's allowed to finish. If nothing fires, check `/hooks`: a
    settings-file hook only runs once the workspace-trust dialog has been accepted, and only finds
    `pytest` if `claude` was started from the activated venv.
@@ -129,7 +133,7 @@ the room, or a mob will spend five minutes looking for a broken setup.
   shipped; verify against the actual docs, not a remembered shape.
 - Chasing 100% coverage as the goal. A 100%-covered file can still stay green against broken code
   — the reference build's own collision test covered the retry line completely and still passed
-  when the retried code was replaced with `None`. That is the line the mob breaks in step 5.
+  when the retried code was replaced with `None`. That is the line the mob breaks in step 6.
 - More generally: an assertion that proves "something happened" (a value changed, an error was
   raised) without pinning down *what* happened is the same weak-oracle shape as the `None`-code
   example above, just with different surface details. M5b hit two more instances of this same

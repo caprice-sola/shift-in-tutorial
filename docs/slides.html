@@ -90,10 +90,14 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size
 .prompt pre{margin:0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   font-size:19px; line-height:1.45; color:var(--code-ink); white-space:pre-wrap}
 .slide.dense h2{font-size:36px; margin-bottom:14px}
-.slide.dense .prompt{padding:12px 17px; margin-bottom:10px}
-.slide.dense .prompt pre{font-size:17.5px; line-height:1.4}
+.slide.dense .prompt{padding:11px 16px; margin-bottom:8px}
+.slide.dense .prompt pre{font-size:17px; line-height:1.38}
 .slide.dense .prompt .who{font-size:14px; margin-bottom:4px}
 .slide.dense li{font-size:21px; line-height:1.34; margin-bottom:8px}
+.slide.tight li{font-size:20px; line-height:1.3; margin-bottom:6px}
+.slide.tight .note{padding:11px 18px; font-size:19px}
+.slide.tight .prompt{padding:10px 15px; margin-bottom:7px}
+.slide.tight .prompt pre{font-size:16.5px; line-height:1.36}
 .slide.dense ol{padding-left:26px}
 .kv{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:18px}
 .pill{font-size:19px; padding:7px 15px; border-radius:999px; border:1px solid var(--line);
@@ -572,25 +576,26 @@ tr.brk td:first-child{font-style:normal}
   <div class="note"><b>When the hook blocks the agent for the first time, say so out loud.</b> This is the central moment of the day.</div>
 </article>
 
-<article class="slide dense" data-kind="exercise">
-  <div class="tag"><span class="dot"></span>Exercise 3 · Steps 1–6</div>
-  <h2>Do this — tests, then the oracle check</h2>
+<article class="slide dense tight" data-kind="exercise">
+  <div class="tag"><span class="dot"></span>Exercise 3 · Steps 1–7</div>
+  <h2>Do this — build the suite, then check it</h2>
   <ol>
-    <li>Add <code>"pytest"</code> and <code>"pytest-cov"</code> to the <code>test</code> list under <code>[project.optional-dependencies]</code> in <code>pyproject.toml</code>, then run <code>pip install -e ".[test]"</code>.</li>
-    <li>In <code>tests/unit/test_shortener.py</code>, write a test for the <strong>defect left open in Ex 2</strong>: when <code>generate_code()</code> returns a code that already exists, the second link must not overwrite the first. Run <code>pytest tests/unit -q</code> and <strong>confirm it fails</strong>.</li>
+    <li>Add <code>"pytest"</code> and <code>"pytest-cov"</code> to the <code>test</code> extra in <code>pyproject.toml</code>, then run <code>pip install -e ".[test]"</code>.</li>
+    <li>In <code>tests/unit/test_shortener.py</code>, write <strong>one</strong> test for the <strong>defect left open in Ex 2</strong>: when <code>generate_code()</code> returns a code that already exists, the second link must not overwrite the first. Run <code>pytest tests/unit -q</code> and <strong>confirm it fails</strong>.</li>
     <li>Fix it in <code>create_link()</code> in <code>src/snip/shortener.py</code> — generate a new code while the current one already exists. Run the test again: it passes (confirmation testing).</li>
-    <li>Add <code>tests/api/test_routes.py</code>: one or two tests per endpoint, checking only the status code and the response structure — not every input variation.</li>
+    <li><strong>Now build out the unit suite</strong> — <code>shortener.py</code>, <code>store.py</code>, <code>models.py</code>. Let the per-SLI table in <code>docs/test-strategy.md</code> set the order: the paths behind an SLI first, not whatever is easiest to test.</li>
+    <li>Add <code>tests/api/test_routes.py</code>: one or two tests per endpoint — status code and response structure only, not every input variation.</li>
     <li><strong>Now break the code on purpose.</strong> <code>create_link()</code> contains <strong>two identical</strong> <code>code = generate_code()</code> lines. Change the <strong>indented one inside <code>while store.exists(code):</code></strong> to <code>code = None</code>, and run <code>pytest tests/unit -q</code>.</li>
-    <li>Does a test fail, or does the suite still pass on visibly broken code? If it passes, your assertion only checks that the two codes <em>differ</em>. Make it assert the value the retry should produce, re-run to confirm it now fails, then <strong>undo the change to <code>shortener.py</code></strong>.</li>
+    <li>Does any test fail — or does the whole suite pass on visibly broken code? If it passes, your collision test only checks that the two codes <em>differ</em>. Make it assert the value the retry should produce, re-run, then <strong>undo the change</strong>.</li>
   </ol>
-  <div class="note warn">In step 5, change the <strong>second</strong> of the two identical lines, not the first. Breaking the first one makes several tests fail at once — which proves nothing about weak assertions.</div>
-  <aside class="notes">Facilitator: steps 5–6 are the point of the module and cost about three minutes; if time is short, cut depth in step 4 instead. The mob must do the breaking itself — watching a green suite survive obviously-broken code does not land secondhand. Note the branch's own test already asserts the strengthened value (second.code == "uniq99"); if a mob's agent writes that assertion straight away, step 5 goes red immediately. That is a good outcome, not a failed exercise: ask them which assertion saved them, and have them weaken it to see the other result.</aside>
+  <div class="note warn">In step 6, change the <strong>second</strong> of the two identical lines. Breaking the first one fails several tests at once and proves nothing about weak assertions.</div>
+  <aside class="notes">Facilitator: steps 6–7 are the point of the module and cost about three minutes; if time is short, cut depth in step 4 instead — that is the one step that expands to fill whatever time it is given. The mob must do the breaking itself; watching a green suite survive obviously-broken code does not land secondhand. Note the branch's own test already asserts the strengthened value (second.code == "uniq99"); if a mob's agent writes that assertion straight away, step 6 goes red immediately. That is a good outcome, not a failed exercise: ask which assertion saved them, then have them weaken it to see the other result.</aside>
 </article>
 
 <article class="slide dense" data-kind="exercise">
-  <div class="tag"><span class="dot"></span>Exercise 3 · Steps 7–10</div>
+  <div class="tag"><span class="dot"></span>Exercise 3 · Steps 8–11</div>
   <h2>Do this — the loop hook</h2>
-  <ol start="7">
+  <ol start="8">
     <li>Write <code>.claude/hooks/run_tests.py</code>: read the JSON on standard input, run <code>pytest tests/unit tests/api</code>, and if it fails print <code>{"decision":"block","reason":"…"}</code> with the pytest output as the reason. Make it executable (<code>chmod +x</code>).</li>
     <li>Register it in <code>.claude/settings.json</code> under <code>hooks</code> → <code>Stop</code>. Check the current documentation for the exact shape of both the settings entry and the JSON the hook prints.</li>
     <li><strong>Test the hook before trusting it.</strong> Send it a payload directly, twice:<br>
@@ -599,15 +604,25 @@ tr.brk td:first-child{font-style:normal}
     <li><strong>Then show it in a live session:</strong> break one test, ask the agent to make any change, and confirm it cannot finish its turn. Undo the broken test afterwards.</li>
   </ol>
   <div class="note">Still no CI after this exercise — a push shows no checks on GitHub, the same as after Ex 2. That is expected: the pipeline is Ex 4, and keeping it out is what keeps this exercise about the loop.</div>
-  <aside class="notes">Facilitator: if the hook does nothing in step 10, it is almost always one of two things — (1) claude was not started from the activated venv, so the hook cannot find pytest on PATH; (2) the workspace-trust dialog was never accepted, and settings-file hooks are held back until it is. /hooks shows what is actually registered. Step 9 exists because a hook that is wrong in shape fails silently: it does not error, it just never blocks.</aside>
+  <aside class="notes">Facilitator: if the hook does nothing in step 11, it is almost always one of two things — (1) claude was not started from the activated venv, so the hook cannot find pytest on PATH; (2) the workspace-trust dialog was never accepted, and settings-file hooks are held back until it is. /hooks shows what is actually registered. Step 10 exists because a hook that is wrong in shape fails silently: it does not error, it just never blocks.</aside>
 </article>
 
 <article class="slide dense" data-kind="prompt">
-  <div class="tag"><span class="dot"></span>Exercise 3 · Example prompts</div>
+  <div class="tag"><span class="dot"></span>Exercise 3 · Prompts for steps 1–5</div>
   <h2>If you're behind, start here</h2>
-  <div class="prompt"><div class="who">Prompt 1 · write a failing test first</div><pre>Add pytest and pytest-cov to the [project.optional-dependencies] "test" list in pyproject.toml, and install with pip install -e ".[test]". Then write ONE unit test in tests/unit/test_shortener.py proving the short-code collision defect: if generate_code() returns a code that already exists, the second link must not silently overwrite the first. Monkeypatch generate_code to force the collision. Run pytest tests/unit -q and show me it failing — do not fix the defect yet.</pre></div>
-  <div class="prompt"><div class="who">Prompt 2 · check the test oracle</div><pre>In src/snip/shortener.py, create_link() has two identical "code = generate_code()" lines. Change the one INSIDE the "while store.exists(code):" loop to code = None — not the first one — then run pytest tests/unit -q. If the suite still passes, tell me exactly which assertion should have caught this and why it did not. Do not fix anything yet: leave the broken line in place so we can watch it fail once the assertion is stronger.</pre></div>
-  <div class="prompt"><div class="who">Prompt 3 · create the Stop hook</div><pre>Create a Stop hook at .claude/hooks/run_tests.py that runs pytest and, if it fails, returns a block decision with the failure output as the reason. Check the current hooks documentation for the exact JSON output shape and for how to register it in .claude/settings.json — do not guess either. Make the script executable. Then test it by piping a fake Stop payload into it for both a green and a red suite.</pre></div>
+  <div class="prompt"><div class="who">Steps 1–2 · tooling, then one failing test</div><pre>Add pytest and pytest-cov to the [project.optional-dependencies] "test" list in pyproject.toml, and install with pip install -e ".[test]". Then write ONE unit test in tests/unit/test_shortener.py proving the short-code collision defect: if generate_code() returns a code that already exists, the second link must not silently overwrite the first. Monkeypatch generate_code to force the collision. Run pytest tests/unit -q and show me it failing — do not fix the defect yet.</pre></div>
+  <div class="prompt"><div class="who">Step 3 · fix the defect</div><pre>Now fix the defect in create_link() in src/snip/shortener.py: keep generating a new code while the current one already exists. Re-run pytest tests/unit -q and show me the test passing. Change nothing else.</pre></div>
+  <div class="prompt"><div class="who">Step 4 · cover the rest of the core logic</div><pre>Read docs/test-strategy.md, then add unit tests in tests/unit/ for the rest of the core logic — shortener.py, store.py and models.py. Work in the order of its per-SLI table: paths behind an SLI first. For each test tell me which SLI it serves, and list the paths you are deliberately leaving untested.</pre></div>
+  <div class="prompt"><div class="who">Step 5 · thin API tests</div><pre>Add tests/api/test_routes.py using FastAPI's TestClient: one or two tests per endpoint, asserting only the status code and the response structure. No input-validation cases here — those belong in tests/unit/test_models.py.</pre></div>
+</article>
+
+<article class="slide dense tight" data-kind="prompt">
+  <div class="tag"><span class="dot"></span>Exercise 3 · Prompts for steps 6–11</div>
+  <h2>If you're behind, start here</h2>
+  <div class="prompt"><div class="who">Steps 6–7 · break it, then fix the assertion</div><pre>In src/snip/shortener.py, create_link() has two identical "code = generate_code()" lines. Change the one INSIDE the "while store.exists(code):" loop to code = None — not the first one — then run pytest tests/unit -q. If the suite still passes, tell me exactly which assertion should have caught this and why it did not. Then strengthen that assertion so it pins down the value the retry should produce, re-run to show it failing against the broken line, and only then undo the change to shortener.py.</pre></div>
+  <div class="prompt"><div class="who">Steps 8–9 · write and register the hook</div><pre>Create a Stop hook at .claude/hooks/run_tests.py that runs pytest and, if it fails, returns a block decision with the failure output as the reason. Check the current hooks documentation for the exact JSON output shape and for how to register it in .claude/settings.json — do not guess either. Make the script executable. Register it in .claude/settings.json under hooks -> Stop, and make the script executable.</pre></div>
+  <div class="prompt"><div class="who">Step 10 · test the hook before trusting it</div><pre>Test the hook without waiting for a live turn: pipe a Stop payload into it with the suite green (it must print nothing), then break one test and pipe the same payload again (it must print the block JSON). Show me both commands and their output.</pre></div>
+  <div class="prompt"><div class="who">Step 11 · show it working live</div><pre>I have broken one test on purpose. Add a one-line comment to README.md, then finish your turn. Tell me what happened when you tried to stop.</pre></div>
 </article>
 
 <article class="slide dense" data-kind="learn">
