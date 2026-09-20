@@ -3,8 +3,9 @@
 A tiny URL shortener — the **starter application** for the Shift In tutorial. Past M3a: a unit
 test suite exists with its oracles checked by hand (`docs/oracle-notes.md`), and a `Stop`
 hook (`.claude/hooks/run_tests.py`) keeps Claude Code from ending its turn while the suite is red
-— the shift-left → Shift In pivot. A minimal `.github/workflows/ci.yml` exists too, but it only
-checks that the package installs and imports; running the tests in CI is M3b, system tests are M4.
+— the shift-left → Shift In pivot. There is still **no CI**: the pipeline is M3b's job, and system
+tests are M4's. Pushing from this branch produces no checks on GitHub — that is expected, not a
+broken setup.
 
 ## Run it
 
