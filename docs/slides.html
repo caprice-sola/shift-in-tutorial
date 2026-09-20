@@ -99,6 +99,9 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size
 .slide.tight .prompt{padding:10px 15px; margin-bottom:7px}
 .slide.tight .prompt pre{font-size:16.5px; line-height:1.36}
 .slide.dense ol{padding-left:26px}
+.tree{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:17.5px;
+  line-height:1.5; color:var(--ink-soft); margin:0; white-space:pre}
+.tree b{color:var(--ink); font-weight:600}
 .kv{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:18px}
 .pill{font-size:19px; padding:7px 15px; border-radius:999px; border:1px solid var(--line);
   background:var(--panel-2); color:var(--ink-soft)}
@@ -237,6 +240,36 @@ tr.brk td:first-child{font-style:normal}
     <li><strong>A human verification step</strong> — nothing is "done" until a person has reproduced and confirmed it. <small>(all day)</small></li>
   </ul>
   <div class="note">Each exercise adds exactly one of these pieces. By Ex 7 they all run together on one real feature.</div>
+</article>
+
+<article class="slide dense" data-kind="theory">
+  <div class="tag"><span class="dot"></span>Definition</div>
+  <h2>Where those pieces live on disk</h2>
+  <p class="lead">Each one is a <strong>file in your repository</strong>, committed like source code — not a personal setting.</p>
+  <div class="cols">
+    <div class="card">
+      <pre class="tree">your-repo/
+├── <b>CLAUDE.md</b>
+└── <b>.claude/</b>
+    ├── settings.json
+    ├── hooks/
+    │   └── run_tests.py
+    ├── agents/
+    │   └── system-test-writer.md
+    └── skills/
+        └── example-mapping/
+            └── SKILL.md</pre>
+    </div>
+    <div>
+      <ul style="padding-left:20px">
+        <li><code>CLAUDE.md</code> — standing context, read at the start of every session <small>(Ex 1)</small></li>
+        <li><code>settings.json</code> — where a hook is <em>registered</em>; the script itself sits in <code>hooks/</code> <small>(Ex 3)</small></li>
+        <li><code>agents/</code> — one Markdown file per subagent <small>(Ex 5)</small></li>
+        <li><code>skills/&lt;name&gt;/SKILL.md</code> — one folder per skill <small>(Ex 7)</small></li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">All of it is <b>committed</b>, so a clone gives every teammate the same behaviour. <code>.claude/settings.local.json</code> is the personal, git-ignored counterpart — for machine-specific things, never for a rule the team depends on.</div>
 </article>
 
 <article class="slide" data-kind="theory">
@@ -556,6 +589,7 @@ tr.brk td:first-child{font-style:normal}
     <li>A <code>Stop</code> hook can <strong>block</strong>: return <code>{"decision":"block","reason":"…"}</code> and the agent must keep working, with your reason as its next instruction. Claude Code allows at most 8 blocks in a row.</li>
     <li>An instruction is a request that the agent can ignore. A hook is a rule that the tool <strong>enforces</strong>. That difference is the point.</li>
     <li>It must stay <strong>fast</strong> — it runs on every turn.</li>
+    <li>Two files, both committed: the script in <code>.claude/hooks/</code>, registered in <code>.claude/settings.json</code>.</li>
   </ul>
   <div class="note"><b>Copilot equivalent:</b> hooks exist (e.g. <code>preToolUse</code>), configured differently — same idea, different file.</div>
   <aside class="notes">Facilitator: the reference build's first hook nested decision/reason under hookSpecificOutput — no error, just a silent no-op. Verify the JSON shape against current docs, and test the hook by piping fake JSON at it before trusting it live.</aside>
@@ -748,6 +782,7 @@ tr.brk td:first-child{font-style:normal}
     <li><strong>Limited responsibility</strong> — one task, explicit rules, including what it must <em>not</em> do.</li>
     <li><strong>Limited tools</strong> — give it only what the task needs, and write the allowed directories into its instructions as well.</li>
     <li>Best for <strong>one task, delegated once</strong>. Not suitable for a task that needs discussion — it cannot see your conversation.</li>
+    <li>Defined as one Markdown file in <code>.claude/agents/</code>: frontmatter for its name, description and allowed tools, then its instructions.</li>
   </ul>
   <div class="note"><b>Copilot equivalent:</b> a custom agent profile with its own instructions and MCP scoping. Robot Framework itself is tool-agnostic.</div>
 </article>
@@ -909,7 +944,7 @@ tr.brk td:first-child{font-style:normal}
   <h2>What is a skill?</h2>
   <p class="lead">A <strong>reusable procedure in a folder</strong> that the agent loads when it is relevant: your team's method, written down once and then applied the same way every time.</p>
   <ul>
-    <li>It contains instructions, and optionally scripts or reference files, which the agent loads when needed.</li>
+    <li>A folder — <code>.claude/skills/&lt;name&gt;/SKILL.md</code> — holding instructions, and optionally scripts or reference files, loaded when needed.</li>
     <li>It runs <strong>in the current conversation</strong>, so it can have a real dialogue with the team.</li>
     <li>Use it so that the agent does not invent a different method each time you ask.</li>
   </ul>
