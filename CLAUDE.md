@@ -100,11 +100,11 @@ Work on a feature branch, keep `start` clean, and update `solutions/README.md` c
       fixes a subset of the planted issues. Document the verification ritual. No CI yet — the
       pipeline starts in M3a, so M2 stays focused on review and the mob's verification ritual.
 - [ ] **T3 — `solution/m3a-unit-hook`.** Add `pytest`/`pytest-cov`, unit tests for core logic, one
-      hand-mutation oracle check with notes on what stayed green, a Claude Code `Stop` hook that runs tests
-      in-loop, and a minimal GitHub Actions workflow (install + import check, no test run yet).
-      (This is the shift-left → Shift In pivot — make it prominent.)
-- [ ] **T4 — `solution/m3b-ci`.** GitHub Actions workflow running unit tests on every commit, with
-      one SLI-derived gate.
+      hand-mutation oracle check with notes on what stayed green, and a Claude Code `Stop` hook that
+      runs tests in-loop. No CI in this task — it is the after-the-push mechanism the pivot
+      contrasts against. (This is the shift-left → Shift In pivot — make it prominent.)
+- [ ] **T4 — `solution/m3b-ci`.** Create `.github/workflows/ci.yml` complete, not as a stub: a
+      production-only install check, the unit/API test run, and one SLI-derived gate.
 - [ ] **T5 — `solution/m4-system`.** A system-test **subagent** generating Robot Framework suites at
       the right pyramid level; add a separate (slower) CI stage. Update `app/CLAUDE.md` to v2.
 - [ ] **T6 — `solution/m5a-bdd`.** A pre-prepared GitHub issue (new feature: **link expiry**), plus a

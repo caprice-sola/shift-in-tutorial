@@ -87,9 +87,9 @@ and checking whether the tests notice. We do that **by hand**, on one line, in a
 no extra tooling, no config, and the mob does the breaking itself. (`mutmut` automates the same
 idea across a whole module — named in the notes as a take-home, not run on the day.) **This is the pivot.** A `Stop` hook that
 runs tests before the agent can end its turn moves quality feedback from "after a push" (CI) to
-*inside the loop* — shift-left becomes Shift In right here. The module ends by adding the minimal
-CI workflow, so the mob sees both ends of that sentence in one sitting: the hook that runs now,
-and the pipeline that runs after the push.
+*inside the loop* — shift-left becomes Shift In right here. Deliberately no CI in this module:
+the pipeline is the after-the-push half of that same sentence, and it gets its own module (M3b).
+Keeping it out is what keeps this one about the loop.
 
 **Steps:**
 1. Add `pytest`/`pytest-cov` as a test extra.
@@ -111,13 +111,10 @@ and the pipeline that runs after the push.
    the stop and force a fix before it's allowed to finish. If nothing fires, check `/hooks`: a
    settings-file hook only runs once the workspace-trust dialog has been accepted, and only finds
    `pytest` if `claude` was started from the activated venv.
-9. Add a minimal `.github/workflows/ci.yml`: install the package and check it imports, with **only
-   production dependencies**. It deliberately does not run the tests yet — M3b adds that, plus the
-   SLI gate. The production-only install is not filler: it is the check that later catches a
-   test-only import leaking into `src/snip/`.
 
-**Artifact:** `tests/unit/`, `tests/api/`, a hand-mutation oracle check with notes, the `Stop` hook,
-a minimal `.github/workflows/ci.yml`.
+**Artifact:** `tests/unit/`, `tests/api/`, a hand-mutation oracle check with notes, the `Stop` hook.
+Still no CI — a push from this branch shows no checks on GitHub, the same as after M2. Say so in
+the room, or a mob will spend five minutes looking for a broken setup.
 
 **Common failure modes:**
 - Reading `stop_hook_active` as "bail out". The input field is `true` when the stop attempt is
@@ -157,11 +154,16 @@ a documented service promise, not just "nothing broke."
    the *actual* documented SLO — not a softened threshold.
 3. Confirm the `Stop` hook stays scoped away from this test (it should already be — verify, don't
    assume).
-4. Update the CI workflow: keep the production-only-install sanity step, add the unit+API step,
-   add the SLI gate as its own labeled step so a failure clearly shows which layer broke.
+4. Create `.github/workflows/ci.yml` with three labeled steps, in this order: (a) install with
+   **production dependencies only** and check the package imports, (b) run the unit+API suite,
+   (c) run the SLI gate. Separate steps, so a failure names the layer that broke. Step (a) earns
+   its place: it is the check that catches a test-only import leaking into `src/snip/`, which is
+   the failure M4/M6's dependency split is built to prevent — say that out loud when it is
+   written, or it reads as boilerplate.
 5. Push and confirm CI is actually green on GitHub — not just locally.
 
-**Artifact:** `.github/workflows/ci.yml` with a real SLI gate.
+**Artifact:** `.github/workflows/ci.yml`, created complete here — install check, test run, SLI
+   gate — rather than upgraded from a stub.
 
 **Common failure modes:**
 - Softening the SLI threshold to avoid imagined CI flakiness. Check the real margin first — the

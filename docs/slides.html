@@ -506,7 +506,7 @@ tr.brk td:first-child{font-style:normal}
   <p class="lead">Generate unit tests, find weak test oracles by breaking the code by hand, then run the test suite <strong>inside the agent's loop</strong>.</p>
   <div class="kv">
     <span class="pill"><b>11:10–12:00</b> · 50 min</span>
-    <span class="pill">Deliverable: <code>tests/unit/</code>, <code>tests/api/</code>, an oracle check, a <code>Stop</code> hook, a minimal CI workflow</span>
+    <span class="pill">Deliverable: <code>tests/unit/</code>, <code>tests/api/</code>, an oracle check, a <code>Stop</code> hook</span>
     <span class="pill">Fallback branch: <code>solution/m3a-unit-hook</code></span>
   </div>
   <div class="note"><b>This is the turning point of the day</b> — the moment where shift-left becomes Shift In.</div>
@@ -589,7 +589,7 @@ tr.brk td:first-child{font-style:normal}
 
 <article class="slide dense" data-kind="exercise">
   <div class="tag"><span class="dot"></span>Exercise 3 · Steps 7–10</div>
-  <h2>Do this — the hook, then CI</h2>
+  <h2>Do this — the loop hook</h2>
   <ol start="7">
     <li>Write <code>.claude/hooks/run_tests.py</code>: read the JSON on standard input, run <code>pytest tests/unit tests/api</code>, and if it fails print <code>{"decision":"block","reason":"…"}</code> with the pytest output as the reason. Make it executable (<code>chmod +x</code>).</li>
     <li>Register it in <code>.claude/settings.json</code> under <code>hooks</code> → <code>Stop</code>. Check the current documentation for the exact shape of both the settings entry and the JSON the hook prints.</li>
@@ -597,23 +597,17 @@ tr.brk td:first-child{font-style:normal}
       <code>echo '{"cwd":"'$PWD'"}' | .claude/hooks/run_tests.py</code><br>
       with a passing suite it must print <strong>nothing</strong>; with one test deliberately broken it must print the <code>block</code> JSON.</li>
     <li><strong>Then show it in a live session:</strong> break one test, ask the agent to make any change, and confirm it cannot finish its turn. Undo the broken test afterwards.</li>
-    <li>Add <code>.github/workflows/ci.yml</code>: one job that installs the package with <strong>production dependencies only</strong> and runs <code>python -c "from snip.main import app"</code>. No test run yet — that is Ex 4.</li>
   </ol>
+  <div class="note">Still no CI after this exercise — a push shows no checks on GitHub, the same as after Ex 2. That is expected: the pipeline is Ex 4, and keeping it out is what keeps this exercise about the loop.</div>
   <aside class="notes">Facilitator: if the hook does nothing in step 10, it is almost always one of two things — (1) claude was not started from the activated venv, so the hook cannot find pytest on PATH; (2) the workspace-trust dialog was never accepted, and settings-file hooks are held back until it is. /hooks shows what is actually registered. Step 9 exists because a hook that is wrong in shape fails silently: it does not error, it just never blocks.</aside>
 </article>
 
 <article class="slide dense" data-kind="prompt">
-  <div class="tag"><span class="dot"></span>Exercise 3 · Prompts for steps 1–6</div>
+  <div class="tag"><span class="dot"></span>Exercise 3 · Example prompts</div>
   <h2>If you're behind, start here</h2>
   <div class="prompt"><div class="who">Prompt 1 · write a failing test first</div><pre>Add pytest and pytest-cov to the [project.optional-dependencies] "test" list in pyproject.toml, and install with pip install -e ".[test]". Then write ONE unit test in tests/unit/test_shortener.py proving the short-code collision defect: if generate_code() returns a code that already exists, the second link must not silently overwrite the first. Monkeypatch generate_code to force the collision. Run pytest tests/unit -q and show me it failing — do not fix the defect yet.</pre></div>
   <div class="prompt"><div class="who">Prompt 2 · check the test oracle</div><pre>In src/snip/shortener.py, create_link() has two identical "code = generate_code()" lines. Change the one INSIDE the "while store.exists(code):" loop to code = None — not the first one — then run pytest tests/unit -q. If the suite still passes, tell me exactly which assertion should have caught this and why it did not. Do not fix anything yet: leave the broken line in place so we can watch it fail once the assertion is stronger.</pre></div>
-</article>
-
-<article class="slide dense" data-kind="prompt">
-  <div class="tag"><span class="dot"></span>Exercise 3 · Prompts for steps 7–10</div>
-  <h2>If you're behind, start here</h2>
   <div class="prompt"><div class="who">Prompt 3 · create the Stop hook</div><pre>Create a Stop hook at .claude/hooks/run_tests.py that runs pytest and, if it fails, returns a block decision with the failure output as the reason. Check the current hooks documentation for the exact JSON output shape and for how to register it in .claude/settings.json — do not guess either. Make the script executable. Then test it by piping a fake Stop payload into it for both a green and a red suite.</pre></div>
-  <div class="prompt"><div class="who">Prompt 4 · add the minimal CI workflow</div><pre>Add .github/workflows/ci.yml with one job: install the package with production dependencies only, then check that it imports. Do not run the tests there yet — Ex 4 adds that. Explain in a comment why the production-only install is a useful check on its own.</pre></div>
 </article>
 
 <article class="slide dense" data-kind="learn">
@@ -625,7 +619,7 @@ tr.brk td:first-child{font-style:normal}
     <li><strong>An enforced rule is better than a written intention.</strong> "Always run the tests" in an instructions file is a request the agent can ignore. A <code>Stop</code> hook cannot be ignored.</li>
     <li><strong>Testing now happens inside the loop.</strong> The test fails, the agent sees the failure and fixes it, before a person is involved.</li>
     <li><strong>Check the hook's expected output format in the current documentation.</strong> A hook with the wrong format does not report an error — it simply does nothing.</li>
-    <li><strong>The pipeline starts here, deliberately small.</strong> Installing with production dependencies only is the check that later detects a test-only import in production code.</li>
+
   </ul>
   <div class="note">If you get stuck, return to a known state: <code>git checkout solution/m3a-unit-hook</code></div>
 </article>
@@ -638,7 +632,7 @@ tr.brk td:first-child{font-style:normal}
 <article class="slide" data-kind="section">
   <div class="bignum">4</div>
   <h1>The CI pipeline</h1>
-  <p class="lead">Check every commit in CI — and turn one published SLI into a real pipeline gate.</p>
+  <p class="lead">Build the pipeline from nothing, and turn one published SLI into a real gate.</p>
   <div class="kv">
     <span class="pill"><b>12:00–12:30</b> · 30 min</span>
     <span class="pill">Deliverable: <code>.github/workflows/ci.yml</code> with an SLI gate</span>
@@ -686,8 +680,8 @@ tr.brk td:first-child{font-style:normal}
   <ol>
     <li>Choose <strong>one SLI</strong> to check in the pipeline. Redirect response time is the simplest first choice.</li>
     <li>Write a separate test that <strong>starts a real server</strong>, sends real requests and compares the result with the <strong>documented SLO</strong> — do not relax the threshold.</li>
-    <li>Confirm that the <code>Stop</code> hook does <strong>not</strong> run this slow test. Check it; do not assume it.</li>
-    <li>Update the workflow: keep the install check, add the unit and API tests, then add the <strong>SLI gate as a separate, named step</strong>, so that a failure shows which test level failed.</li>
+    <li>Confirm that the <code>Stop</code> hook does <strong>not</strong> run this slow test — it must stay on <code>tests/unit</code> and <code>tests/api</code>. Check the script; do not assume it.</li>
+    <li>Create <code>.github/workflows/ci.yml</code> with <strong>three separate, named steps</strong>, so a failure shows which layer broke: (a) install with <strong>production dependencies only</strong> and check the package imports, (b) run the unit and API tests, (c) run the SLI gate.</li>
     <li><strong>Push and confirm CI is green on GitHub</strong> — not just locally.</li>
   </ol>
   <div class="note">Step 5 fits well before lunch: push first, then read the CI result.</div>
@@ -698,7 +692,7 @@ tr.brk td:first-child{font-style:normal}
   <h2>If you're behind, start here</h2>
   <div class="prompt"><div class="who">Prompt 1 · write the SLI gate test</div><pre>Write tests/gates/test_redirect_latency.py: start a real uvicorn server, create a link, follow it ~200 times, and assert p95 server time is under the SLO documented in docs/slis.md. Print the measured p95 so CI logs show the real margin. Use the documented threshold exactly — don't soften it.</pre></div>
   <div class="prompt"><div class="who">Prompt 2 · keep the hook fast</div><pre>Check .claude/hooks/run_tests.py — it must run only tests/unit and tests/api, never tests/gates. Show me the line that enforces that, and how long the hook takes to run right now.</pre></div>
-  <div class="prompt"><div class="who">Prompt 3 · update CI and verify it</div><pre>Update .github/workflows/ci.yml: keep the production install check, add a step for the unit and API tests, and add the SLI gate as its own clearly labelled step. Push the branch and then use gh to show me the run result — I want to see it pass on GitHub, not locally.</pre></div>
+  <div class="prompt"><div class="who">Prompt 3 · create CI and verify it</div><pre>Create .github/workflows/ci.yml with three clearly labelled steps in this order: install the package with production dependencies only and check that it imports; run the unit and API tests; run the SLI gate. Explain in a comment why the production-only install is worth a step of its own. Push the branch and then use gh to show me the run result — I want to see it pass on GitHub, not locally.</pre></div>
 </article>
 
 <article class="slide" data-kind="learn">

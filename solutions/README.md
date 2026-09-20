@@ -8,8 +8,8 @@ out the previous branch to resync. Branches are built in order; each starts from
 | `start` | T0 | The `app/` starter only. No tests, no CI, no AI tooling. |
 | `solution/m1-context` | T1 | `app/CLAUDE.md` v1 + `app/docs/test-strategy.md` v1. |
 | `solution/m2-review` | T2 | GitHub CLI notes (`gh`, MCP optional) + one AI-reviewed PR fixing some planted issues. No CI yet. |
-| `solution/m3a-unit-hook` | T3 | `pytest`/`pytest-cov`, unit tests, a hand-mutation oracle check, a `Stop` hook, a minimal CI workflow. |
-| `solution/m3b-ci` | T4 | `.github/workflows/ci.yml` running units + one SLI gate. |
+| `solution/m3a-unit-hook` | T3 | `pytest`/`pytest-cov`, unit tests, a hand-mutation oracle check, a `Stop` hook. Still no CI. |
+| `solution/m3b-ci` | T4 | `.github/workflows/ci.yml` created complete: install check + units/API + one SLI gate. |
 | `solution/m4-system` | T5 | System-test subagent + Robot suites + slow CI stage + `app/CLAUDE.md` v2. |
 | `solution/m5a-bdd` | T6 | Pre-prepared issue (link expiry) + BDD/Example-Mapping skill (`.claude/skills/example-mapping/`). |
 | `solution/m5b-feature` | T7 | Link-expiry feature built in-loop, tests generated, PR opened. |

@@ -39,12 +39,13 @@ the workaround, if a mob wants to try it anyway). Copilot: GitHub + Playwright M
 default in its agent mode, if you want the contrast.
 
 **M3a Unit tests + loop hook** — *Generate units, expose weak oracles by breaking the code by
-hand, run tests inside the agent loop.* Artifact: `tests/unit/`, `Stop` hook in `.claude/settings.json`,
-and a minimal `.github/workflows/ci.yml` (install + import check; M3b makes it run the tests).
+hand, run tests inside the agent loop.* Artifact: `tests/unit/`, `Stop` hook in `.claude/settings.json`.
+No CI here — that is M3b, and keeping it out is what keeps this module about the loop.
 **This is the shift-left → Shift In pivot.** Copilot: hooks exist (e.g. `preToolUse`), configured differently.
 
-**M3b CI pipeline** — *Gate every commit in CI with one SLI check.* Artifact:
-`.github/workflows/ci.yml`. Copilot: identical GitHub Actions.
+**M3b CI pipeline** — *Create the pipeline and gate every commit, including one SLI check.*
+Artifact: `.github/workflows/ci.yml` — written complete here (install check, test run, SLI gate),
+not upgraded from an earlier stub. Copilot: identical GitHub Actions.
 
 **M4 System tests via subagent** — *Delegate Robot Framework suites at the right pyramid level;
 add a slow CI stage.* Artifact: system-test subagent, `tests/system/`, `app/CLAUDE.md` v2.
