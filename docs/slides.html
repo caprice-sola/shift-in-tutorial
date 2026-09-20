@@ -573,32 +573,50 @@ tr.brk td:first-child{font-style:normal}
 </article>
 
 <article class="slide dense" data-kind="exercise">
-  <div class="tag"><span class="dot"></span>Exercise 3 · Steps</div>
-  <h2>Do this</h2>
+  <div class="tag"><span class="dot"></span>Exercise 3 · Steps 1–6</div>
+  <h2>Do this — tests, then the oracle check</h2>
   <ol>
-    <li>Add <code>pytest</code> and <code>pytest-cov</code> as a test extra.</li>
-    <li>Write a unit test for the <strong>defect still open from Ex 2</strong> and <strong>run it to confirm that it fails</strong>.</li>
-    <li>Fix the defect, then run the test again to confirm that it now passes (confirmation testing).</li>
-    <li>Add a <strong>few API-level tests</strong> — only that each route returns the correct status code and response structure, not every input variation.</li>
-    <li><strong>Break the code on purpose:</strong> change the collision-retry line to <code>code = None</code> and re-run the suite. Does it go red — or stay green on broken code?</li>
-    <li>If all tests still pass, an assertion is missing. Make it stronger, run the tests again to confirm they now detect the broken line, then <strong>undo the change</strong>.</li>
-    <li>Write the <code>Stop</code> hook and its settings. <strong>Test the hook itself</strong> by sending it a test JSON input, once with passing tests and once with a failing test.</li>
-    <li><strong>Show it working:</strong> break one test on purpose, ask the agent to make any change, and confirm that the hook does not let the agent finish.</li>
-    <li>Add a <strong>minimal CI workflow</strong>: install the package with <strong>production dependencies only</strong> and check that it imports. It does not run the tests yet — Ex 4 adds that.</li>
+    <li>Add <code>"pytest"</code> and <code>"pytest-cov"</code> to the <code>test</code> list under <code>[project.optional-dependencies]</code> in <code>pyproject.toml</code>, then run <code>pip install -e ".[test]"</code>.</li>
+    <li>In <code>tests/unit/test_shortener.py</code>, write a test for the <strong>defect left open in Ex 2</strong>: when <code>generate_code()</code> returns a code that already exists, the second link must not overwrite the first. Run <code>pytest tests/unit -q</code> and <strong>confirm it fails</strong>.</li>
+    <li>Fix it in <code>create_link()</code> in <code>src/snip/shortener.py</code> — generate a new code while the current one already exists. Run the test again: it passes (confirmation testing).</li>
+    <li>Add <code>tests/api/test_routes.py</code>: one or two tests per endpoint, checking only the status code and the response structure — not every input variation.</li>
+    <li><strong>Now break the code on purpose.</strong> <code>create_link()</code> contains <strong>two identical</strong> <code>code = generate_code()</code> lines. Change the <strong>indented one inside <code>while store.exists(code):</code></strong> to <code>code = None</code>, and run <code>pytest tests/unit -q</code>.</li>
+    <li>Does a test fail, or does the suite still pass on visibly broken code? If it passes, your assertion only checks that the two codes <em>differ</em>. Make it assert the value the retry should produce, re-run to confirm it now fails, then <strong>undo the change to <code>shortener.py</code></strong>.</li>
   </ol>
-  <aside class="notes">Facilitator: this is the tightest block of the morning. Steps 5–6 are deliberately cheap — about three minutes by hand — so nobody should skip them; if time is short, cut depth in step 4 instead. The mob must do the breaking itself: watching a green suite survive obviously-broken code is the point, and it doesn't land secondhand. If the hook does not fire in step 8: (1) was claude started from the activated venv? the hook runs pytest from PATH; (2) was the workspace-trust dialog accepted? settings-file hooks are held back until then. Check /hooks.</aside>
+  <div class="note warn">In step 5, change the <strong>second</strong> of the two identical lines, not the first. Breaking the first one makes several tests fail at once — which proves nothing about weak assertions.</div>
+  <aside class="notes">Facilitator: steps 5–6 are the point of the module and cost about three minutes; if time is short, cut depth in step 4 instead. The mob must do the breaking itself — watching a green suite survive obviously-broken code does not land secondhand. Note the branch's own test already asserts the strengthened value (second.code == "uniq99"); if a mob's agent writes that assertion straight away, step 5 goes red immediately. That is a good outcome, not a failed exercise: ask them which assertion saved them, and have them weaken it to see the other result.</aside>
+</article>
+
+<article class="slide dense" data-kind="exercise">
+  <div class="tag"><span class="dot"></span>Exercise 3 · Steps 7–10</div>
+  <h2>Do this — the hook, then CI</h2>
+  <ol start="7">
+    <li>Write <code>.claude/hooks/run_tests.py</code>: read the JSON on standard input, run <code>pytest tests/unit tests/api</code>, and if it fails print <code>{"decision":"block","reason":"…"}</code> with the pytest output as the reason. Make it executable (<code>chmod +x</code>).</li>
+    <li>Register it in <code>.claude/settings.json</code> under <code>hooks</code> → <code>Stop</code>. Check the current documentation for the exact shape of both the settings entry and the JSON the hook prints.</li>
+    <li><strong>Test the hook before trusting it.</strong> Send it a payload directly, twice:<br>
+      <code>echo '{"cwd":"'$PWD'"}' | .claude/hooks/run_tests.py</code><br>
+      with a passing suite it must print <strong>nothing</strong>; with one test deliberately broken it must print the <code>block</code> JSON.</li>
+    <li><strong>Then show it in a live session:</strong> break one test, ask the agent to make any change, and confirm it cannot finish its turn. Undo the broken test afterwards.</li>
+    <li>Add <code>.github/workflows/ci.yml</code>: one job that installs the package with <strong>production dependencies only</strong> and runs <code>python -c "from snip.main import app"</code>. No test run yet — that is Ex 4.</li>
+  </ol>
+  <aside class="notes">Facilitator: if the hook does nothing in step 10, it is almost always one of two things — (1) claude was not started from the activated venv, so the hook cannot find pytest on PATH; (2) the workspace-trust dialog was never accepted, and settings-file hooks are held back until it is. /hooks shows what is actually registered. Step 9 exists because a hook that is wrong in shape fails silently: it does not error, it just never blocks.</aside>
 </article>
 
 <article class="slide dense" data-kind="prompt">
-  <div class="tag"><span class="dot"></span>Exercise 3 · Example prompts</div>
+  <div class="tag"><span class="dot"></span>Exercise 3 · Prompts for steps 1–6</div>
   <h2>If you're behind, start here</h2>
-  <div class="prompt"><div class="who">Prompt 1 · write a failing test first</div><pre>Add pytest and pytest-cov as a [test] extra. Then write ONE unit test that proves the short-code collision bug: an existing code must never be silently overwritten. Run it and show me it failing — do not fix the bug yet.</pre></div>
-  <div class="prompt"><div class="who">Prompt 2 · check the test oracle</div><pre>In src/snip/shortener.py, change the collision-retry line to code = None and run the suite. If it still passes, tell me exactly which assertion should have caught it and why it didn't. Don't fix anything yet, and leave the broken line in place so we can see it fail once the assertion is stronger.</pre></div>
+  <div class="prompt"><div class="who">Prompt 1 · write a failing test first</div><pre>Add pytest and pytest-cov to the [project.optional-dependencies] "test" list in pyproject.toml, and install with pip install -e ".[test]". Then write ONE unit test in tests/unit/test_shortener.py proving the short-code collision defect: if generate_code() returns a code that already exists, the second link must not silently overwrite the first. Monkeypatch generate_code to force the collision. Run pytest tests/unit -q and show me it failing — do not fix the defect yet.</pre></div>
+  <div class="prompt"><div class="who">Prompt 2 · check the test oracle</div><pre>In src/snip/shortener.py, create_link() has two identical "code = generate_code()" lines. Change the one INSIDE the "while store.exists(code):" loop to code = None — not the first one — then run pytest tests/unit -q. If the suite still passes, tell me exactly which assertion should have caught this and why it did not. Do not fix anything yet: leave the broken line in place so we can watch it fail once the assertion is stronger.</pre></div>
+</article>
+
+<article class="slide dense" data-kind="prompt">
+  <div class="tag"><span class="dot"></span>Exercise 3 · Prompts for steps 7–10</div>
+  <h2>If you're behind, start here</h2>
   <div class="prompt"><div class="who">Prompt 3 · create the Stop hook</div><pre>Create a Stop hook at .claude/hooks/run_tests.py that runs pytest and, if it fails, returns a block decision with the failure output as the reason. Check the current hooks documentation for the exact JSON output shape and for how to register it in .claude/settings.json — do not guess either. Make the script executable. Then test it by piping a fake Stop payload into it for both a green and a red suite.</pre></div>
   <div class="prompt"><div class="who">Prompt 4 · add the minimal CI workflow</div><pre>Add .github/workflows/ci.yml with one job: install the package with production dependencies only, then check that it imports. Do not run the tests there yet — Ex 4 adds that. Explain in a comment why the production-only install is a useful check on its own.</pre></div>
 </article>
 
-<article class="slide" data-kind="learn">
+<article class="slide dense" data-kind="learn">
   <div class="tag"><span class="dot"></span>Exercise 3 · Learning points</div>
   <h2>What just happened</h2>
   <ul>

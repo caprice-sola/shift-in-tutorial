@@ -97,10 +97,12 @@ and the pipeline that runs after the push.
    real, not just "written."
 3. Fix the bug; watch the test go green.
 4. Add thin API-level tests (route wiring only — status codes and shapes, not every input variant).
-5. **Break the code on purpose.** Change one line of the core logic module to something wrong —
-   the collision-retry line (`code = generate_code()` → `code = None`) is the sharpest target — and
-   re-run the suite. Does it go red? Read the result as a mob: does the test really assert what it
-   claims to?
+5. **Break the code on purpose.** In `src/snip/shortener.py`, `create_link()` contains **two
+   identical** `code = generate_code()` lines. Change the indented one inside
+   `while store.exists(code):` to `code = None` and re-run `pytest tests/unit -q`. (Breaking the
+   *first* one instead fails several tests immediately, which proves nothing about weak
+   assertions — say which line you mean when you brief a mob.) Does a test fail? Read the result
+   as a mob: does the test really assert what it claims to?
 6. If it stayed green, that's a missing assertion, not a passing test. Strengthen it, re-run to
    confirm it now catches the sabotage, then **revert the broken line**.
 7. Write the `Stop` hook script and settings. **Test it by piping fake JSON at it directly** — a
@@ -271,8 +273,11 @@ module is the day's thesis, made concrete in one continuous build.
    them and watch them fail — before implementing anything.
 3. Implement against the rules, letting the `Stop` hook fire naturally. Don't bypass it to move
    faster.
-4. Hand-mutate any new logic that lands in the core logic module — break one line, re-run, confirm
-   the suite goes red. Treat a green run as a missing assertion, not noise to dismiss.
+4. Hand-mutate the new logic — break one line, re-run, confirm a test fails. For link expiry the
+   two sharpest targets are in `src/snip/shortener.py`: flip `record.expires_at <= datetime.now(...)`
+   to `<` (does anything cover the exact expiry instant?), and change `LinkExpiredError(code)` to
+   `LinkExpiredError(None)` (does anything check *which* code the error carries?). Treat a green
+   run as a missing assertion, not noise to dismiss.
 5. Smoke-test the actually-running app, not just the test suite. This matters: a real bug in the
    reference build (a crash on a naive, non-UTC datetime) had 100% passing tests around it. It was
    found by a second `/code-review` pass plus direct reproduction against the running app — the
