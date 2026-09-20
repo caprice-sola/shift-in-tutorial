@@ -1,6 +1,7 @@
-# CI: the M3a sanity check (package installs and imports with ONLY production
-# deps - catches a test-only import accidentally leaking into src/snip/),
-# then the real test suite added in M3a/M3b: unit + API tests, plus one
+# CI: created in M3b, complete rather than as a stub. Step 1 is the sanity
+# check (package installs and imports with ONLY production deps - catches a
+# test-only import accidentally leaking into src/snip/), then the test suite
+# written in M3a: unit + API tests, plus one
 # SLI-derived gate (SLI 1 - redirect p95 latency, docs/slis.md). One job,
 # labeled steps rather than a second job/runner - the app is tiny enough
 # that splitting would only add GitHub Actions overhead for no benefit.
