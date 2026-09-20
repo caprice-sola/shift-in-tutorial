@@ -448,17 +448,18 @@ tr.brk td:first-child{font-style:normal}
   <div class="note">A finding is a <b>claim</b>, not a fact. Reproduce it before you fix it.</div>
 </article>
 
-<article class="slide" data-kind="theory">
+<article class="slide dense" data-kind="theory">
   <div class="tag"><span class="dot"></span>Theory · the verification steps</div>
   <h2>The verification ritual</h2>
-  <p class="lead">Four steps, for every change you accept. These steps <strong>are</strong> the quality gate.</p>
+  <p class="lead">Four steps, every time you accept a change. About three minutes in total.</p>
   <ol>
-    <li><strong>Read the diff</strong> — out loud, together. Not the agent's summary of the diff. The diff.</li>
-    <li><strong>Run it</strong> — the application, the endpoint, the command. Check the behaviour, not the description of it.</li>
-    <li><strong>Question one statement</strong> — take one sentence the agent wrote and check whether it is true.</li>
-    <li><strong>Accept or reject</strong> — then rotate. The person rotating in re-reads the diff.</li>
+    <li><strong>Read the diff — everyone.</strong> Run <code>git diff</code>. One person names every changed line aloud: which file, what changed, why. Read the code, not the agent's summary above it. <em>If nobody can explain a line, that is already a finding.</em></li>
+    <li><strong>Run it — the driver.</strong> Start the application and send one real request: <code>curl</code>, the browser, or <code>/docs</code>. Look at the status code and the response body. Passing tests are not proof that the application behaves.</li>
+    <li><strong>Question one claim — the navigator.</strong> The agent's answer contains statements: <em>"this rejects unsafe URLs"</em>, <em>"nothing else changes"</em>. Choose the one most likely to be wrong and test exactly that, with an input the agent did not try.</li>
+    <li><strong>Accept or reject — say it out loud.</strong> Accept → commit it. Reject → name the line and the reason, then prompt again. Then rotate: the next driver re-reads the diff before typing.</li>
   </ol>
-  <div class="note warn"><b>Opening a pull request is an action outside the repository.</b> Do these four steps <em>before</em> it, not after: once it is pushed, other people can see it.</div>
+  <div class="note warn"><b>A pull request is an action outside the repository.</b> These four steps come <em>before</em> it, not after — once it is pushed, other people can see it.</div>
+  <aside class="notes">Facilitator: step 2 is the one mobs drop first, because the agent already said the tests pass. Step 3 is the one that needs modelling — do it from the front once: take a sentence from the agent's reply, say why you doubt it, and test that one thing. The mob copies the move far more reliably than it follows the instruction.</aside>
 </article>
 
 <article class="slide" data-kind="exercise">
