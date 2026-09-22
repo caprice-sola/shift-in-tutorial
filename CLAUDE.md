@@ -41,6 +41,9 @@ are SLI violations, not style issues.
 - **Keep the pyramid upright.** Add coverage at the lowest level that gives confidence. See
   `docs/test-strategy.md` for the target distribution — don't add a system/end-to-end test for
   something a unit test already covers.
+- **A turn never ends with a failing test.** Run `pytest tests/unit tests/api` before you finish.
+  If something is red, fix it — or say plainly that you could not and why. Don't narrow a test or
+  delete an assertion to get to green.
 - **DoD (excerpt — full version in `docs/business-context.md`):** reviewed and merged via PR;
   tests exist at the appropriate level(s) and pass in CI; SLI-affecting changes are reflected in
   pipeline gates; observable behaviour changes are covered by at least one higher-level test.
@@ -58,6 +61,8 @@ are SLI violations, not style issues.
   slower than an in-loop check should be.
 
 ---
-_v1 — authored in M1 from business context, quality characteristics, and SLIs; test tooling and
-the `Stop` hook noted here as of M3a without a full rewrite. Subagents don't exist yet — this file
-gets its real v2 pass in M4._
+_v2 — M3a. v1 (M1) covered business context, quality characteristics, and SLIs. This pass adds the
+test commands and one working agreement: a turn never ends with a failing test. That agreement was
+written here **before** the `Stop` hook existed, on purpose — an instruction the agent may or may
+not follow, and then the same rule enforced by the harness. Subagents don't exist yet; the
+system-test tier and the full pyramid map arrive in v3 (M4)._
