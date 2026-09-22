@@ -11,7 +11,7 @@
   --bg:#f4f5f7; --panel:#ffffff; --panel-2:#fafbfc;
   --ink:#14171c; --ink-soft:#3c444f; --muted:#69727f; --line:#dde1e7;
   --accent:#2f5fe0;
-  --k-theory:#2f5fe0; --k-exercise:#0f7a56; --k-prompt:#9a5b00; --k-learn:#6b3fc9;
+  --k-theory:#2f5fe0; --k-exercise:#0f7a56; --k-prompt:#9a5b00; --k-learn:#6b3fc9; --k-tech:#0e7490;
   --code-bg:#eef0f4; --code-ink:#1d2430;
   --shadow:0 1px 3px rgba(16,20,28,.08), 0 8px 28px rgba(16,20,28,.06);
 }
@@ -20,7 +20,7 @@
     --bg:#0e1116; --panel:#161b22; --panel-2:#1b212a;
     --ink:#e8ecf2; --ink-soft:#c3cad4; --muted:#93a0b0; --line:#2a323d;
     --accent:#6f9bff;
-    --k-theory:#6f9bff; --k-exercise:#39c69a; --k-prompt:#e3a944; --k-learn:#a98cf5;
+    --k-theory:#6f9bff; --k-exercise:#39c69a; --k-prompt:#e3a944; --k-learn:#a98cf5; --k-tech:#38bdf8;
     --code-bg:#11161d; --code-ink:#d7dee8;
     --shadow:0 1px 3px rgba(0,0,0,.5), 0 10px 32px rgba(0,0,0,.4);
   }
@@ -29,7 +29,7 @@
   --bg:#0e1116; --panel:#161b22; --panel-2:#1b212a;
   --ink:#e8ecf2; --ink-soft:#c3cad4; --muted:#93a0b0; --line:#2a323d;
   --accent:#6f9bff;
-  --k-theory:#6f9bff; --k-exercise:#39c69a; --k-prompt:#e3a944; --k-learn:#a98cf5;
+  --k-theory:#6f9bff; --k-exercise:#39c69a; --k-prompt:#e3a944; --k-learn:#a98cf5; --k-tech:#38bdf8;
   --code-bg:#11161d; --code-ink:#d7dee8;
   --shadow:0 1px 3px rgba(0,0,0,.5), 0 10px 32px rgba(0,0,0,.4);
 }
@@ -54,6 +54,7 @@ body{
 .slide[data-kind="exercise"]{--kc:var(--k-exercise)}
 .slide[data-kind="prompt"]{--kc:var(--k-prompt)}
 .slide[data-kind="learn"]{--kc:var(--k-learn)}
+.slide[data-kind="tech"]{--kc:var(--k-tech)}
 .slide[data-kind="section"]{--kc:var(--accent); background:var(--panel-2)}
 .slide[data-kind="title"]{--kc:var(--accent); background:var(--panel-2)}
 
@@ -328,6 +329,19 @@ tr.brk td:first-child{font-style:normal}
   <div class="note"><b>No <code>gh</code>?</b> Installing it was pre-work — install it now and continue: <code>brew install gh</code> (macOS) · <code>winget install --id GitHub.cli</code> (Windows) · <code>cli.github.com</code> (Linux). <b>Blocked?</b> Raise your hand now, not at 11:00.</div>
 </article>
 
+
+<article class="slide dense" data-kind="tech">
+  <div class="tag"><span class="dot"></span>Technology · the application</div>
+  <h2>FastAPI, uvicorn and pydantic</h2>
+  <p class="lead">The application you work on all day is a small Python web service. Three libraries do most of the work.</p>
+  <ul>
+    <li><strong>FastAPI</strong> — the web framework. You write a function and declare its parameter types; FastAPI turns that into an HTTP endpoint, checks incoming requests against those types, and generates the interactive <code>/docs</code> page from them.</li>
+    <li><strong>pydantic</strong> — the validation library underneath it. <code>models.py</code> declares what a valid request looks like; anything that does not fit is rejected before your code runs. Ex 2 and Ex 7 both change these rules.</li>
+    <li><strong>uvicorn</strong> — the server process that listens on a port. <code>uvicorn snip.main:app</code> means "serve the <code>app</code> object defined in <code>snip/main.py</code>".</li>
+    <li><strong>An in-memory store</strong> — <code>store.py</code> keeps links in a dictionary, so restarting the server loses them. Deliberate: no database to install, and the tests stay fast.</li>
+  </ul>
+  <div class="note">None of this is specific to AI agents. The same exercises work on any codebase you can run and test.</div>
+</article>
 </section>
 <!-- ===================== COLUMN 1 — EXERCISE 1 ===================== -->
 <section class="col" data-label="Ex 1 · Foundations" data-time="09:30–10:00">
@@ -442,6 +456,19 @@ tr.brk td:first-child{font-style:normal}
   <div class="note">If you get stuck, return to a known state: <code>git checkout solution/m1-context</code></div>
 </article>
 
+
+<article class="slide dense" data-kind="tech">
+  <div class="tag"><span class="dot"></span>Technology · Ex 1</div>
+  <h2>ISO/IEC 25010</h2>
+  <p class="lead">The standard vocabulary for the "-ilities", so a team can argue about priorities instead of about words.</p>
+  <ul>
+    <li>It defines <strong>nine product quality characteristics</strong>, each with sub-characteristics. "Functional correctness" is one of them, under <strong>Functional Suitability</strong> — <em>"the degree to which a product provides accurate results"</em>.</li>
+    <li>Its value is the <strong>shared vocabulary</strong>: "reliability" then means the same thing to the developer, the tester and the product owner.</li>
+    <li>It is not a checklist to satisfy. <code>docs/quality-characteristics.md</code> <strong>puts five of them in priority order</strong> for snip — correctness first, maintainability last.</li>
+    <li>That order is product-specific. A billing system and a game would rank the same nine very differently.</li>
+  </ul>
+  <div class="note">The <b>order</b> is the part that does work. An unranked list of nine good things gives an agent no way to choose what to test first.</div>
+</article>
 </section>
 
 <!-- ===================== COLUMN 2 — EXERCISE 2 ===================== -->
@@ -534,6 +561,19 @@ tr.brk td:first-child{font-style:normal}
   <div class="note">If you get stuck, return to a known state: <code>git checkout solution/m2-review</code></div>
 </article>
 
+
+<article class="slide dense" data-kind="tech">
+  <div class="tag"><span class="dot"></span>Technology · Ex 2</div>
+  <h2>The GitHub CLI</h2>
+  <p class="lead">GitHub as a command you can type — and therefore as a command the agent can run.</p>
+  <ul>
+    <li><code>gh</code> reaches the GitHub API from a terminal: issues, pull requests, workflow runs, releases.</li>
+    <li>It is authenticated <strong>once, as you</strong> (<code>gh auth login</code>). Anything the agent does through it happens under your account, with exactly your permissions — no more.</li>
+    <li>That is the entire integration. No plugin, no connector, no separate credential for the agent to hold.</li>
+    <li>It is <strong>not an agent tool</strong>. It is the same command a human uses, which is precisely why it works: the agent is using your tools rather than a special interface.</li>
+  </ul>
+  <div class="note">MCP is the other route to the same actions, as structured tool calls instead of shell commands. Either way the question is the same: what is this token allowed to do?</div>
+</article>
 </section>
 <!-- ===================== COLUMN 3 — EXERCISE 3 ===================== -->
 <section class="col" data-label="Ex 3 · Unit tests + the loop hook" data-time="11:10–12:00">
@@ -674,6 +714,19 @@ tr.brk td:first-child{font-style:normal}
   <div class="note">If you get stuck, return to a known state: <code>git checkout solution/m3a-unit-hook</code></div>
 </article>
 
+
+<article class="slide dense" data-kind="tech">
+  <div class="tag"><span class="dot"></span>Technology · Ex 3</div>
+  <h2>pytest and pytest-cov</h2>
+  <p class="lead">The test runner: it finds your tests, runs them, and reports which failed and why.</p>
+  <ul>
+    <li><strong>Discovery by convention</strong> — files named <code>test_*.py</code>, functions named <code>test_*</code>. Nothing to register anywhere.</li>
+    <li><strong>Plain <code>assert</code></strong> — no special assertion API. pytest rewrites the expression so a failure report shows the actual values, not just "False".</li>
+    <li><strong>Fixtures</strong> — reusable setup handed to a test as an argument. <code>conftest.py</code> shares them across a directory, and an <code>autouse</code> fixture applies to every test. This repo uses one to empty the in-memory store between tests.</li>
+    <li><strong>pytest-cov</strong> is a plugin: while the tests run it records which lines were executed, then reports the ones that never were.</li>
+  </ul>
+  <div class="note">Robot Framework (Ex 5) is a different tool for a different level. pytest calls your functions directly; that is what makes it fast enough to run inside the agent's loop.</div>
+</article>
 </section>
 
 <!-- ===================== COLUMN 4 — EXERCISE 4 ===================== -->
@@ -757,6 +810,19 @@ tr.brk td:first-child{font-style:normal}
   <div class="note">If you get stuck, return to a known state: <code>git checkout solution/m3b-ci</code></div>
 </article>
 
+
+<article class="slide dense" data-kind="tech">
+  <div class="tag"><span class="dot"></span>Technology · Ex 4</div>
+  <h2>GitHub Actions</h2>
+  <p class="lead">A CI service built into GitHub: on every push it runs your checks on a clean machine, then throws the machine away.</p>
+  <ul>
+    <li>A <strong>workflow</strong> is a YAML file in <code>.github/workflows/</code>. It contains <strong>jobs</strong>; each job gets its own fresh virtual machine; each job is a list of <strong>steps</strong>.</li>
+    <li>A step either runs a shell command (<code>run:</code>) or uses a prepared, shared action (<code>uses:</code>) — <code>actions/checkout</code> to fetch your code, <code>actions/setup-python</code> to install Python.</li>
+    <li>The machine starts <strong>empty</strong>. Everything the tests need must be installed by the workflow itself — which is exactly why CI catches "but it works on my laptop".</li>
+    <li>Jobs run <strong>in parallel</strong> unless you declare that one needs another. Ex 6 uses that deliberately.</li>
+  </ul>
+  <div class="note">Nothing here is agent-specific or editor-specific: the same file runs the same way whoever pushed the commit.</div>
+</article>
 </section>
 <!-- ===================== COLUMN 5 — EXERCISE 5 ===================== -->
 <section class="col" data-label="Ex 5 · System tests via subagent" data-time="13:30–14:15">
@@ -849,6 +915,19 @@ tr.brk td:first-child{font-style:normal}
   </ul>
 </article>
 
+
+<article class="slide dense" data-kind="tech">
+  <div class="tag"><span class="dot"></span>Technology · Ex 5</div>
+  <h2>Robot Framework</h2>
+  <p class="lead">A test tool where a test case reads as a sequence of named keywords rather than as code.</p>
+  <ul>
+    <li>A line like <code>GET On Session&nbsp;&nbsp;&nbsp;snip&nbsp;&nbsp;&nbsp;/abc</code> is a <strong>keyword</strong> plus its arguments. Libraries supply the keywords: <code>RequestsLibrary</code> for HTTP, <code>Process</code> for starting the server.</li>
+    <li>Suites are plain-text files divided into <code>*** Settings ***</code>, <code>*** Test Cases ***</code> and <code>*** Keywords ***</code> sections. You compose your own keywords out of existing ones.</li>
+    <li>The <strong>readability is the point</strong>: someone who does not write Python can still read the suite — and therefore review whether it tests the right thing.</li>
+    <li>It drives the application <strong>from the outside</strong>, over real HTTP against a running server. That is a different job from pytest, which calls the functions directly.</li>
+  </ul>
+  <div class="note">A long-established open-source tool, independent of any vendor or agent. What the subagent generates here, a human would have written the same way.</div>
+</article>
 </section>
 
 <!-- ===================== COLUMN 6 — EXERCISE 6 ===================== -->
@@ -923,6 +1002,19 @@ tr.brk td:first-child{font-style:normal}
   <div class="note">If you get stuck, return to a known state: <code>git checkout solution/m4-system</code></div>
 </article>
 
+
+<article class="slide dense" data-kind="tech">
+  <div class="tag"><span class="dot"></span>Technology · Ex 6</div>
+  <h2>Optional dependencies in Python</h2>
+  <p class="lead">One package, several named groups of dependencies — so each job installs only what it actually needs.</p>
+  <ul>
+    <li><code>pyproject.toml</code> lists the dependencies the application needs to run, then <strong>optional groups</strong> under <code>[project.optional-dependencies]</code>: here, <code>test</code> and <code>system</code>.</li>
+    <li><code>pip install -e .</code> installs only the application's own dependencies. <code>pip install -e ".[test]"</code> adds the test group on top.</li>
+    <li>This is what makes the CI install check meaningful: if application code imports something that only exists in the <code>test</code> group, the production-only install <strong>fails</strong> — which is the whole purpose of that step.</li>
+    <li><code>-e</code> means "editable": the installed package points back at your source directory, so an edit takes effect without reinstalling.</li>
+  </ul>
+  <div class="note">Standard Python packaging (PEP 621), not a workshop invention. Any Python project can separate its dependencies this way.</div>
+</article>
 </section>
 <!-- ===================== COLUMN 7 — EXERCISE 7 ===================== -->
 <section class="col" data-label="Ex 7 · Feature build, QA in the loop" data-time="15:15–16:30">
@@ -1085,6 +1177,32 @@ tr.brk td:first-child{font-style:normal}
   <div class="note">If you get stuck, return to a known state: <code>git checkout solution/m5b-feature</code></div>
 </article>
 
+
+<article class="slide dense" data-kind="tech">
+  <div class="tag"><span class="dot"></span>Technology · Ex 7</div>
+  <h2>Example Mapping and Gherkin</h2>
+  <p class="lead">A conversation format, and the notation its output gets written in.</p>
+  <ul>
+    <li><strong>Example Mapping</strong> (Matt Wynne, 2015) gives a refinement conversation a structure: four colours of card — yellow story, blue rules, green examples, red questions. The timebox is about <strong>25 minutes</strong> for a well-understood story.</li>
+    <li>A table covered in <strong>red cards is a result</strong>, not a failure: it says the team still has a lot to learn about this story, so split it or go and find out before building.</li>
+    <li><strong>Gherkin</strong> is how the green cards are written down: <code>Given</code> a starting state, <code>When</code> something happens, <code>Then</code> this is observable. One scenario, one behaviour.</li>
+    <li>Those scenarios become the acceptance criteria — and in Ex 7 part 2 the tests are written directly from them, before the feature exists.</li>
+  </ul>
+  <div class="note">Both come from BDD and the <b>Three Amigos</b> idea: business, development and testing agreeing what "done" means <em>before</em> the code is written. Neither is tied to any tool or vendor.</div>
+</article>
+
+<article class="slide dense" data-kind="tech">
+  <div class="tag"><span class="dot"></span>Technology · Ex 7</div>
+  <h2>HTTP status codes: 307, 404, 410</h2>
+  <p class="lead">Which code you return is a design decision — and one the mob confirms during refinement, not afterwards.</p>
+  <ul>
+    <li><strong>307 Temporary Redirect</strong> — "what you asked for is at this other address." snip's entire purpose. Temporary, and it preserves the request method.</li>
+    <li><strong>404 Not Found</strong> — "there is nothing here," saying nothing about whether there ever was.</li>
+    <li><strong>410 Gone</strong> — "there <em>was</em> something here and it is deliberately gone." That extra meaning is why an expired link returns 410 rather than 404.</li>
+    <li><strong>422</strong> — the request was understood but failed validation. This is what pydantic produces when a URL is rejected.</li>
+  </ul>
+  <div class="note">A client can act on the difference: a crawler that sees 410 can drop the link for good, where 404 only makes it try again later. That is the distinction the acceptance criteria are pinning down.</div>
+</article>
 </section>
 
 <!-- ===================== COLUMN 8 — RETRO & WRAP ===================== -->
