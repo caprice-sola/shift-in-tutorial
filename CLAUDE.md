@@ -50,6 +50,9 @@ are SLI violations, not style issues.
   If `tests/api/` already proves it — even for a new feature on the hot path, as M5b's 410 status
   code was — that's the pyramid-inversion anti-pattern, not thoroughness. M5b deliberately added no
   system test for exactly this reason.
+- **A turn never ends with a failing test.** Run `pytest tests/unit tests/api` before you finish.
+  If something is red, fix it — or say plainly that you could not and why. Don't narrow a test or
+  delete an assertion to get to green.
 - **DoD (excerpt — full version in `docs/business-context.md`):** reviewed and merged via PR;
   tests exist at the appropriate level(s) and pass in CI; SLI-affecting changes are reflected in
   pipeline gates; observable behaviour changes are covered by at least one higher-level test.
@@ -81,10 +84,11 @@ are SLI violations, not style issues.
   tell from the job name alone which layer failed.
 
 ---
-_v2 — M4, plus one working agreement added in M5a. v1 (M1) covered business context, quality
-characteristics, and SLIs; M3a/M3b noted test tooling, the `Stop` hook, and CI here without a full
-rewrite; M4 added the system-test tier, the subagent that owns it, and reorganised the stack
-section. This file said its next move would wait for M5's app change — wrong: a review of M5a's
+_v3 — M4, plus one working agreement added in M5a. v1 (M1) covered business context, quality
+characteristics, and SLIs; v2 (M3a) added the test commands and the "a turn never ends with a
+failing test" agreement, written before the `Stop` hook that enforces it; M3b noted CI here
+without a full rewrite; v3 (M4) added the system-test tier, the subagent that owns it, and
+reorganised the stack section. This file said its next move would wait for M5's app change — wrong: a review of M5a's
 skill caught that its injection-awareness step (Step 0) had nowhere to live except that one file,
 so every other skill/subagent with write access here was silently exempt from the same defense.
 Added as a working agreement instead, since this file already reaches every subagent's context
