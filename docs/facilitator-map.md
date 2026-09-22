@@ -39,8 +39,10 @@ the workaround, if a mob wants to try it anyway). Copilot: GitHub + Playwright M
 default in its agent mode, if you want the contrast.
 
 **M3a Unit tests + loop hook** — *Generate units, expose weak oracles by breaking the code by
-hand, run tests inside the agent loop.* Artifact: `tests/unit/`, `Stop` hook in `.claude/settings.json`.
-No CI here — that is M3b, and keeping it out is what keeps this module about the loop.
+hand, write the rule down, then enforce it.* Artifact: `tests/unit/`, **`CLAUDE.md` v2**, `Stop`
+hook in `.claude/settings.json`. The order matters: the mob writes "a turn never ends with a
+failing test" as an *instruction* first, watches how reliably it is followed, and only then adds
+the hook — instruction and enforcement as two separate moves. No CI here; that is M3b.
 **This is the shift-left → Shift In pivot.** Copilot: hooks exist (e.g. `preToolUse`), configured differently.
 
 **M3b CI pipeline** — *Create the pipeline and gate every commit, including one SLI check.*
@@ -48,8 +50,9 @@ Artifact: `.github/workflows/ci.yml` — written complete here (install check, t
 not upgraded from an earlier stub. Copilot: identical GitHub Actions.
 
 **M4 System tests via subagent** — *Delegate Robot Framework suites at the right pyramid level;
-add a slow CI stage.* Artifact: system-test subagent, `tests/system/`, `app/CLAUDE.md` v2.
-Copilot: custom-agent profile with its own MCP; Robot is tool-agnostic.
+add a slow CI stage.* Artifact: system-test subagent, `tests/system/`, `app/CLAUDE.md` v3.
+Copilot: custom-agent profile with its own MCP; Robot is tool-agnostic. `CLAUDE.md` reaches **v3**
+here — the third and last deliberate pass (v1 M1, v2 M3a).
 
 **M5a Story refinement** — *Refine AC + scenarios via Example Mapping, driven by a skill that
 structures the interview.* Artifact: `.claude/skills/example-mapping/`, enhanced AC + BDD

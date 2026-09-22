@@ -263,7 +263,7 @@ tr.brk td:first-child{font-style:normal}
     </div>
     <div>
       <ul style="padding-left:20px">
-        <li><code>CLAUDE.md</code> — standing context, read at the start of every session <small>(Ex 1)</small></li>
+        <li><code>CLAUDE.md</code> — standing context, read at the start of every session <small>(written in Ex 1, rewritten in Ex 3 and Ex 6)</small></li>
         <li><code>settings.json</code> — where a hook is <em>registered</em>; the script itself sits in <code>hooks/</code> <small>(Ex 3)</small></li>
         <li><code>agents/</code> — one Markdown file per subagent <small>(Ex 5)</small></li>
         <li><code>skills/&lt;name&gt;/SKILL.md</code> — one folder per skill <small>(Ex 7)</small></li>
@@ -381,7 +381,7 @@ tr.brk td:first-child{font-style:normal}
     <li><strong>Standing context</strong> is what gets loaded automatically, every session, for human and agent alike.</li>
     <li>In Claude Code that file is <code>CLAUDE.md</code> at the repo root.</li>
     <li>Write it once, carefully, and you do not have to explain the business context again in every session.</li>
-    <li><strong>Keep it up to date:</strong> we update it as a deliberate step at the end of an exercise (version 2 in Ex 6).</li>
+    <li><strong>Keep it up to date:</strong> we rewrite it as a deliberate step, three times today — <strong>v1</strong> here, <strong>v2</strong> in Ex 3, <strong>v3</strong> in Ex 6.</li>
   </ul>
   <div class="note"><b>Copilot equivalent:</b> <code>.github/copilot-instructions.md</code> plus scoped <code>*.instructions.md</code> files for path-specific rules.</div>
 </article>
@@ -426,8 +426,8 @@ tr.brk td:first-child{font-style:normal}
   <h2>Do this</h2>
   <ol>
     <li><strong>Read the three documents together</strong> — <code>docs/business-context.md</code>, <code>quality-characteristics.md</code>, <code>slis.md</code>. Do not skip this by asking the agent to summarise them. These documents are your test basis.</li>
-    <li>Ask the agent to draft <strong><code>CLAUDE.md</code> version 1</strong>: who the service serves, in priority order; the quality expectations; the SLI table; the working agreements; the technical conventions.</li>
-    <li>Ask the agent to draft <strong><code>docs/test-strategy.md</code> version 1</strong>: the target share of tests per test level, a table mapping each SLI to a test level, and a plan for checking the test oracles.</li>
+    <li>Ask the agent to draft <strong><code>CLAUDE.md</code> v1</strong>: who the service serves, in priority order; the quality expectations; the SLI table; the working agreements; the technical conventions.</li>
+    <li>Ask the agent to draft <strong><code>docs/test-strategy.md</code> v1</strong>: the target share of tests per test level, a table mapping each SLI to a test level, and a plan for checking the test oracles.</li>
     <li><strong>Read both documents aloud together.</strong> Ask: could this text belong to any application? If yes, it is generic — reject it and ask the agent again.</li>
     <li>Commit. No application code changes in this exercise.</li>
   </ol>
@@ -584,7 +584,7 @@ tr.brk td:first-child{font-style:normal}
   <p class="lead">Generate unit tests, find weak test oracles by breaking the code by hand, then run the test suite <strong>inside the agent's loop</strong>.</p>
   <div class="kv">
     <span class="pill"><b>11:10–12:00</b> · 50 min</span>
-    <span class="pill">Deliverable: <code>tests/unit/</code>, <code>tests/api/</code>, an oracle check, a <code>Stop</code> hook</span>
+    <span class="pill">Deliverable: <code>tests/unit/</code>, <code>tests/api/</code>, an oracle check, <code>CLAUDE.md</code> v2, a <code>Stop</code> hook</span>
     <span class="pill">Fallback branch: <code>solution/m3a-unit-hook</code></span>
   </div>
   <div class="note"><b>This is the turning point of the day</b> — the moment where shift-left becomes Shift In.</div>
@@ -627,7 +627,7 @@ tr.brk td:first-child{font-style:normal}
   <ul>
     <li>Example points: before a tool runs (<code>PreToolUse</code>), after a tool runs (<code>PostToolUse</code>), and <strong>when the agent tries to end its turn (<code>Stop</code>)</strong>.</li>
     <li>A <code>Stop</code> hook can <strong>block</strong>: return <code>{"decision":"block","reason":"…"}</code> and the agent must keep working, with your reason as its next instruction. Claude Code allows at most 8 blocks in a row.</li>
-    <li>An instruction is a request that the agent can ignore. A hook is a rule that the tool <strong>enforces</strong>. That difference is the point.</li>
+    <li>An instruction is a request the agent can ignore — <strong>you wrote one into <code>CLAUDE.md</code> in step 6</strong>. A hook is the same rule, <strong>enforced by the tool</strong>. That difference is the point of this exercise.</li>
     <li>It must stay <strong>fast</strong> — it runs on every turn.</li>
     <li>Two files, both committed: the script in <code>.claude/hooks/</code>, registered in <code>.claude/settings.json</code>.</li>
   </ul>
@@ -652,25 +652,26 @@ tr.brk td:first-child{font-style:normal}
 </article>
 
 <article class="slide dense tight" data-kind="exercise">
-  <div class="tag"><span class="dot"></span>Exercise 3 · Steps 1–7</div>
-  <h2>Do this — build the suite, then check it</h2>
+  <div class="tag"><span class="dot"></span>Exercise 3 · Steps 1–6</div>
+  <h2>Do this — build the suite, then write it down</h2>
   <ol>
     <li>Add <code>"pytest"</code> and <code>"pytest-cov"</code> to the <code>test</code> extra in <code>pyproject.toml</code>, then run <code>pip install -e ".[test]"</code>.</li>
     <li>In <code>tests/unit/test_shortener.py</code>, write <strong>one</strong> test for the <strong>defect left open in Ex 2</strong>: when <code>generate_code()</code> returns a code that already exists, the second link must not overwrite the first. Run <code>pytest tests/unit -q</code> and <strong>confirm it fails</strong>.</li>
     <li>Fix it in <code>create_link()</code> in <code>src/snip/shortener.py</code> — generate a new code while the current one already exists. Run the test again: it passes (confirmation testing).</li>
     <li><strong>Now build out the unit suite</strong> — <code>shortener.py</code>, <code>store.py</code>, <code>models.py</code>. Let the per-SLI table in <code>docs/test-strategy.md</code> set the order: the paths behind an SLI first, not whatever is easiest to test.</li>
     <li>Add <code>tests/api/test_routes.py</code>: one or two tests per endpoint — status code and response structure only, not every input variation.</li>
-    <li><strong>Now break the code on purpose.</strong> <code>create_link()</code> contains <strong>two identical</strong> <code>code = generate_code()</code> lines. Change the <strong>indented one inside <code>while store.exists(code):</code></strong> to <code>code = None</code>, and run <code>pytest tests/unit -q</code>.</li>
-    <li>Does any test fail — or does the whole suite pass on visibly broken code? If it passes, your collision test only checks that the two codes <em>differ</em>. Make it assert the value the retry should produce, re-run, then <strong>undo the change</strong>.</li>
+    <li>Update <strong><code>CLAUDE.md</code> to v2</strong>: how to run the suite, and the working agreement that <strong>a turn never ends with a failing test</strong>. Nothing enforces this yet — it is an instruction, and the agent may or may not follow it.</li>
   </ol>
-  <div class="note warn">In step 6, change the <strong>second</strong> of the two identical lines. Breaking the first one fails several tests at once and proves nothing about weak assertions.</div>
-  <aside class="notes">Facilitator: steps 6–7 are the point of the module and cost about three minutes; if time is short, cut depth in step 4 instead — that is the one step that expands to fill whatever time it is given. The mob must do the breaking itself; watching a green suite survive obviously-broken code does not land secondhand. Note the branch's own test already asserts the strengthened value (second.code == "uniq99"); if a mob's agent writes that assertion straight away, step 6 goes red immediately. That is a good outcome, not a failed exercise: ask which assertion saved them, then have them weaken it to see the other result.</aside>
+  <div class="note">v2 is a small, deliberate edit, not a rewrite: the test commands and one working agreement. The full map of all three test levels waits for <strong>v3</strong> in Ex 6, when the third level exists.</div>
+  <aside class="notes">Facilitator: step 4 is the elastic one - it expands to fill whatever time it is given, so cut depth there if the clock bites, never in steps 7-8. After step 6, tell the mob to WATCH the next few turns: does the agent run the tests on its own now that CLAUDE.md asks it to? Sometimes yes, sometimes not, and either answer is the point - an instruction is a request. That observation is what makes the hook in step 9 feel necessary rather than redundant. Do not announce the answer in advance; let them see it.</aside>
 </article>
 
-<article class="slide dense" data-kind="exercise">
-  <div class="tag"><span class="dot"></span>Exercise 3 · Steps 8–11</div>
-  <h2>Do this — the loop hook</h2>
-  <ol start="8">
+<article class="slide dense tight" data-kind="exercise">
+  <div class="tag"><span class="dot"></span>Exercise 3 · Steps 7–12</div>
+  <h2>Do this — check your oracles, then enforce the rule</h2>
+  <ol start="7">
+    <li><strong>Now break the code on purpose.</strong> <code>create_link()</code> contains <strong>two identical</strong> <code>code = generate_code()</code> lines. Change the <strong>indented one inside <code>while store.exists(code):</code></strong> to <code>code = None</code>, and run <code>pytest tests/unit -q</code>. <em>The second of the two, not the first.</em></li>
+    <li>Does any test fail — or does the whole suite pass on visibly broken code? If it passes, your collision test only checks that the two codes <em>differ</em>. Make it assert the value the retry should produce, re-run, then <strong>undo the change</strong>.</li>
     <li>Write <code>.claude/hooks/run_tests.py</code>: read the JSON on standard input, run <code>pytest tests/unit tests/api</code>, and if it fails print <code>{"decision":"block","reason":"…"}</code> with the pytest output as the reason. Make it executable (<code>chmod +x</code>).</li>
     <li>Register it in <code>.claude/settings.json</code> under <code>hooks</code> → <code>Stop</code>. Check the current documentation for the exact shape of both the settings entry and the JSON the hook prints.</li>
     <li><strong>Test the hook before trusting it.</strong> Send it a payload directly, twice:<br>
@@ -678,26 +679,32 @@ tr.brk td:first-child{font-style:normal}
       with a passing suite it must print <strong>nothing</strong>; with one test deliberately broken it must print the <code>block</code> JSON.</li>
     <li><strong>Then show it in a live session:</strong> break one test, ask the agent to make any change, and confirm it cannot finish its turn. Undo the broken test afterwards.</li>
   </ol>
-  <div class="note">Still no CI after this exercise — a push shows no checks on GitHub, the same as after Ex 2. That is expected: the pipeline is Ex 4, and keeping it out is what keeps this exercise about the loop.</div>
-  <aside class="notes">Facilitator: if the hook does nothing in step 11, it is almost always one of two things — (1) claude was not started from the activated venv, so the hook cannot find pytest on PATH; (2) the workspace-trust dialog was never accepted, and settings-file hooks are held back until it is. /hooks shows what is actually registered. Step 10 exists because a hook that is wrong in shape fails silently: it does not error, it just never blocks.</aside>
+  <div class="note"><b>Step 9 is where the instruction from step 6 becomes a rule.</b> Still no CI after this exercise — a push shows no checks on GitHub, the same as after Ex 2. The pipeline is Ex 4.</div>
+  <aside class="notes">Facilitator: if the hook does nothing in step 12, it is almost always one of two things — (1) claude was not started from the activated venv, so the hook cannot find pytest on PATH; (2) the workspace-trust dialog was never accepted, and settings-file hooks are held back until it is. /hooks shows what is actually registered. Step 11 exists because a hook that is wrong in shape fails silently: it does not error, it just never blocks.</aside>
 </article>
 
 <article class="slide dense" data-kind="prompt">
-  <div class="tag"><span class="dot"></span>Exercise 3 · Prompts for steps 1–5</div>
+  <div class="tag"><span class="dot"></span>Exercise 3 · Prompts for steps 1–4</div>
   <h2>If you're behind, start here</h2>
   <div class="prompt"><div class="who">Steps 1–2 · tooling, then one failing test</div><pre>Add pytest and pytest-cov to the [project.optional-dependencies] "test" list in pyproject.toml, and install with pip install -e ".[test]". Then write ONE unit test in tests/unit/test_shortener.py proving the short-code collision defect: if generate_code() returns a code that already exists, the second link must not silently overwrite the first. Monkeypatch generate_code to force the collision. Run pytest tests/unit -q and show me it failing — do not fix the defect yet.</pre></div>
   <div class="prompt"><div class="who">Step 3 · fix the defect</div><pre>Now fix the defect in create_link() in src/snip/shortener.py: keep generating a new code while the current one already exists. Re-run pytest tests/unit -q and show me the test passing. Change nothing else.</pre></div>
   <div class="prompt"><div class="who">Step 4 · cover the rest of the core logic</div><pre>Read docs/test-strategy.md, then add unit tests in tests/unit/ for the rest of the core logic — shortener.py, store.py and models.py. Work in the order of its per-SLI table: paths behind an SLI first. For each test tell me which SLI it serves, and list the paths you are deliberately leaving untested.</pre></div>
-  <div class="prompt"><div class="who">Step 5 · thin API tests</div><pre>Add tests/api/test_routes.py using FastAPI's TestClient: one or two tests per endpoint, asserting only the status code and the response structure. No input-validation cases here — those belong in tests/unit/test_models.py.</pre></div>
 </article>
 
-<article class="slide dense tight" data-kind="prompt">
-  <div class="tag"><span class="dot"></span>Exercise 3 · Prompts for steps 6–11</div>
+<article class="slide dense" data-kind="prompt">
+  <div class="tag"><span class="dot"></span>Exercise 3 · Prompts for steps 5–8</div>
   <h2>If you're behind, start here</h2>
-  <div class="prompt"><div class="who">Steps 6–7 · break it, then fix the assertion</div><pre>In src/snip/shortener.py, create_link() has two identical "code = generate_code()" lines. Change the one INSIDE the "while store.exists(code):" loop to code = None — not the first one — then run pytest tests/unit -q. If the suite still passes, tell me exactly which assertion should have caught this and why it did not. Then strengthen that assertion so it pins down the value the retry should produce, re-run to show it failing against the broken line, and only then undo the change to shortener.py.</pre></div>
-  <div class="prompt"><div class="who">Steps 8–9 · write and register the hook</div><pre>Create a Stop hook at .claude/hooks/run_tests.py that runs pytest and, if it fails, returns a block decision with the failure output as the reason. Check the current hooks documentation for the exact JSON output shape and for how to register it in .claude/settings.json — do not guess either. Make the script executable. Register it in .claude/settings.json under hooks -> Stop, and make the script executable.</pre></div>
-  <div class="prompt"><div class="who">Step 10 · test the hook before trusting it</div><pre>Test the hook without waiting for a live turn: pipe a Stop payload into it with the suite green (it must print nothing), then break one test and pipe the same payload again (it must print the block JSON). Show me both commands and their output.</pre></div>
-  <div class="prompt"><div class="who">Step 11 · show it working live</div><pre>I have broken one test on purpose. Add a one-line comment to README.md, then finish your turn. Tell me what happened when you tried to stop.</pre></div>
+  <div class="prompt"><div class="who">Step 5 · thin API tests</div><pre>Add tests/api/test_routes.py using FastAPI's TestClient: one or two tests per endpoint, asserting only the status code and the response structure. No input-validation cases here — those belong in tests/unit/test_models.py.</pre></div>
+  <div class="prompt"><div class="who">Step 6 · write the rule into CLAUDE.md</div><pre>Update CLAUDE.md to v2. Add how to run the suite (pytest tests/unit tests/api) and one working agreement: a turn never ends with a failing test — if a test is red, fix it or say clearly that you could not. Keep the edit small; do not restructure the file. Show me the diff.</pre></div>
+  <div class="prompt"><div class="who">Steps 7–8 · break it, then fix the assertion</div><pre>In src/snip/shortener.py, create_link() has two identical "code = generate_code()" lines. Change the one INSIDE the "while store.exists(code):" loop to code = None — not the first one — then run pytest tests/unit -q. If the suite still passes, tell me exactly which assertion should have caught this and why it did not. Then strengthen that assertion so it pins down the value the retry should produce, re-run to show it failing against the broken line, and only then undo the change to shortener.py.</pre></div>
+</article>
+
+<article class="slide dense" data-kind="prompt">
+  <div class="tag"><span class="dot"></span>Exercise 3 · Prompts for steps 9–12</div>
+  <h2>If you're behind, start here</h2>
+  <div class="prompt"><div class="who">Steps 9–10 · write and register the hook</div><pre>Create a Stop hook at .claude/hooks/run_tests.py that runs pytest and, if it fails, returns a block decision with the failure output as the reason. Check the current hooks documentation for the exact JSON output shape and for how to register it in .claude/settings.json — do not guess either. Make the script executable. Register it in .claude/settings.json under hooks -> Stop, and make the script executable.</pre></div>
+  <div class="prompt"><div class="who">Step 11 · test the hook before trusting it</div><pre>Test the hook without waiting for a live turn: pipe a Stop payload into it with the suite green (it must print nothing), then break one test and pipe the same payload again (it must print the block JSON). Show me both commands and their output.</pre></div>
+  <div class="prompt"><div class="who">Step 12 · show it working live</div><pre>I have broken one test on purpose. Add a one-line comment to README.md, then finish your turn. Tell me what happened when you tried to stop.</pre></div>
 </article>
 
 <article class="slide dense" data-kind="learn">
@@ -706,7 +713,7 @@ tr.brk td:first-child{font-style:normal}
   <ul>
     <li><strong>A passing test does not mean the behaviour is checked.</strong> Breaking the code on purpose shows you the difference — three minutes, no extra tool.</li>
     <li><strong>Weak assertions to watch for:</strong> checking <em>that</em> something happened without checking <em>what</em> happened. <code>pytest.raises(SomeError)</code> checks the exception type, not its content.</li>
-    <li><strong>An enforced rule is better than a written intention.</strong> "Always run the tests" in an instructions file is a request the agent can ignore. A <code>Stop</code> hook cannot be ignored.</li>
+    <li><strong>Ask first, then enforce.</strong> You wrote "never end a turn with a failing test" into <code>CLAUDE.md</code>, watched how reliably it was followed, and only then made it a <code>Stop</code> hook. Write the rule down before you automate it — if you cannot state it, you cannot enforce it.</li>
     <li><strong>Testing now happens inside the loop.</strong> The test fails, the agent sees the failure and fixes it, before a person is involved.</li>
     <li><strong>Check the hook's expected output format in the current documentation.</strong> A hook with the wrong format does not report an error — it simply does nothing.</li>
 
@@ -939,7 +946,7 @@ tr.brk td:first-child{font-style:normal}
   <p class="lead">Add the slow test suite as a separate CI job — and update the agent's standing context to match the completed test pyramid.</p>
   <div class="kv">
     <span class="pill"><b>14:15–14:45</b> · ~30 min</span>
-    <span class="pill">Deliverable: second CI job + <code>CLAUDE.md</code> v2</span>
+    <span class="pill">Deliverable: second CI job + <code>CLAUDE.md</code> v3</span>
     <span class="pill">Fallback branch: <code>solution/m4-system</code></span>
   </div>
 </article>
@@ -962,7 +969,7 @@ tr.brk td:first-child{font-style:normal}
   <p class="lead">The test pyramid is now complete. If <code>CLAUDE.md</code> still describes this morning's state, the agent is working from an out-of-date description.</p>
   <ul>
     <li><strong>Update it at the end of an exercise</strong>, as a deliberate step — not "some time later, when we remember".</li>
-    <li>Version 2 should describe <strong>all three test levels in one place</strong>: what belongs at each level, and what does not.</li>
+    <li>v3 should describe <strong>all three test levels in one place</strong>: what belongs at each level, and what does not. v2 (Ex 3) only knew about two of them.</li>
     <li>Add the <strong>working agreement for delegation</strong>: when to give system-test work to the subagent, and the rule it must apply.</li>
     <li>Out-of-date standing context is worse than none: it is wrong, and the agent follows it in every session.</li>
   </ul>
@@ -977,7 +984,7 @@ tr.brk td:first-child{font-style:normal}
     <li>Add a <strong>second, parallel CI job</strong> for the system tests — not another step inside the fast job.</li>
     <li>Upload the report as a CI artifact, so that you can analyse a failure.</li>
     <li>Push and confirm <strong>both jobs</strong> report independently on GitHub.</li>
-    <li>Update <strong><code>CLAUDE.md</code> to version 2</strong>: all three test levels in one place, plus the delegation agreement. Read the diff together — this file controls every future session.</li>
+    <li>Update <strong><code>CLAUDE.md</code> to v3</strong>: all three test levels in one place, plus the delegation agreement. Read the diff together — this file controls every future session.</li>
   </ol>
   <div class="note">Before the break, check: every mob has two passing CI jobs and an updated instructions file.</div>
 </article>
@@ -986,7 +993,7 @@ tr.brk td:first-child{font-style:normal}
   <div class="tag"><span class="dot"></span>Exercise 6 · Example prompts</div>
   <h2>If you're behind, start here</h2>
   <div class="prompt"><div class="who">Prompt 1 · add the second CI job</div><pre>Split the system-test dependencies into their own [system] extra. Then add a second CI job that installs only that extra and runs the Robot suite, uploading the results as an artifact even on failure. It must be a separate job so it runs in parallel with the fast one — explain in a comment why.</pre></div>
-  <div class="prompt"><div class="who">Prompt 2 · update the instructions file</div><pre>Update CLAUDE.md to v2. Add one coherent map of our three test levels — what belongs at each and what must not — and a working agreement on delegating system tests to the subagent, including the bar a new system test has to clear. Keep it derived from docs/test-strategy.md; show me the diff.</pre></div>
+  <div class="prompt"><div class="who">Prompt 2 · update the instructions file</div><pre>Update CLAUDE.md to v3. Add one coherent map of our three test levels — what belongs at each and what must not — and a working agreement on delegating system tests to the subagent, including the bar a new system test has to clear. Keep it derived from docs/test-strategy.md; show me the diff.</pre></div>
   <div class="prompt"><div class="who">Prompt 3 · verify both jobs</div><pre>Push and show me both CI jobs and their durations. Which one is the bottleneck, and does the fast job install anything it doesn't need?</pre></div>
 </article>
 
@@ -1225,7 +1232,7 @@ tr.brk td:first-child{font-style:normal}
     <tr><td>3</td><td>Tests that really check behaviour, executed <b>before the agent may stop</b></td><td>Oracle check + <code>Stop</code> hook</td></tr>
     <tr><td>4</td><td>A documented service target that blocks a bad change</td><td>SLI-based CI gate</td></tr>
     <tr><td>5</td><td>A specialist with a limited scope that keeps the test pyramid in shape</td><td>System-test subagent</td></tr>
-    <tr><td>6</td><td>Slow feedback in parallel; standing context kept up to date</td><td>Second CI job + <code>CLAUDE.md</code> version 2</td></tr>
+    <tr><td>6</td><td>Slow feedback in parallel; standing context kept up to date</td><td>Second CI job + <code>CLAUDE.md</code> v3</td></tr>
     <tr><td>7</td><td>A complete feature built with testing inside the loop</td><td>Skill + everything above</td></tr>
   </table>
   <div class="note">Seven exercises, one idea repeated: put the test activity <b>where the agent is already working</b>.</div>

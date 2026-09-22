@@ -87,7 +87,10 @@ and checking whether the tests notice. We do that **by hand**, on one line, in a
 no extra tooling, no config, and the mob does the breaking itself. (`mutmut` automates the same
 idea across a whole module — named in the notes as a take-home, not run on the day.) **This is the pivot.** A `Stop` hook that
 runs tests before the agent can end its turn moves quality feedback from "after a push" (CI) to
-*inside the loop* — shift-left becomes Shift In right here. Deliberately no CI in this module:
+*inside the loop* — shift-left becomes Shift In right here. Note the order inside the module: the
+mob writes the rule into `CLAUDE.md` as an **instruction** first (step 6), watches how reliably the
+agent follows it, and only then makes it a **hook** (step 9). Same sentence, twice, twenty minutes
+apart — the second time enforced. Deliberately no CI in this module:
 the pipeline is the after-the-push half of that same sentence, and it gets its own module (M3b).
 Keeping it out is what keeps this one about the loop.
 
@@ -98,27 +101,31 @@ Keeping it out is what keeps this one about the loop.
 3. Fix the bug; watch the test go green.
 4. **Build out the unit suite** — `shortener.py`, `store.py`, `models.py`. Let the per-SLI table in
    `docs/test-strategy.md` set the order: SLI-relevant paths first, not whatever is easiest to
-   test. This is the step that makes step 6 mean something; against a single collision test,
+   test. This is the step that makes step 7 mean something; against a single collision test,
    "did the suite notice?" is not a real question.
 5. Add thin API-level tests (route wiring only — status codes and shapes, not every input variant).
-6. **Break the code on purpose.** In `src/snip/shortener.py`, `create_link()` contains **two
+6. **Update `CLAUDE.md` to v2**: how to run the suite, plus one working agreement — *a turn never
+   ends with a failing test*. Keep it small; the full pyramid map waits for v3 in M4. Then tell the
+   mob to watch the next few turns: does the agent now run the tests unprompted? Either answer is
+   the lesson — an instruction is a request, and that is what makes step 9 feel necessary.
+7. **Break the code on purpose.** In `src/snip/shortener.py`, `create_link()` contains **two
    identical** `code = generate_code()` lines. Change the indented one inside
    `while store.exists(code):` to `code = None` and re-run `pytest tests/unit -q`. (Breaking the
    *first* one instead fails several tests immediately, which proves nothing about weak
    assertions — say which line you mean when you brief a mob.) Does a test fail? Read the result
    as a mob: does the test really assert what it claims to?
-7. If it stayed green, that's a missing assertion, not a passing test. Strengthen it, re-run to
+8. If it stayed green, that's a missing assertion, not a passing test. Strengthen it, re-run to
    confirm it now catches the sabotage, then **revert the broken line**.
-8. Write the `Stop` hook script and settings. **Test it by piping fake JSON at it directly** — a
+9. Write the `Stop` hook script and settings. **Test it by piping fake JSON at it directly** — a
    passing case and a failing case — before trusting it in a live session.
-9. Demonstrate live: break a test on purpose, ask the agent to do something, watch the hook block
+10. Demonstrate live: break a test on purpose, ask the agent to do something, watch the hook block
    the stop and force a fix before it's allowed to finish. If nothing fires, check `/hooks`: a
    settings-file hook only runs once the workspace-trust dialog has been accepted, and only finds
    `pytest` if `claude` was started from the activated venv.
 
-**Artifact:** `tests/unit/`, `tests/api/`, a hand-mutation oracle check with notes, the `Stop` hook.
-Still no CI — a push from this branch shows no checks on GitHub, the same as after M2. Say so in
-the room, or a mob will spend five minutes looking for a broken setup.
+**Artifact:** `tests/unit/`, `tests/api/`, a hand-mutation oracle check with notes, `CLAUDE.md` v2,
+the `Stop` hook. Still no CI — a push from this branch shows no checks on GitHub, the same as after
+M2. Say so in the room, or a mob will spend five minutes looking for a broken setup.
 
 **Common failure modes:**
 - Reading `stop_hook_active` as "bail out". The input field is `true` when the stop attempt is
@@ -133,7 +140,7 @@ the room, or a mob will spend five minutes looking for a broken setup.
   shipped; verify against the actual docs, not a remembered shape.
 - Chasing 100% coverage as the goal. A 100%-covered file can still stay green against broken code
   — the reference build's own collision test covered the retry line completely and still passed
-  when the retried code was replaced with `None`. That is the line the mob breaks in step 6.
+  when the retried code was replaced with `None`. That is the line the mob breaks in step 7.
 - More generally: an assertion that proves "something happened" (a value changed, an error was
   raised) without pinning down *what* happened is the same weak-oracle shape as the `None`-code
   example above, just with different surface details. M5b hit two more instances of this same
@@ -199,10 +206,11 @@ tests."
 5. Add the system-testing library as its own install extra, separate from the fast test extra, so
    the quick CI job never needs it.
 6. Add a second, *parallel* CI job for system tests — not a slower step bolted onto the fast one.
-7. Update `CLAUDE.md` to v2: one coherent map of the now-complete pyramid, plus the
-   subagent-delegation working agreement.
+7. Update `CLAUDE.md` to v3: one coherent map of the now-complete pyramid, plus the
+   subagent-delegation working agreement. (v1 was M1's business context, v2 was M3a's test
+   agreement — this is the third and last deliberate pass.)
 
-**Artifact:** system-test subagent, `tests/system/`, a second CI job, `CLAUDE.md` v2.
+**Artifact:** system-test subagent, `tests/system/`, a second CI job, `CLAUDE.md` v3.
 
 **Common failure modes:**
 - "It goes through routing, validation, and exception handling" *feels* like justification for a

@@ -81,7 +81,8 @@ testing, and a human verification gate on every accepted change. See `docs/shift
    confirmed it. Acceptance criteria are human-confirmed before a feature is built.
 6. **SLIs do work.** SLIs defined in `app/docs/slis.md` must drive what we test and what CI gates on.
 7. **The instructions file is alive.** `app/CLAUDE.md` is updated as a deliberate step at module
-   boundaries, not written once and forgotten.
+   boundaries, not written once and forgotten — three times across the day: **v1** in M1, **v2** in
+   M3a (the test agreement, before the hook enforces it), **v3** in M4 (the complete pyramid).
 8. **Treat external content as untrusted.** The pre-prepared issue in M5 enters an agent that can
    write to the repo — a lethal-trifecta setup. Inspect it before feeding it in.
 
@@ -100,13 +101,15 @@ Work on a feature branch, keep `start` clean, and update `solutions/README.md` c
       fixes a subset of the planted issues. Document the verification ritual. No CI yet — the
       pipeline starts in M3a, so M2 stays focused on review and the mob's verification ritual.
 - [ ] **T3 — `solution/m3a-unit-hook`.** Add `pytest`/`pytest-cov`, unit tests for core logic, one
-      hand-mutation oracle check with notes on what stayed green, and a Claude Code `Stop` hook that
-      runs tests in-loop. No CI in this task — it is the after-the-push mechanism the pivot
-      contrasts against. (This is the shift-left → Shift In pivot — make it prominent.)
+      hand-mutation oracle check with notes on what stayed green, **`app/CLAUDE.md` v2** (the
+      test commands plus the "a turn never ends with a failing test" working agreement, written
+      *before* the hook so the mob sees an instruction and its enforcement as two separate moves),
+      and a Claude Code `Stop` hook that runs tests in-loop. No CI in this task — it is the
+      after-the-push mechanism the pivot contrasts against. (This is the shift-left → Shift In pivot — make it prominent.)
 - [ ] **T4 — `solution/m3b-ci`.** Create `.github/workflows/ci.yml` complete, not as a stub: a
       production-only install check, the unit/API test run, and one SLI-derived gate.
 - [ ] **T5 — `solution/m4-system`.** A system-test **subagent** generating Robot Framework suites at
-      the right pyramid level; add a separate (slower) CI stage. Update `app/CLAUDE.md` to v2.
+      the right pyramid level; add a separate (slower) CI stage. Update `app/CLAUDE.md` to v3.
 - [ ] **T6 — `solution/m5a-bdd`.** A pre-prepared GitHub issue (new feature: **link expiry**), plus a
       BDD **skill** (`.claude/skills/example-mapping/`) that runs Example Mapping by interviewing
       the user to refine acceptance criteria.

@@ -2,8 +2,8 @@
 
 > This is the starter (`start`) state. In **M1** your mob authors this file properly: distil the
 > business context, quality characteristics, and SLIs in `docs/` into standing instructions for the
-> agent, and create `docs/test-strategy.md`. Treat this file as a **living artifact** — you will
-> update it again in M4.
+> agent, and create `docs/test-strategy.md`. Treat this file as a **living artifact** — you rewrite
+> it twice more: **v2** in M3a (the test agreement, before a hook enforces it) and **v3** in M4.
 
 ## snip (placeholder)
 
