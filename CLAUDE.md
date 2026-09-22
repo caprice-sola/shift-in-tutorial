@@ -26,6 +26,10 @@ ordinary code.
 **The current milestone isn't inferable from this repo.** No branch name or commit tells you which
 exercise is running, and the two guardrails above depend on it. Ask rather than guess.
 
+**After changing behaviour in `src/snip/`, run the tests that cover it before calling the change
+done** — see **Tests** below for how. A diff that looks right isn't the same as one that's been
+run.
+
 ## The code
 
 A tiny FastAPI URL shortener, ~130 lines across four modules:
@@ -34,12 +38,38 @@ A tiny FastAPI URL shortener, ~130 lines across four modules:
   the guardrail above.
 - [store.py](src/snip/store.py) — one module-level `store = Store()` wrapping a dict. In-memory
   and non-persistent: nothing survives a restart, and state carries between tests unless they
-  reset it.
+  reset it — see **Tests** below for the pattern already in use.
 - [main.py](src/snip/main.py) — the four routes. [models.py](src/snip/models.py) — the pydantic
   request/response shapes.
-- [tests/](tests/) — empty on purpose, and [pyproject.toml](pyproject.toml) lists no test tooling.
-  pytest isn't available until someone adds it.
 
 Run it via **Run it** in the [README](README.md), which also lists the endpoints. Activate `.venv`
 first — bare `pip` and `uvicorn` don't exist otherwise, which is what "command not found" there
 means. `.venv-1` isn't the venv the README sets up; ignore it.
+
+## Tests
+
+[test-strategy.md](docs/test-strategy.md) sets the target shape and the SLI-per-level mapping;
+this is where that maps onto the actual repo:
+
+- [tests/unit/](tests/unit/) — pure logic, no HTTP: `test_shortener.py`, `test_store.py`,
+  `test_models.py`.
+- [tests/api/](tests/api/) — FastAPI `TestClient`; this is what the doc calls the "Integration /
+  API" level. `test_routes.py` asserts status code and response structure only — input-validation
+  cases belong in `tests/unit/test_models.py` instead.
+- No `tests/system/` yet — the doc's Robot Framework layer hasn't been started.
+
+One-time setup: `pip install -e '.[test]'` (pytest, pytest-cov, httpx — httpx is what
+`TestClient` needs under the hood). Run with `.venv/bin/pytest tests/`, or scope it to
+`tests/unit` / `tests/api`.
+
+Both directories share the same state trap as `store.py` above: because `store` is a singleton,
+every test file resets it with an autouse fixture —
+```python
+@pytest.fixture(autouse=True)
+def clear_store():
+    store._links.clear()
+    yield
+    store._links.clear()
+```
+Copy this into any new test file that touches the store, or state leaks between tests in the same
+run.
