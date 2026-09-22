@@ -4,7 +4,7 @@ A tiny URL shortener — the **starter application** for the Shift In tutorial. 
 test pyramid exists — unit, API, one SLI-derived CI gate, and now Robot Framework system tests in
 `tests/system/`, maintained by the `system-test-writer` subagent
 (`.claude/agents/system-test-writer.md`) rather than written inline. CI (`.github/workflows/ci.yml`)
-runs the fast suite and the system suite as two parallel jobs. `CLAUDE.md` is at v2. See
+runs the fast suite and the system suite as two parallel jobs. `CLAUDE.md` is at v3. See
 `docs/test-strategy.md` for the full shape.
 
 ## Run it
