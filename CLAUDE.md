@@ -45,6 +45,9 @@ are SLI violations, not style issues.
 - **Delegate system tests to the `system-test-writer` subagent** (`.claude/agents/system-test-writer.md`)
   rather than writing `tests/system/*.robot` inline. It's scoped to keep that layer thin — use it
   when a change affects end-to-end behaviour on the redirect hot path.
+- **A turn never ends with a failing test.** Run `pytest tests/unit tests/api` before you finish.
+  If something is red, fix it — or say plainly that you could not and why. Don't narrow a test or
+  delete an assertion to get to green.
 - **DoD (excerpt — full version in `docs/business-context.md`):** reviewed and merged via PR;
   tests exist at the appropriate level(s) and pass in CI; SLI-affecting changes are reflected in
   pipeline gates; observable behaviour changes are covered by at least one higher-level test.
@@ -70,8 +73,9 @@ are SLI violations, not style issues.
   tell from the job name alone which layer failed.
 
 ---
-_v2 — M4. v1 (M1) covered business context, quality characteristics, and SLIs; M3a/M3b noted test
-tooling, the `Stop` hook, and CI here without a full rewrite. This pass adds the system-test tier,
+_v3 — M4. v1 (M1) covered business context, quality characteristics, and SLIs; v2 (M3a) added the
+test commands and the "a turn never ends with a failing test" agreement, written before the hook
+that enforces it; M3b noted CI here without a full rewrite. This pass adds the system-test tier,
 the subagent that owns it, and reorganises the stack section into one coherent map of the pyramid
 now that every tier actually exists. Next scheduled change: none — this file only moves again if
 the app itself changes (M5)._
