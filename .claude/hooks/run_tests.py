@@ -25,7 +25,7 @@ venv_pytest = os.path.join(project_dir, ".venv", "bin", "pytest")
 pytest_cmd = venv_pytest if os.path.exists(venv_pytest) else "pytest"
 
 result = subprocess.run(
-    [pytest_cmd, "tests/"],
+    [pytest_cmd, "tests/unit", "tests/api"],  # never tests/gates: real server, ~1s
     cwd=project_dir,
     capture_output=True,
     text=True,
