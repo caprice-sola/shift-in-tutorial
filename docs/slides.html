@@ -187,7 +187,7 @@ tr.brk td:first-child{font-style:normal}
     <tr><td>15:15–16:30</td><td><b>Feature build, QA in the loop</b></td><td>Ex 7 (pt 1 + pt 2)</td><td><code>m5a-bdd</code> / <code>m5b-feature</code></td></tr>
     <tr><td>16:30–17:00</td><td><b>Retro &amp; wrap</b></td><td>—</td><td>—</td></tr>
   </table>
-  <div class="note">Stuck? Check out the previous solution branch to return to a known state — <b>nobody stays stuck.</b> Short progress check at every break and at lunch.</div>
+  <div class="note">Stuck? Check out the previous solution branch to return to a known state — <b>nobody stays stuck.</b> We built those branches by working through these same exercises first; slides that mention <b>"the reference build"</b> are quoting what went wrong when we did.</div>
 </article>
 
 <article class="slide" data-kind="theory">
@@ -886,7 +886,8 @@ tr.brk td:first-child{font-style:normal}
     <div class="card"><h3>Justified</h3><p>A real server process, real network connections, real deployment configuration. The most-used path, end to end: create a link → follow it → check the statistics.</p></div>
     <div class="card"><h3>Not justified</h3><p>"It goes through routing, validation and error handling." The API-level test client already does exactly that: same input, same assertion, only slower.</p></div>
   </div>
-  <div class="note warn">In the reference build, the first suite added two test cases for exactly that reason. Both were exact copies of existing API tests. They were found in review and deleted, and the test strategy document was corrected.</div>
+  <div class="note warn"><b>This is not hypothetical.</b> In the reference build the subagent's first suite added exactly two such cases — <em>"unknown code returns 404"</em> and <em>"unsafe URL rejected"</em> — each with the same input and the same assertion as a test already in <code>tests/api/</code>. Both were deleted in review.</div>
+  <aside class="notes">Facilitator: those two deleted cases are named in the subagent's own instructions on the solution branch (.claude/agents/system-test-writer.md), ending "Don't reintroduce it." Worth knowing for the question a mob will ask in step 5: docs/test-strategy.md had promised "one or two" more system cases, and rather than pad the suite to match the document, the document was corrected. Fixing the plan instead of inflating the suite is the direction you want them to copy.</aside>
 </article>
 
 <article class="slide" data-kind="exercise">
