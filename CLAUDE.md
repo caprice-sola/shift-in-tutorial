@@ -77,5 +77,8 @@ _v3 — M4. v1 (M1) covered business context, quality characteristics, and SLIs;
 test commands and the "a turn never ends with a failing test" agreement, written before the hook
 that enforces it; M3b noted CI here without a full rewrite. This pass adds the system-test tier,
 the subagent that owns it, and reorganises the stack section into one coherent map of the pyramid
-now that every tier actually exists. Next scheduled change: none — this file only moves again if
+now that every tier actually exists. It was written **before** restarting Claude Code: creating
+`.claude/agents/` for the first time means the new subagent isn't discoverable until a new session
+starts, and that restart discards the conversation - so whatever the next session needs had to be
+in this file first. Next scheduled change: none — this file only moves again if
 the app itself changes (M5)._
