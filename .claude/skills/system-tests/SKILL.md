@@ -15,6 +15,9 @@ file is the *how*. **What** deserves a system test is decided by `docs/test-stra
 
 ## Conventions
 
+- **The virtualenv must be active.** The fixture starts the server with `Start Process uvicorn`,
+  which resolves `uvicorn` on `PATH`. Run `robot` from an activated venv or the suite fails in
+  setup with `FileNotFoundError: 'uvicorn'` — which looks like a broken test and is not one.
 - **One server for the whole directory.** `tests/system/__init__.robot` starts a single `uvicorn`
   process for every suite in `tests/system/` and stops it afterwards. Reuse it. Never start a
   server inside a test case, and never add a second `Suite Setup` that binds the same port.
