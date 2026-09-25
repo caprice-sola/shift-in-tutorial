@@ -83,7 +83,8 @@ _v3 — M4, plus one working agreement added in M5a. v1 (M1) covered business co
 characteristics, and SLIs; v2 (M3a) added the test commands and the "a turn never ends with a
 failing test" agreement, written before the `Stop` hook that enforces it; M3b noted CI here
 without a full rewrite; v3 (M4) added the system-test tier, the subagent that owns it, and
-reorganised the stack section. This file said its next move would wait for M5's app change — wrong: a review of M5a's
+reorganised the stack section — written before the restart that made the subagent discoverable,
+since a restart keeps this file and loses the conversation. This file said its next move would wait for M5's app change — wrong: a review of M5a's
 skill caught that its injection-awareness step (Step 0) had nowhere to live except that one file,
 so every other skill/subagent with write access here was silently exempt from the same defense.
 Added as a working agreement instead, since this file already reaches every subagent's context
