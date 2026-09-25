@@ -187,7 +187,7 @@ tr.brk td:first-child{font-style:normal}
     <tr><td>15:15–16:30</td><td><b>Feature build, QA in the loop</b></td><td>Ex 7 (pt 1 + pt 2)</td><td><code>m5a-bdd</code> / <code>m5b-feature</code></td></tr>
     <tr><td>16:30–17:00</td><td><b>Retro &amp; wrap</b></td><td>—</td><td>—</td></tr>
   </table>
-  <div class="note">Stuck? Check out the previous solution branch to return to a known state — <b>nobody stays stuck.</b> We built those branches by working through these same exercises first; slides that mention <b>"the reference build"</b> are quoting what went wrong when we did.</div>
+  <div class="note">Stuck? Check out the previous solution branch to return to a known state — <b>nobody stays stuck.</b> Short progress check at every break and at lunch.</div>
 </article>
 
 <article class="slide" data-kind="theory">
@@ -418,7 +418,7 @@ tr.brk td:first-child{font-style:normal}
     <li>So it must be concrete and checkable: a table of test levels with <strong>a share of tests for each level</strong>, and one row per SLI naming the test level that will verify it.</li>
     <li>"We will test the important things" is not a strategy. You cannot check whether you followed it, so it cannot guide any decision.</li>
   </ul>
-  <div class="note">This helped in Ex 5 of the reference build: the strategy planned a second system test that turned out not to be justified, and the document made that difference visible.</div>
+  <div class="note">You will use this in Ex 5: compare what the strategy promised at the system level against what turns out to be justified — then correct whichever one is wrong. That comparison is only possible because the document exists first.</div>
 </article>
 
 <article class="slide" data-kind="exercise">
@@ -553,7 +553,7 @@ tr.brk td:first-child{font-style:normal}
   <div class="tag"><span class="dot"></span>Exercise 2 · Learning points</div>
   <h2>What just happened</h2>
   <ul>
-    <li><strong>A fix that looks correct can change behaviour silently.</strong> In the reference build, a URL-validation fix looked correct at first reading — but it changed the input (added a trailing slash, lowercased the host), which broke the rule "a link resolves to the <em>exact</em> URL it was created for."</li>
+    <li><strong>A fix that looks correct can change behaviour silently.</strong> A URL validator that <em>normalises</em> what it accepts — adding a trailing slash, lowercasing the host — passes a quick read and still breaks the rule "a link resolves to the <em>exact</em> URL it was created for." Watch for a fix that rewrites its input.</li>
     <li><strong>Reading the diff is the work.</strong> The summary above the diff is only the agent's own description of what it did.</li>
     <li><strong>Evaluate findings; do not fix everything the agent reports.</strong> Rank them by their effect on the SLIs.</li>
     <li><strong>Check actions that leave the repository, before they happen.</strong> The agent can open pull requests, write comments and close issues.</li>
@@ -599,7 +599,7 @@ tr.brk td:first-child{font-style:normal}
     <li>Test those first. Do not use a coverage percentage as a target — an agent can easily produce tests that raise the number without testing anything.</li>
     <li>A file with 100% statement coverage can still have no test that would detect a defect in it.</li>
   </ul>
-  <div class="note">In the reference build, the collision test covered the retry line <b>completely</b> — and still passed when the retried code was replaced with <code>None</code>.</div>
+  <div class="note">A collision test can cover the retry line <b>completely</b> and still pass when that line is replaced with <code>code = None</code>. Step 7 is where you find out whether yours does.</div>
 </article>
 
 <article class="slide" data-kind="theory">
@@ -760,7 +760,7 @@ tr.brk td:first-child{font-style:normal}
     <li><strong>An SLI-based gate</strong> — it checks the <em>documented SLO</em>, not a convenient number: 95th percentile redirect time under 50 ms, measured against a real running server.</li>
     <li>This makes the target in <code>docs/slis.md</code> <strong>executable</strong>. The document now has an effect.</li>
   </ul>
-  <div class="note warn"><b>Do not relax the threshold</b> because you expect flaky tests. Measure the real margin first: the reference build measured about 0.6 ms against the 50 ms target — about 80 times margin.</div>
+  <div class="note warn"><b>Do not relax the threshold</b> because you expect flaky tests. Measure the real margin first — print the p95 your gate records. On this app it lands around 0.6 ms against a 50 ms target: roughly 80× headroom, so the threshold is not the fragile part.</div>
 </article>
 
 <article class="slide" data-kind="theory">
@@ -886,7 +886,7 @@ tr.brk td:first-child{font-style:normal}
     <div class="card"><h3>Justified</h3><p>A real server process, real network connections, real deployment configuration. The most-used path, end to end: create a link → follow it → check the statistics.</p></div>
     <div class="card"><h3>Not justified</h3><p>"It goes through routing, validation and error handling." The API-level test client already does exactly that: same input, same assertion, only slower.</p></div>
   </div>
-  <div class="note warn"><b>This is not hypothetical.</b> In the reference build the subagent's first suite added exactly two such cases — <em>"unknown code returns 404"</em> and <em>"unsafe URL rejected"</em> — each with the same input and the same assertion as a test already in <code>tests/api/</code>. Both were deleted in review.</div>
+  <div class="note warn"><b>Expect your subagent to produce at least one case like the right-hand card.</b> Step 5 is where you check each one against the rule — open <code>tests/api/test_routes.py</code> beside it and look for the same input with the same assertion.</div>
   <aside class="notes">Facilitator: those two deleted cases are named in the subagent's own instructions on the solution branch (.claude/agents/system-test-writer.md), ending "Don't reintroduce it." Worth knowing for the question a mob will ask in step 5: docs/test-strategy.md had promised "one or two" more system cases, and rather than pad the suite to match the document, the document was corrected. Fixing the plan instead of inflating the suite is the direction you want them to copy.</aside>
 </article>
 
@@ -1118,7 +1118,7 @@ tr.brk td:first-child{font-style:normal}
     <li><strong>External content is input, not instruction.</strong> The issue body carried a hidden instruction aimed at the agent — invisible in the rendered page, plain in the raw text.</li>
     <li><strong>This inspection step is the safeguard.</strong> It is cheap and repetitive, and it only works if you do it every time.</li>
     <li><strong>A method written down as a skill runs the same way every time</strong> — and it can require its own input-inspection step first.</li>
-    <li><strong>Agents produce plausible guesses.</strong> In the reference build, the first draft of the acceptance criteria answered an open question <em>inside its own "open questions" section</em> — a document about not guessing, guessing.</li>
+    <li><strong>Agents produce plausible guesses.</strong> Check your own document for it: an open question that has quietly been <em>answered</em> inside the "open questions" section is exactly the failure this technique exists to prevent.</li>
     <li><strong>People must confirm the acceptance criteria as well</strong>, not only the code.</li>
   </ul>
   <div class="note">If you get stuck, return to a known state: <code>git checkout solution/m5a-bdd</code></div>
@@ -1161,7 +1161,7 @@ tr.brk td:first-child{font-style:normal}
     <li><strong>Run a smoke test against the running application</strong> by hand, with real requests — not only the automated tests.</li>
     <li>Open a pull request and <strong>read what CI reports</strong>. Do not merge it into the fallback branch.</li>
   </ol>
-  <div class="note warn"><b>Passing tests are necessary, but not sufficient.</b> The reference build contained a crash while all tests passed. It was found only by reproducing it against the running application.</div>
+  <div class="note warn"><b>Passing tests are necessary, but not sufficient.</b> A green suite only covers the cases someone thought of — a crash can sit behind it untouched. Running the application is what finds the rest.</div>
 </article>
 
 <article class="slide dense" data-kind="prompt">
@@ -1177,7 +1177,7 @@ tr.brk td:first-child{font-style:normal}
   <div class="tag"><span class="dot"></span>Exercise 7 · Part 2 · Learning points</div>
   <h2>What just happened</h2>
   <ul>
-    <li><strong>"All tests pass" does not mean the work is done.</strong> A real crash in the reference build existed while every test passed. It was found by running the application, not by the tests.</li>
+    <li><strong>"All tests pass" does not mean the work is done.</strong> Step 5 — running the application by hand — is not ceremony. A suite tests the cases its author imagined; the application shows you the ones nobody did.</li>
     <li><strong>If nobody confirmed the acceptance criteria, the whole feature may be wrong.</strong> If Part 1 was rushed, Part 2 inherits every guess.</li>
     <li><strong>The hook changed who fixes the defects.</strong> Most of them never reached a person: they were detected and corrected inside the loop.</li>
     <li><strong>You were the verifier, not the person typing</strong> — for a complete feature. That is Shift In in practice.</li>
