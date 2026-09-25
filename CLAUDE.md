@@ -109,7 +109,10 @@ Work on a feature branch, keep `start` clean, and update `solutions/README.md` c
 - [ ] **T4 — `solution/m3b-ci`.** Create `.github/workflows/ci.yml` complete, not as a stub: a
       production-only install check, the unit/API test run, and one SLI-derived gate.
 - [ ] **T5 — `solution/m4-system`.** A system-test **subagent** generating Robot Framework suites at
-      the right pyramid level; add a separate (slower) CI stage. Update `app/CLAUDE.md` to v3.
+      the right pyramid level; add a separate (slower) CI stage. Update `app/CLAUDE.md` to v3
+      **before** the restart that makes the subagent discoverable — `.claude/agents/` is a new
+      directory, so the watcher misses it until a new session starts, and the restart costs the
+      conversation but not the file.
 - [ ] **T6 — `solution/m5a-bdd`.** A pre-prepared GitHub issue (new feature: **link expiry**), plus a
       BDD **skill** (`.claude/skills/example-mapping/`) that runs Example Mapping by interviewing
       the user to refine acceptance criteria.

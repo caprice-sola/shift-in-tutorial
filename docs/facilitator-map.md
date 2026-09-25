@@ -51,6 +51,9 @@ not upgraded from an earlier stub. Copilot: identical GitHub Actions.
 
 **M4 System tests via subagent** — *Delegate Robot Framework suites at the right pyramid level;
 add a slow CI stage.* Artifact: system-test subagent, `tests/system/`, `app/CLAUDE.md` v3.
+**Order matters here:** `.claude/agents/` is a new directory, so Claude Code only discovers the
+subagent after a **restart** — and a restart discards the conversation. So v3 is written *before*
+the restart, which makes it the day's clearest demonstration of what standing context is for.
 Copilot: custom-agent profile with its own MCP; Robot is tool-agnostic. `CLAUDE.md` reaches **v3**
 here — the third and last deliberate pass (v1 M1, v2 M3a).
 

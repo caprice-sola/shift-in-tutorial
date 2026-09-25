@@ -201,14 +201,20 @@ tests."
 2. Write the subagent's ground rules with a genuinely high bar: a system test is justified only
    when something can't be proven by the API-layer tests — a real process boundary, real sockets
    — not just "this is on the redirect hot path."
-3. Have it produce one suite: the redirect hot path round trip (create → follow → stats).
-4. Actually run it against a real server and watch it pass.
-5. Add the system-testing library as its own install extra, separate from the fast test extra, so
+3. **Update `CLAUDE.md` to v3 now**, before anything else: all three test levels in one map, plus
+   the working agreement to delegate system tests to the subagent. The next step throws the
+   conversation away, and this file is what survives it.
+4. **Restart Claude Code.** `.claude/agents/` didn't exist when the session started, so nothing is
+   watching it — the subagent is undiscoverable until a new session begins. (Later *edits* to the
+   file are picked up live; the restart is about the directory being new, not the file changing.
+   Verify this against the current docs before the day — it's the kind of behaviour that moves.)
+5. Have the subagent produce one suite: the redirect hot path round trip (create → follow → stats).
+6. Actually run it against a real server and watch it pass.
+7. Add the system-testing library as its own install extra, separate from the fast test extra, so
    the quick CI job never needs it.
-6. Add a second, *parallel* CI job for system tests — not a slower step bolted onto the fast one.
-7. Update `CLAUDE.md` to v3: one coherent map of the now-complete pyramid, plus the
-   subagent-delegation working agreement. (v1 was M1's business context, v2 was M3a's test
-   agreement — this is the third and last deliberate pass.)
+8. Add a second, *parallel* CI job for system tests — not a slower step bolted onto the fast one.
+   (v1 was M1's business context, v2 was M3a's test agreement, v3 was step 3 above — the third and
+   last deliberate pass, done early in the module because the restart demanded it.)
 
 **Artifact:** system-test subagent, `tests/system/`, a second CI job, `CLAUDE.md` v3.
 
