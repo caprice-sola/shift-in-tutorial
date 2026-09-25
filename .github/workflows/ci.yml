@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Installs *only* [project.dependencies] from pyproject.toml (fastapi,
+      # uvicorn) -- no pytest, no httpx, no test tooling of any kind -- then
+      # imports the app. This gets its own step, separate from step 2, because
+      # every other step here (and every contributor's local .venv) has the
+      # [test] extra installed too, so a bug where application code under
+      # src/snip/ accidentally comes to depend on a test-only package (e.g.
+      # `from fastapi.testclient import TestClient` landing somewhere it
+      # shouldn't) would pass every other check in this workflow and still
+      # ship broken to production, where those packages are never installed.
+      # Only an install that matches production exactly can catch that, which
+      # is the point of keeping this step separate rather than folding it
+      # into step 2's install.
+      - name: "1. Install production dependencies only, check it imports"
+        run: |
+          pip install .
+          python -c "import snip.main; print('snip.main imports cleanly with production dependencies only')"
+
+      - name: "2. Run unit and API tests"
+        run: |
+          pip install '.[test]'
+          pytest tests/unit tests/api -v
+
+      - name: "3. Run the SLI-1 latency gate"
+        run: |
+          pytest tests/gates -v -s
