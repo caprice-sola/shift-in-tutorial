@@ -9,4 +9,5 @@ htmlcov/
 dist/
 build/
 .DS_Store
+.playwright-mcp/
 AGENTS.md

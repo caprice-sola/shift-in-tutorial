@@ -187,20 +187,27 @@ a documented service promise, not just "nothing broke."
 
 ---
 
-## M4 — System tests via subagent
+## M4 — A skill, then a subagent
 
-**Theory primer:** Pyramid discipline gets *harder*, not easier, once an agent can generate tests
-cheaply — the temptation to over-test at the expensive top level is real. Delegating to a scoped
+**Theory primer:** Two agent features, in the order that makes each one work. A **skill** carries
+*how* we write a system suite — stable, reusable, the same for any project using Robot Framework.
+A **subagent** carries *what* deserves one here: the strategy, the SLIs, the justification bar.
+Built the other way round, the subagent has to work Robot Framework out mid-exercise — installing
+it ad hoc, reading documentation — while the mob watches. Pyramid discipline also gets *harder*,
+not easier, once an agent can generate tests cheaply — the temptation to over-test at the expensive top level is real. Delegating to a scoped
 subagent is about bounded responsibility: a subagent with a narrow job and explicit ground rules
 about what *not* to add is more trustworthy than an open-ended request to "write some system
 tests."
 
 **Steps:**
-1. Verify the subagent file mechanics against current docs before building one — file location,
-   required frontmatter, tool scoping.
-2. Write the subagent's ground rules with a genuinely high bar: a system test is justified only
-   when something can't be proven by the API-layer tests — a real process boundary, real sockets
-   — not just "this is on the redirect hot path."
+1. **Install the tool first.** Add `robotframework` and `robotframework-requests` as a `[system]`
+   extra, separate from `[test]`, then `pip install -e ".[system]"`. This used to live in M3b —
+   *after* the first `robot` run needed it, which is why that run used to install things ad hoc.
+2. **Build the skill**: `.claude/skills/system-tests/`, with `SKILL.md` for the conventions (reuse
+   the shared `uvicorn` fixture, `RequestsLibrary` over real HTTP, one suite per flow, run what you
+   write) and `reference.md` for the syntax. Verify the frontmatter against current docs. One
+   failure mode worth naming out loud: the fixture resolves `uvicorn` on `PATH`, so running `robot`
+   outside an activated venv fails in *suite setup* and reads like a broken test.
 3. **Update `CLAUDE.md` to v3 now**, before anything else: all three test levels in one map, plus
    the working agreement to delegate system tests to the subagent. The next step throws the
    conversation away, and this file is what survives it.
@@ -208,15 +215,24 @@ tests."
    watching it — the subagent is undiscoverable until a new session begins. (Later *edits* to the
    file are picked up live; the restart is about the directory being new, not the file changing.
    Verify this against the current docs before the day — it's the kind of behaviour that moves.)
-5. Have the subagent produce one suite: the redirect hot path round trip (create → follow → stats).
-6. Actually run it against a real server and watch it pass.
-7. Add the system-testing library as its own install extra, separate from the fast test extra, so
-   the quick CI job never needs it.
-8. Add a second, *parallel* CI job for system tests — not a slower step bolted onto the fast one.
-   (v1 was M1's business context, v2 was M3a's test agreement, v3 was step 3 above — the third and
-   last deliberate pass, done early in the module because the restart demanded it.)
+5. **Use the skill in the main session**: one suite for the redirect hot path (create → follow →
+   stats), then run it. This is the payoff — no documentation hunting, because the syntax is
+   already in context.
+6. **Now build the subagent**, preloading the skill with the `skills:` frontmatter field. Its own
+   instructions carry only scope: read `docs/test-strategy.md` and `docs/slis.md`, and a system test
+   is justified only when `tests/api/` cannot prove the behaviour. Preload rather than the `Skill`
+   tool — this subagent's `tools` list doesn't include `Skill`, and a preload is deterministic.
+   Restart again for `.claude/agents/`; cheap this time, since `CLAUDE.md` is already current.
+7. **Delegate**: ask whether a *second* case clears that bar. For this app the honest answer is no,
+   and getting the subagent to say so — naming the `tests/api/` test that already covers each
+   candidate — is the exercise.
+8. Add a second, *parallel* CI job for system tests, installing only the `[system]` extra — not a
+   slower step bolted onto the fast one. (v1 was M1's business context, v2 was M3a's test
+   agreement, v3 was step 3 — the third and last deliberate pass, done early because the restart
+   demanded it.)
 
-**Artifact:** system-test subagent, `tests/system/`, a second CI job, `CLAUDE.md` v3.
+**Artifact:** `.claude/skills/system-tests/`, the system-test subagent that preloads it,
+`tests/system/`, a second CI job, `CLAUDE.md` v3.
 
 **Common failure modes:**
 - "It goes through routing, validation, and exception handling" *feels* like justification for a

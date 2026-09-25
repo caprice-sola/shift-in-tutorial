@@ -49,8 +49,11 @@ the hook — instruction and enforcement as two separate moves. No CI here; that
 Artifact: `.github/workflows/ci.yml` — written complete here (install check, test run, SLI gate),
 not upgraded from an earlier stub. Copilot: identical GitHub Actions.
 
-**M4 System tests via subagent** — *Delegate Robot Framework suites at the right pyramid level;
-add a slow CI stage.* Artifact: system-test subagent, `tests/system/`, `app/CLAUDE.md` v3.
+**M4 A skill, then a subagent** — *Encode how to write a Robot suite as a skill, then delegate what
+to test to a subagent that preloads it; add a slow CI stage.* Artifact:
+`.claude/skills/system-tests/`, the system-test subagent, `tests/system/`, `app/CLAUDE.md` v3.
+Install Robot Framework **first** — it used to be installed in M3b, after the first run needed it.
+Ex 5 ~55 min, Ex 6 ~20.
 **Order matters here:** `.claude/agents/` is a new directory, so Claude Code only discovers the
 subagent after a **restart** — and a restart discards the conversation. So v3 is written *before*
 the restart, which makes it the day's clearest demonstration of what standing context is for.

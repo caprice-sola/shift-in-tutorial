@@ -100,8 +100,8 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size
 .slide.tight .prompt{padding:10px 15px; margin-bottom:7px}
 .slide.tight .prompt pre{font-size:16.5px; line-height:1.36}
 .slide.dense ol{padding-left:26px}
-.tree{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:17.5px;
-  line-height:1.5; color:var(--ink-soft); margin:0; white-space:pre}
+.tree{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:16.5px;
+  line-height:1.42; color:var(--ink-soft); margin:0; white-space:pre}
 .tree b{color:var(--ink); font-weight:600}
 .kv{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:18px}
 .pill{font-size:19px; padding:7px 15px; border-radius:999px; border:1px solid var(--line);
@@ -258,15 +258,19 @@ tr.brk td:first-child{font-style:normal}
     ├── agents/
     │   └── system-test-writer.md
     └── skills/
+        ├── system-tests/
+        │   ├── SKILL.md
+        │   └── reference.md
         └── example-mapping/
             └── SKILL.md</pre>
     </div>
     <div>
       <ul style="padding-left:20px">
-        <li><code>CLAUDE.md</code> — standing context, read at the start of every session <small>(written in Ex 1, rewritten in Ex 3 and Ex 6)</small></li>
+        <li><code>CLAUDE.md</code> — standing context, read at the start of every session <small>(written in Ex 1, rewritten in Ex 3 and Ex 5)</small></li>
         <li><code>settings.json</code> — where a hook is <em>registered</em>; the script itself sits in <code>hooks/</code> <small>(Ex 3)</small></li>
         <li><code>agents/</code> — one Markdown file per subagent <small>(Ex 5)</small></li>
-        <li><code>skills/&lt;name&gt;/SKILL.md</code> — one folder per skill <small>(Ex 7)</small></li>
+        <li><code>skills/&lt;name&gt;/</code> — one folder per skill: <code>SKILL.md</code> plus any reference files <small>(Ex 5 and Ex 7)</small></li>
+        <li><code>skills/&lt;name&gt;/</code> — one folder per skill, <code>SKILL.md</code> plus any reference files <small>(Ex 5 and Ex 7)</small></li>
       </ul>
     </div>
   </div>
@@ -832,18 +836,36 @@ tr.brk td:first-child{font-style:normal}
 </article>
 </section>
 <!-- ===================== COLUMN 5 — EXERCISE 5 ===================== -->
-<section class="col" data-label="Ex 5 · System tests via subagent" data-time="13:30–14:15">
+<section class="col" data-label="Ex 5 · A skill, then a subagent" data-time="13:30–14:25">
 
 <article class="slide" data-kind="section">
   <div class="bignum">5</div>
-  <h1>System tests as a subagent</h1>
-  <p class="lead">Delegate Robot Framework test suites to a subagent with a limited scope — and keep the test pyramid in the right shape while doing it.</p>
+  <h1>A skill, then a subagent</h1>
+  <p class="lead">Teach the agent <em>how</em> to write a Robot Framework suite, then delegate <em>what</em> to test to a subagent that follows the strategy.</p>
   <div class="kv">
-    <span class="pill"><b>13:30–14:15</b> · ~45 min</span>
-    <span class="pill">Deliverable: system-test subagent + <code>tests/system/</code> + <code>CLAUDE.md</code> v3</span>
+    <span class="pill"><b>13:30–14:25</b> · ~55 min</span>
+    <span class="pill">Deliverable: a skill, a subagent, <code>tests/system/</code>, <code>CLAUDE.md</code> v3</span>
     <span class="pill">Fallback branch: <code>solution/m4-system</code> <small>(after Ex 6)</small></span>
   </div>
   <div class="note">This is where teams add too many system tests. Watch for it.</div>
+</article>
+
+<article class="slide dense tight" data-kind="theory">
+  <div class="tag"><span class="dot"></span>Definition</div>
+  <h2>What is a skill?</h2>
+  <p class="lead">A <strong>reusable procedure in a folder</strong> that the agent loads when it is relevant: your team's method, written down once and then applied the same way every time.</p>
+  <ul>
+    <li>A folder — <code>.claude/skills/&lt;name&gt;/SKILL.md</code> — holding instructions, and optionally scripts or reference files, loaded when needed. Same discovery rule as subagents: edits are picked up live, but a brand-new <code>.claude/skills/</code> directory needs a restart.</li>
+    <li>It runs <strong>in the current conversation</strong>, so it can have a real dialogue with the team.</li>
+    <li>A subagent can <strong>preload</strong> one with a <code>skills:</code> field — the content is in its context from the start, not something it must go and find.</li>
+  </ul>
+  <table style="margin-top:10px">
+    <tr><th></th><th>Skill</th><th>Subagent</th></tr>
+    <tr><td><b>Context</b></td><td>In the conversation — it can see the discussion</td><td>Separate — it starts with no history</td></tr>
+    <tr><td><b>Use</b></td><td>Encoded technique, or an interview</td><td>One task, delegated once</td></tr>
+    <tr><td><b>Here</b></td><td><em>How</em> to write a Robot suite</td><td><em>What</em> deserves one</td></tr>
+  </table>
+  <div class="note">You build both in this exercise: a skill for <em>how</em>, a subagent for <em>what</em>. <b>Copilot:</b> Agent Skills / a prompt file.</div>
 </article>
 
 <article class="slide dense" data-kind="theory">
@@ -908,24 +930,33 @@ tr.brk td:first-child{font-style:normal}
   <div class="tag"><span class="dot"></span>Exercise 5 · Steps</div>
   <h2>Do this</h2>
   <ol>
-    <li><strong>Check how subagent files are defined in the current documentation</strong> before you create one: file location, required fields, tool restrictions.</li>
-    <li>Write the subagent with its <strong>rules and a strict limit</strong>: a system test is justified only when the behaviour cannot be tested at the API level. State that explicitly in its instructions.</li>
-    <li><strong>Update <code>CLAUDE.md</code> to v3</strong> — all three test levels in one place, plus the agreement to delegate system tests to this subagent. Do it <strong>now</strong>, before the next step.</li>
-    <li><strong>Restart Claude Code.</strong> <code>.claude/agents/</code> did not exist when this session started, so nothing is watching it and the new subagent is invisible until a new session begins. The conversation is lost; <code>CLAUDE.md</code> is not — which is why step 3 came first.</li>
-    <li><strong>Delegate:</strong> have the subagent produce <strong>one test suite</strong> — the most-used path, end to end: create a link → follow it → check the statistics.</li>
-    <li><strong>Run the suite against a real server</strong> and confirm it passes. A test suite you have not executed is only a claim.</li>
-    <li>Review the result together: <strong>does every test case meet the rule?</strong> Delete the ones that do not.</li>
+    <li><strong>Install the tool first.</strong> Add <code>robotframework</code> and <code>robotframework-requests</code> as a <code>[system]</code> extra in <code>pyproject.toml</code>, separate from <code>[test]</code>, then <code>pip install -e ".[system]"</code>.</li>
+    <li><strong>Create a skill</strong> — <code>.claude/skills/system-tests/</code> — holding <em>how</em> we write a suite: the shared server fixture, real HTTP via <code>RequestsLibrary</code>, one suite per flow. Put the syntax in a separate <code>reference.md</code>.</li>
+    <li><strong>Update <code>CLAUDE.md</code> to v3</strong>: all three test levels in one place, plus the agreement to delegate system tests.</li>
+    <li><strong>Restart Claude Code</strong> — <code>.claude/skills/</code> is a new directory, so nothing is watching it yet. The conversation is lost; <code>CLAUDE.md</code> is not, which is why step 3 came first.</li>
+    <li><strong>Use the skill yourself:</strong> ask for the redirect round trip — create a link → follow it → check the statistics — and <strong>run it</strong>. No documentation hunting: the syntax is already in context.</li>
+    <li><strong>Now create the subagent</strong>, preloading that skill with a <code>skills:</code> field. Its instructions carry only <em>what</em> is worth testing: the strategy, the SLIs, and the rule that a system test must prove something <code>tests/api/</code> cannot.</li>
+    <li><strong>Restart again</strong> — <code>.claude/agents/</code> is also new. Cheap this time: <code>CLAUDE.md</code> is already current.</li>
+    <li><strong>Delegate:</strong> ask the subagent whether a <em>second</em> case clears that bar. Review its answer together — and note that "no" is the correct one for this app.</li>
   </ol>
-  <div class="note warn"><b>Adding no extra test case can be the correct answer.</b> Do not add test cases only because a document mentioned "one or two more".</div>
+  <div class="note warn"><b>Technique in the skill, judgment in the subagent.</b> That split is the point of the exercise — and it is why step 6 comes after step 5, not before.</div>
   <aside class="notes">Facilitator: if a mob's subagent produces duplicates of the API tests, that is the best possible outcome - make them find it, then delete them and correct the strategy doc. That story is worth more than a clean first run. On step 4: later EDITS to the subagent file are picked up live, so they only restart once - if a mob restarts after every tweak they will lose a lot of time. The rule is about the directory being new, not about the file changing.</aside>
 </article>
 
 <article class="slide dense tight" data-kind="prompt">
-  <div class="tag"><span class="dot"></span>Exercise 5 · Example prompts</div>
+  <div class="tag"><span class="dot"></span>Exercise 5 · Prompts for steps 1–4</div>
   <h2>If you're behind, start here</h2>
-  <div class="prompt"><div class="who">Steps 1–2 · create the subagent</div><pre>Check the current documentation for how subagents are defined — file location, frontmatter fields, tool scoping — then create a system-test-writer subagent. Its job: Robot Framework suites in tests/system/ only. Ground rule to state explicitly: a system test is justified ONLY if it proves something tests/api/ cannot — real process, real sockets. Not "it exercises routing and validation." It must read docs/test-strategy.md and the existing tests before writing anything, and it must run what it writes.</pre></div>
+  <div class="prompt"><div class="who">Step 1 · install Robot Framework</div><pre>Add robotframework and robotframework-requests to pyproject.toml as a [system] optional-dependency group, separate from [test], with a comment saying why the fast test job must not install them. Then run pip install -e ".[system]" and show me that the robot command works.</pre></div>
+  <div class="prompt"><div class="who">Step 2 · create the skill</div><pre>Create a skill at .claude/skills/system-tests/. SKILL.md holds how we write a system suite: reuse the shared uvicorn fixture in tests/system/__init__.robot, drive the app over real HTTP with RequestsLibrary, never import snip.*, one suite per user-visible flow, and run what you write. Put the Robot Framework syntax we actually use in a separate reference.md and link to it. Check the current skills documentation for the frontmatter fields before you write either file.</pre></div>
   <div class="prompt"><div class="who">Step 3 · CLAUDE.md v3, before the restart</div><pre>Update CLAUDE.md to v3. Replace the stack section with one map of all three test levels — what belongs at unit, API and system, and what must not — and add a working agreement: delegate system tests to the system-test-writer subagent rather than writing .robot files inline. I am about to restart Claude Code, so anything you would otherwise remember from this conversation needs to be in this file. Show me the diff.</pre></div>
-  <div class="prompt"><div class="who">Steps 5–6 · delegate the test suite</div><pre>Use the system-test-writer subagent to add one test suite covering the most-used path: create a link, follow it, check the statistics — against a real running server. Report back what it added and what it deliberately chose not to add.</pre></div>
+</article>
+
+<article class="slide dense tight" data-kind="prompt">
+  <div class="tag"><span class="dot"></span>Exercise 5 · Prompts for steps 5–8</div>
+  <h2>If you're behind, start here</h2>
+  <div class="prompt"><div class="who">Step 5 · use the skill yourself</div><pre>Using the system-tests skill, add one Robot suite for the redirect round trip: create a link, follow it without following the redirect, and check the click count. Then run it and show me the result. Do not look up Robot Framework documentation — everything you need is in the skill.</pre></div>
+  <div class="prompt"><div class="who">Step 6 · create the subagent</div><pre>Create a system-test-writer subagent in .claude/agents/. Preload the system-tests skill with the skills: frontmatter field, so it starts with our conventions already in context. Its own instructions should cover only what is worth testing: read docs/test-strategy.md and docs/slis.md, and state that a system test is justified ONLY if it proves something tests/api/ cannot — real process, real sockets. Check the current subagent documentation for the frontmatter fields first.</pre></div>
+  <div class="prompt"><div class="who">Step 8 · delegate, and expect a no</div><pre>Ask the system-test-writer subagent whether a SECOND system test case clears the bar in its instructions. It must name the tests/api/ test that already covers each candidate, or say plainly that no second case is justified for this app. Report back its reasoning, not just its answer.</pre></div>
   <div class="prompt"><div class="who">Step 7 · check every test case</div><pre>For each case in tests/system/, show me the tests/api/ test that already covers the same behaviour, or state clearly what only a real server can prove here. Delete any case that fails that test.</pre></div>
 </article>
 
@@ -933,7 +964,8 @@ tr.brk td:first-child{font-style:normal}
   <div class="tag"><span class="dot"></span>Exercise 5 · Learning points</div>
   <h2>What just happened</h2>
   <ul>
-    <li><strong>Delegation needs a narrow, written scope.</strong> A subagent with one task and explicit "do not do this" rules is far more reliable than an open request to "write some system tests".</li>
+    <li><strong>Separate technique from judgment.</strong> <em>How</em> to write a Robot suite is stable and reusable, so it belongs in a skill. <em>What</em> deserves one is a project decision, so it belongs in the subagent. Mixed together, neither is reusable.</li>
+    <li><strong>Give the agent the tool and the know-how before the task.</strong> Installing Robot Framework and writing the skill first is why step 5 took minutes instead of a documentation hunt.</li>
     <li><strong>Cheap test generation makes discipline harder.</strong> Writing tests used to be slow, and that effort protected the pyramid. Now only your rules protect it.</li>
     <li><strong>"It goes through the whole system" is not a justification.</strong> Ask what <em>only</em> this test level can verify.</li>
     <li><strong>A test that was never executed is only a claim.</strong> Make execution part of the subagent's Definition of Done.</li>
@@ -956,14 +988,14 @@ tr.brk td:first-child{font-style:normal}
 </section>
 
 <!-- ===================== COLUMN 6 — EXERCISE 6 ===================== -->
-<section class="col" data-label="Ex 6 · System regression in the pipeline" data-time="14:15–14:45">
+<section class="col" data-label="Ex 6 · System regression in the pipeline" data-time="14:25–14:45">
 
 <article class="slide" data-kind="section">
   <div class="bignum">6</div>
   <h1>System regression in the pipeline</h1>
   <p class="lead">Add the slow test suite as a separate CI job, so the fast feedback stays fast.</p>
   <div class="kv">
-    <span class="pill"><b>14:15–14:45</b> · ~30 min</span>
+    <span class="pill"><b>14:25–14:45</b> · ~20 min</span>
     <span class="pill">Deliverable: a second, parallel CI job</span>
     <span class="pill">Fallback branch: <code>solution/m4-system</code></span>
   </div>
@@ -987,7 +1019,6 @@ tr.brk td:first-child{font-style:normal}
   <div class="tag"><span class="dot"></span>Exercise 6 · Steps</div>
   <h2>Do this</h2>
   <ol>
-    <li>Add the system-test library as its own <strong>dependency group</strong>, separate from the fast test group.</li>
     <li>Add a <strong>second, parallel CI job</strong> for the system tests — not another step inside the fast job.</li>
     <li>Upload the report as a CI artifact, so that you can analyse a failure.</li>
     <li>Push and confirm <strong>both jobs</strong> report independently on GitHub.</li>
@@ -998,7 +1029,7 @@ tr.brk td:first-child{font-style:normal}
 <article class="slide" data-kind="prompt">
   <div class="tag"><span class="dot"></span>Exercise 6 · Example prompts</div>
   <h2>If you're behind, start here</h2>
-  <div class="prompt"><div class="who">Prompt 1 · add the second CI job</div><pre>Split the system-test dependencies into their own [system] extra. Then add a second CI job that installs only that extra and runs the Robot suite, uploading the results as an artifact even on failure. It must be a separate job so it runs in parallel with the fast one — explain in a comment why.</pre></div>
+  <div class="prompt"><div class="who">Prompt 1 · add the second CI job</div><pre>Add a second CI job that installs only the [system] extra and runs the Robot suite, uploading the results as an artifact even on failure. It must be a separate job so it runs in parallel with the fast one — explain in a comment why. Confirm the fast job still installs only [test].</pre></div>
   <div class="prompt"><div class="who">Prompt 2 · check the split is real</div><pre>Show me which dependencies each CI job installs. Confirm the fast job never installs the system-test libraries, and that the system job never installs pytest. If either one pulls in something it does not use, fix it and explain what it was.</pre></div>
   <div class="prompt"><div class="who">Prompt 3 · verify both jobs</div><pre>Push and show me both CI jobs and their durations. Which one is the bottleneck, and does the fast job install anything it doesn't need?</pre></div>
 </article>
@@ -1044,22 +1075,19 @@ tr.brk td:first-child{font-style:normal}
   <div class="note">Everything from today is used at the same time here: standing context, hook, CI, subagent, skill — and people checking every step.</div>
 </article>
 
-<article class="slide" data-kind="theory">
+
+
+<article class="slide dense" data-kind="theory">
   <div class="tag"><span class="dot"></span>Definition</div>
-  <h2>What is a skill?</h2>
-  <p class="lead">A <strong>reusable procedure in a folder</strong> that the agent loads when it is relevant: your team's method, written down once and then applied the same way every time.</p>
+  <h2>Your second skill — a different kind</h2>
+  <p class="lead">Ex 5's skill was a <strong>procedure</strong> the agent applies on its own. This one runs a <strong>conversation</strong> with you.</p>
   <ul>
-    <li>A folder — <code>.claude/skills/&lt;name&gt;/SKILL.md</code> — holding instructions, and optionally scripts or reference files, loaded when needed. Same discovery rule as subagents: edits are picked up live, but a brand-new <code>.claude/skills/</code> directory needs a restart.</li>
-    <li>It runs <strong>in the current conversation</strong>, so it can have a real dialogue with the team.</li>
-    <li>Use it so that the agent does not invent a different method each time you ask.</li>
+    <li><strong>You invoke it, not the agent.</strong> Its frontmatter sets <code>disable-model-invocation: true</code>, so it runs only when someone types <code>/example-mapping</code> — never because the agent decided the moment looked right.</li>
+    <li><strong>It takes an argument.</strong> <code>argument-hint</code> shows what to pass; the skill reads it as <code>$ARGUMENTS</code>. Here: an issue number, or the story text.</li>
+    <li><strong>It runs in your conversation</strong>, so it can ask a question, wait, and use the answer — which a subagent cannot do.</li>
+    <li><strong>It can enforce its own first step.</strong> This one refuses to start until the input has been inspected for instructions aimed at the agent.</li>
   </ul>
-  <table style="margin-top:10px">
-    <tr><th></th><th>Skill</th><th>Subagent</th></tr>
-    <tr><td><b>Context</b></td><td>In the conversation — it can see the discussion</td><td>Separate — it starts with no history</td></tr>
-    <tr><td><b>Use</b></td><td>Interactive: questions and answers</td><td>One defined task, delegated once</td></tr>
-    <tr><td><b>Today</b></td><td>Example Mapping interview</td><td>System-test writing</td></tr>
-  </table>
-  <div class="note"><b>Copilot equivalent:</b> Agent Skills / a prompt file.</div>
+  <div class="note">Two skills, two shapes: one encodes <em>how we do something</em>, the other <em>how we talk about something</em>. Both are files in the repo, both reviewed like code. <b>Copilot equivalent:</b> Agent Skills, or a prompt file.</div>
 </article>
 
 <article class="slide" data-kind="theory">
@@ -1237,7 +1265,7 @@ tr.brk td:first-child{font-style:normal}
     <tr><td>2</td><td>Nothing is accepted without reading it; the agent acts outside the repository</td><td>Verification steps + <code>gh</code></td></tr>
     <tr><td>3</td><td>Tests that really check behaviour, executed <b>before the agent may stop</b></td><td>Oracle check + <code>Stop</code> hook</td></tr>
     <tr><td>4</td><td>A documented service target that blocks a bad change</td><td>SLI-based CI gate</td></tr>
-    <tr><td>5</td><td>A specialist with a limited scope that keeps the test pyramid in shape</td><td>System-test subagent + <code>CLAUDE.md</code> v3</td></tr>
+    <tr><td>5</td><td>A specialist with a limited scope that keeps the test pyramid in shape</td><td>A skill + a subagent + <code>CLAUDE.md</code> v3</td></tr>
     <tr><td>6</td><td>Slow feedback in parallel, so the fast checks stay fast</td><td>A second, parallel CI job</td></tr>
     <tr><td>7</td><td>A complete feature built with testing inside the loop</td><td>Skill + everything above</td></tr>
   </table>
