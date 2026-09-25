@@ -43,7 +43,9 @@ are SLI violations, not style issues.
   target distribution. Before adding a system test, check whether `tests/unit/` or `tests/api/`
   already prove it; if so, that's the pyramid-inversion anti-pattern, not thoroughness.
 - **Delegate system tests to the `system-test-writer` subagent** (`.claude/agents/system-test-writer.md`)
-  rather than writing `tests/system/*.robot` inline. It's scoped to keep that layer thin — use it
+  rather than writing `tests/system/*.robot` inline. How to write one lives in the `system-tests`
+  skill (`.claude/skills/system-tests/`), which that subagent preloads; the subagent decides only
+  what is worth testing. It's scoped to keep that layer thin — use it
   when a change affects end-to-end behaviour on the redirect hot path.
 - **A turn never ends with a failing test.** Run `pytest tests/unit tests/api` before you finish.
   If something is red, fix it — or say plainly that you could not and why. Don't narrow a test or

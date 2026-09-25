@@ -58,7 +58,10 @@ robot --outputdir robot-results tests/system/ # system tests, real server, real 
   Stop hook; CI runs it on every push.
 - `tests/system/` — Robot Framework system tests: the redirect hot path round trip. Maintained by
   the `system-test-writer` subagent, not written inline.
-- `.claude/agents/system-test-writer.md` — the subagent that owns `tests/system/`. Claude Code
+- `.claude/skills/system-tests/` — how we write Robot Framework suites: conventions in
+  `SKILL.md`, syntax in `reference.md`. Built before the subagent, and preloaded into it.
+- `.claude/agents/system-test-writer.md` — the subagent that owns `tests/system/`. It decides
+  *what* to test; the skill above tells it *how*. Claude Code
   watches this directory and picks up edits within seconds, but only for directories that existed
   when the session started — so the *first* file in a new `.claude/agents/` needs a restart.
 - `.claude/skills/example-mapping/` — the `/example-mapping` skill (same discovery rule as the
