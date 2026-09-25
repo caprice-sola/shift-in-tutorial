@@ -43,7 +43,9 @@ are SLI violations, not style issues.
   target distribution. Before adding a system test, check whether `tests/unit/` or `tests/api/`
   already prove it; if so, that's the pyramid-inversion anti-pattern, not thoroughness.
 - **Delegate system tests to the `system-test-writer` subagent** (`.claude/agents/system-test-writer.md`)
-  rather than writing `tests/system/*.robot` inline. Its actual bar (not just "touches the redirect
+  rather than writing `tests/system/*.robot` inline. How to write one lives in the `system-tests`
+  skill (`.claude/skills/system-tests/`), which that subagent preloads; the subagent decides only
+  what is worth testing. Its actual bar (not just "touches the redirect
   hot path" — that looser wording is how M4's first draft ended up with two suites that turned out
   to be exact restatements of `tests/api/`, caught in review and deleted): does this behaviour need
   a real process boundary to prove, something `tests/api/`'s `TestClient` genuinely cannot exercise?
