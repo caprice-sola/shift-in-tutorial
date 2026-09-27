@@ -841,7 +841,7 @@ tr.brk td:first-child{font-style:normal}
 <article class="slide" data-kind="section">
   <div class="bignum">5</div>
   <h1>A skill, then a subagent</h1>
-  <p class="lead">Teach the agent <em>how</em> to write a Robot Framework suite, then delegate <em>what</em> to test to a subagent that follows the strategy.</p>
+  <p class="lead">Teach the agent <em>how</em> to write a Robot Framework suite, then delegate the <strong>system tester</strong> role to a subagent that works from the test strategy and the SLIs.</p>
   <div class="kv">
     <span class="pill"><b>13:30–14:25</b> · ~55 min</span>
     <span class="pill">Deliverable: a skill, a subagent, <code>tests/system/</code>, <code>CLAUDE.md</code> v3</span>
@@ -859,29 +859,42 @@ tr.brk td:first-child{font-style:normal}
     <li>It runs <strong>in the current conversation</strong>, so it can have a real dialogue with the team.</li>
     <li>A subagent can <strong>preload</strong> one with a <code>skills:</code> field — the content is in its context from the start, not something it must go and find.</li>
   </ul>
-  <table style="margin-top:10px">
-    <tr><th></th><th>Skill</th><th>Subagent</th></tr>
-    <tr><td><b>Context</b></td><td>In the conversation — it can see the discussion</td><td>Separate — it starts with no history</td></tr>
-    <tr><td><b>Use</b></td><td>Encoded technique, or an interview</td><td>One task, delegated once</td></tr>
-    <tr><td><b>Here</b></td><td><em>How</em> to write a Robot suite</td><td><em>What</em> deserves one</td></tr>
-  </table>
-  <div class="note">You build both in this exercise: a skill for <em>how</em>, a subagent for <em>what</em>. <b>Copilot:</b> Agent Skills / a prompt file.</div>
+  <div class="note">In this exercise you write one: <code>.claude/skills/system-tests/</code>, holding how we write a Robot Framework suite. <b>Copilot equivalent:</b> Agent Skills, or a prompt file.</div>
 </article>
 
 <article class="slide dense" data-kind="theory">
   <div class="tag"><span class="dot"></span>Definition</div>
   <h2>What is a subagent?</h2>
-  <p class="lead">A <strong>second agent, started by the first one</strong>, with its own separate context, its own instructions and a limited set of tools.</p>
+  <p class="lead">A <strong>second agent, started by the first one</strong>, with its own separate context, its own instructions and a limited set of tools. You give it a <strong>role</strong>, not a task.</p>
   <ul>
     <li><strong>Separate context</strong> — it does not receive the main conversation, and its output does not fill your conversation. It returns a summary.</li>
-    <li><strong>Limited responsibility</strong> — one task, explicit rules, including what it must <em>not</em> do.</li>
+    <li><strong>A role with limits</strong> — write down what job it holds, what it may decide, and what it must <em>not</em> do.</li>
     <li><strong>Limited tools</strong> — give it only what the task needs, and write the allowed directories into its instructions as well.</li>
     <li>Best for <strong>one task, delegated once</strong>. Not suitable for a task that needs discussion — it cannot see your conversation.</li>
     <li>Defined as one Markdown file in <code>.claude/agents/</code>: frontmatter for its name, description and allowed tools, then its instructions.</li>
     <li><strong>Discovery:</strong> Claude Code watches that directory and picks up edits within seconds — but only for directories that already existed when the session started. The <em>first</em> file in a brand-new <code>.claude/agents/</code> needs a <strong>restart</strong>.</li>
   </ul>
-  <div class="note"><b>Copilot equivalent:</b> a custom agent profile with its own instructions and MCP scoping. Robot Framework itself is tool-agnostic.</div>
+  <div class="note">The one you write here holds the role of <b>system tester</b> — the next slide says what that means. <b>Copilot equivalent:</b> a custom agent profile with its own instructions and MCP scoping.</div>
 </article>
+<article class="slide dense" data-kind="theory">
+  <div class="tag"><span class="dot"></span>Definition</div>
+  <h2>The role we are delegating: system tester</h2>
+  <p class="lead">Spelling the job out in testing terms is what stops the subagent inventing its own scope.</p>
+  <ul>
+    <li><strong>Test analysis</strong> — read the <em>test basis</em> (<code>docs/test-strategy.md</code>, <code>docs/slis.md</code>) and decide which behaviour can only be verified with the whole system running.</li>
+    <li><strong>Test design</strong> — turn each of those into a concrete end-to-end case: given this request, this response.</li>
+    <li><strong>Test implementation</strong> — write it as a Robot Framework suite, using our conventions. <small>(That part is the skill.)</small></li>
+    <li><strong>Test execution</strong> — run it against a real server and report what happened.</li>
+  </ul>
+  <table style="margin-top:6px">
+    <tr><th></th><th>Skill</th><th>Subagent</th></tr>
+    <tr><td><b>Holds</b></td><td>A <b>method</b> — how we do something</td><td>A <b>role</b> — the job, and its limits</td></tr>
+    <tr><td><b>Context</b></td><td>In your conversation</td><td>Separate; starts with no history</td></tr>
+    <tr><td><b>Here</b></td><td>How to write a Robot suite</td><td>System tester: analyse, design, implement, run</td></tr>
+  </table>
+  <div class="note">Four of the seven activities ISTQB names in the test process — planning, monitoring and control, and completion stay with the humans. The subagent does not get to change the strategy; it works <em>from</em> it.</div>
+</article>
+
 
 <article class="slide" data-kind="theory">
   <div class="tag"><span class="dot"></span>Definition</div>
@@ -904,7 +917,7 @@ tr.brk td:first-child{font-style:normal}
 <article class="slide" data-kind="theory">
   <div class="tag"><span class="dot"></span>Theory</div>
   <h2>When is a system test justified?</h2>
-  <p class="lead">Only when the behaviour <strong>cannot be tested at a lower test level</strong>.</p>
+  <p class="lead">This is the subagent's <strong>test analysis</strong> decision, and it has one rule: only when the behaviour <strong>cannot be verified at a lower test level</strong>.</p>
   <div class="cols">
     <div class="card"><h3>Justified</h3><p>A real server process, real network connections, real deployment configuration. The most-used path, end to end: create a link → follow it → check the statistics.</p></div>
     <div class="card"><h3>Not justified</h3><p>"It goes through routing, validation and error handling." The API-level test client already does exactly that: same input, same assertion, only slower.</p></div>
@@ -935,7 +948,7 @@ tr.brk td:first-child{font-style:normal}
     <li><strong>Update <code>CLAUDE.md</code> to v3</strong>: all three test levels in one place, plus the agreement to delegate system tests.</li>
     <li><strong>Restart Claude Code</strong> — <code>.claude/skills/</code> is a new directory, so nothing is watching it yet. The conversation is lost; <code>CLAUDE.md</code> is not, which is why step 3 came first.</li>
     <li><strong>Use the skill yourself:</strong> ask for the redirect round trip — create a link → follow it → check the statistics — and <strong>run it</strong>. No documentation hunting: the syntax is already in context.</li>
-    <li><strong>Now create the subagent</strong>, preloading that skill with a <code>skills:</code> field. Its instructions carry only <em>what</em> is worth testing: the strategy, the SLIs, and the rule that a system test must prove something <code>tests/api/</code> cannot.</li>
+    <li><strong>Now create the subagent</strong>, preloading that skill with a <code>skills:</code> field. Give it the <strong>system tester</strong> role in writing: analyse the test basis, design end-to-end cases, implement and run them — and never add one that <code>tests/api/</code> already proves.</li>
     <li><strong>Restart again</strong> — <code>.claude/agents/</code> is also new. Cheap this time: <code>CLAUDE.md</code> is already current.</li>
     <li><strong>Delegate:</strong> ask the subagent whether a <em>second</em> case clears that bar. Review its answer together — and note that "no" is the correct one for this app.</li>
   </ol>
@@ -955,7 +968,7 @@ tr.brk td:first-child{font-style:normal}
   <div class="tag"><span class="dot"></span>Exercise 5 · Prompts for steps 5–8</div>
   <h2>If you're behind, start here</h2>
   <div class="prompt"><div class="who">Step 5 · use the skill yourself</div><pre>Using the system-tests skill, add one Robot suite for the redirect round trip: create a link, follow it without following the redirect, and check the click count. Then run it and show me the result. Do not look up Robot Framework documentation — everything you need is in the skill.</pre></div>
-  <div class="prompt"><div class="who">Step 6 · create the subagent</div><pre>Create a system-test-writer subagent in .claude/agents/. Preload the system-tests skill with the skills: frontmatter field, so it starts with our conventions already in context. Its own instructions should cover only what is worth testing: read docs/test-strategy.md and docs/slis.md, and state that a system test is justified ONLY if it proves something tests/api/ cannot — real process, real sockets. Check the current subagent documentation for the frontmatter fields first.</pre></div>
+  <div class="prompt"><div class="who">Step 6 · create the subagent</div><pre>Create a system-test-writer subagent in .claude/agents/. Give it this role, in its own words: it is our system tester at the system test level. It reads the test basis — docs/test-strategy.md and docs/slis.md — to decide which behaviour can only be verified with the whole system running (test analysis), designs those end-to-end cases, implements them as Robot suites, and runs them. It does not change the strategy, and it must not add a case that tests/api/ already proves. Preload the system-tests skill with the skills: frontmatter field so our conventions are in its context from the start. Check the current subagent documentation for the frontmatter fields first.</pre></div>
   <div class="prompt"><div class="who">Step 8 · delegate, and expect a no</div><pre>Ask the system-test-writer subagent whether a SECOND system test case clears the bar in its instructions. It must name the tests/api/ test that already covers each candidate, or say plainly that no second case is justified for this app. Report back its reasoning, not just its answer.</pre></div>
   <div class="prompt"><div class="who">Step 7 · check every test case</div><pre>For each case in tests/system/, show me the tests/api/ test that already covers the same behaviour, or state clearly what only a real server can prove here. Delete any case that fails that test.</pre></div>
 </article>
@@ -964,7 +977,8 @@ tr.brk td:first-child{font-style:normal}
   <div class="tag"><span class="dot"></span>Exercise 5 · Learning points</div>
   <h2>What just happened</h2>
   <ul>
-    <li><strong>Separate technique from judgment.</strong> <em>How</em> to write a Robot suite is stable and reusable, so it belongs in a skill. <em>What</em> deserves one is a project decision, so it belongs in the subagent. Mixed together, neither is reusable.</li>
+    <li><strong>Separate the method from the role.</strong> <em>How</em> to write a Robot suite is stable and reusable — a skill. <em>Who decides what to test, and within what limits</em> is a role — a subagent. Mixed together, neither is reusable.</li>
+    <li><strong>Write the role down in testing terms.</strong> "Analyse the test basis, design the cases, implement and run them" tells the subagent where its job starts and stops. "Write some system tests" does not.</li>
     <li><strong>Give the agent the tool and the know-how before the task.</strong> Installing Robot Framework and writing the skill first is why step 5 took minutes instead of a documentation hunt.</li>
     <li><strong>Cheap test generation makes discipline harder.</strong> Writing tests used to be slow, and that effort protected the pyramid. Now only your rules protect it.</li>
     <li><strong>"It goes through the whole system" is not a justification.</strong> Ask what <em>only</em> this test level can verify.</li>

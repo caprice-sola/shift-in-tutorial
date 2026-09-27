@@ -218,10 +218,14 @@ tests."
 5. **Use the skill in the main session**: one suite for the redirect hot path (create → follow →
    stats), then run it. This is the payoff — no documentation hunting, because the syntax is
    already in context.
-6. **Now build the subagent**, preloading the skill with the `skills:` frontmatter field. Its own
-   instructions carry only scope: read `docs/test-strategy.md` and `docs/slis.md`, and a system test
-   is justified only when `tests/api/` cannot prove the behaviour. Preload rather than the `Skill`
-   tool — this subagent's `tools` list doesn't include `Skill`, and a preload is deterministic.
+6. **Now build the subagent**, preloading the skill with the `skills:` frontmatter field. Write its
+   **role**, not a task list: it is the project's system tester at the system test level, and the
+   four activities that are its own are test analysis (read the test basis and decide what can only
+   be verified end to end), test design, test implementation, test execution. Planning and
+   completion are explicitly *not* its to touch — it works from the strategy and reports
+   disagreement rather than acting on it. That framing is what stops it inventing its own scope;
+   "write some system tests" does not. Preload rather than the `Skill` tool — this subagent's
+   `tools` list doesn't include `Skill`, and a preload is deterministic.
    Restart again for `.claude/agents/`; cheap this time, since `CLAUDE.md` is already current.
 7. **Delegate**: ask whether a *second* case clears that bar. For this app the honest answer is no,
    and getting the subagent to say so — naming the `tests/api/` test that already covers each
