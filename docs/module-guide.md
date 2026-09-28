@@ -208,17 +208,14 @@ tests."
    write) and `reference.md` for the syntax. Verify the frontmatter against current docs. One
    failure mode worth naming out loud: the fixture resolves `uvicorn` on `PATH`, so running `robot`
    outside an activated venv fails in *suite setup* and reads like a broken test.
-3. **Update `CLAUDE.md` to v3 now**, before anything else: all three test levels in one map, plus
-   the working agreement to delegate system tests to the subagent. The next step throws the
-   conversation away, and this file is what survives it.
-4. **Restart Claude Code.** `.claude/agents/` didn't exist when the session started, so nothing is
-   watching it — the subagent is undiscoverable until a new session begins. (Later *edits* to the
-   file are picked up live; the restart is about the directory being new, not the file changing.
-   Verify this against the current docs before the day — it's the kind of behaviour that moves.)
-5. **Use the skill in the main session**: one suite for the redirect hot path (create → follow →
+3. **Restart Claude Code** — `.claude/skills/` didn't exist when the session started, so nothing is
+   watching it. Nothing is lost here: the skill is a file on disk. (Later *edits* to a skill or
+   subagent are picked up live; a restart is only needed for a new directory. Verify against the
+   current docs before the day — it's the kind of behaviour that moves.)
+4. **Use the skill in the main session**: one suite for the redirect hot path (create → follow →
    stats), then run it. This is the payoff — no documentation hunting, because the syntax is
    already in context.
-6. **Now build the subagent**, preloading the skill with the `skills:` frontmatter field. Write its
+5. **Now build the subagent**, preloading the skill with the `skills:` frontmatter field. Write its
    **role**, not a task list: it is the project's system tester at the system test level, and the
    four activities that are its own are test analysis (read the test basis and decide what can only
    be verified end to end), test design, test implementation, test execution. Planning and
@@ -226,14 +223,19 @@ tests."
    disagreement rather than acting on it. That framing is what stops it inventing its own scope;
    "write some system tests" does not. Preload rather than the `Skill` tool — this subagent's
    `tools` list doesn't include `Skill`, and a preload is deterministic.
-   Restart again for `.claude/agents/`; cheap this time, since `CLAUDE.md` is already current.
-7. **Delegate**: ask whether a *second* case clears that bar. For this app the honest answer is no,
+6. **Update `CLAUDE.md` to v3**: all three test levels in one map, where the skill lives, and the
+   agreement to delegate system tests to the subagent. It comes *here*, not earlier, because
+   everything it describes has to exist first — an instruction to delegate to a subagent that
+   doesn't exist yet is a forward reference the agent can't act on.
+7. **Restart again** for `.claude/agents/`. This is the restart that matters: it discards the
+   conversation, and v3 is what the next session reads instead.
+8. **Delegate**: ask whether a *second* case clears that bar. For this app the honest answer is no,
    and getting the subagent to say so — naming the `tests/api/` test that already covers each
    candidate — is the exercise.
-8. Add a second, *parallel* CI job for system tests, installing only the `[system]` extra — not a
+9. Add a second, *parallel* CI job for system tests, installing only the `[system]` extra — not a
    slower step bolted onto the fast one. (v1 was M1's business context, v2 was M3a's test
-   agreement, v3 was step 3 — the third and last deliberate pass, done early because the restart
-   demanded it.)
+   agreement, v3 was step 6 — the third and last deliberate pass, written once everything it
+   describes exists and immediately before the restart that discards the conversation.)
 
 **Artifact:** `.claude/skills/system-tests/`, the system-test subagent that preloads it,
 `tests/system/`, a second CI job, `CLAUDE.md` v3.
