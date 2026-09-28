@@ -14,6 +14,13 @@ test = [
     "pytest-cov>=5.0",
     "httpx>=0.27",
 ]
+# System/E2E only (tests/system/): spins up a real server process, so it's
+# slow. Kept out of [test] so the fast unit+api job (and its Stop hook) never
+# installs or runs it.
+system = [
+    "robotframework>=7.0",
+    "robotframework-requests>=0.9.5",
+]
 
 [build-system]
 requires = ["hatchling"]
