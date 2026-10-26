@@ -3,6 +3,8 @@
 snip is an internal URL shortener: employees create short codes for long links, recipients follow
 them, owners check click counts. Source in `src/snip/` (FastAPI). Run with
 `uvicorn snip.main:app --reload --app-dir src`.
+Install test tooling with `pip install -e ".[test]"`, then run the suite with
+`pytest tests/unit tests/api`.
 
 Source of truth: `docs/business-context.md`, `docs/quality-characteristics.md`, `docs/slis.md`.
 If this file and those docs disagree, the docs win — and tell us so we can fix this file.
@@ -53,6 +55,8 @@ follow, 4 for create, 5 for stats).
 - Every PR description names the SLIs it affects (or says "none").
 - Changes to the follow path need a test for exact-URL resolution (SLI 3) and the click increment
   (SLI 5); changes to create need rejection tests for unsafe and malformed URLs (SLI 4).
+- A turn never ends with a failing test. If a test is red, fix it, or say clearly that you could
+  not and which test is still failing.
 - Don't loosen an SLI target or a CI gate to make a change pass; raise it with the team.
 - Link expiry (owners want links that stop working after a chosen time) is a known roadmap item. It
   will be built from Example Mapping first; don't start it ad hoc. Expiry must be treated as a
