@@ -1,0 +1,36 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      # Step 1 - production-only install.
+      # Deliberately its own step, before any test tooling is installed. The test
+      # extra (pytest, httpx2, ...) can mask a missing runtime dependency: if the app
+      # imported something that is only pulled in by a test package, every later step
+      # would be green while the deployed package fails on import. A plain install
+      # (no extras, not editable) also proves the package builds and that
+      # snip.main - which pulls in FastAPI - imports from what pyproject.toml declares.
+      - name: "1. Install production dependencies only and check the package imports"
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+          cd "$RUNNER_TEMP"
+          python -c "import snip.main; print('snip.main imports OK')"
+
+      - name: "2. Unit and API tests"
+        run: |
+          pip install -e ".[test]"
+          pytest tests/unit tests/api -q
+
+      # Gate on SLI 1 (docs/slis.md): p95 redirect latency < 50 ms. -s shows the
+      # measured p95 and margin in the log.
+      - name: "3. SLI gate - redirect latency"
+        run: pytest tests/gates -q -s

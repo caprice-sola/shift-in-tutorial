@@ -1,5 +1,7 @@
 # snip
 
+<!-- snip: in-memory URL shortener used for the Shift In workshop. -->
+
 A tiny URL shortener — the **starter application** for the Shift In tutorial. This is the `start`
 state: it runs, but it has **no tests, no CI, and no AI tooling yet**. That is the point.
 
